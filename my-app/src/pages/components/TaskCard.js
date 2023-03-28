@@ -1,9 +1,7 @@
 import { Box } from "@chakra-ui/react";
-import { Draggable } from "react-dnd";
+import { Draggable } from "react-beautiful-dnd";
 
 const TaskCard = ({ id, name, description, kubixPayout, index }) => {
-  const item = { id, index, type: "taskCard" };
-
   return (
     <Draggable draggableId={id} index={index}>
       {(provided) => (
@@ -28,3 +26,4 @@ const TaskCard = ({ id, name, description, kubixPayout, index }) => {
 };
 
 export default TaskCard;
+
