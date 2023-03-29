@@ -23,10 +23,13 @@ const TaskBoardContent = () => {
       direction={{ base: 'column', md: 'row' }}
       justifyContent='space-between'
       w='100%'
-      overflowX='auto'
+      h='calc(100vh - 2rem)' // Add this line
+      overflowX='hidden'
+      overflowY='hidden'
       wrap={{ base: 'nowrap', md: 'nowrap' }}
-      minH="100vh" 
     >
+
+
 
      
      {taskColumns.map((column, index) => (

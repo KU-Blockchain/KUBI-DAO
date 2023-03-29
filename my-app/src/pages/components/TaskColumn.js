@@ -49,8 +49,9 @@ const TaskColumn = ({ title, tasks, columnId }) => {
   const columnStyle = isOver ? { backgroundColor: 'rgba(0, 255, 0, 0.1)' } : {};
 
   return (
-    <Box ref={drop} w="100%" px={4} py={6} bg="gray.100" borderRadius="md" boxShadow="sm" style={columnStyle}>
-      <Heading size="md" mb={4}>
+    <Box ref={drop} w="100%" h="100%" px={4} py={6} bg="gray.100" borderRadius="md" boxShadow="sm" style={columnStyle}>
+
+      <Heading size="md" mb={4} alignItems="center">
         {title}
         {title === 'Open' && (
           <IconButton
@@ -58,16 +59,21 @@ const TaskColumn = ({ title, tasks, columnId }) => {
             icon={<AddIcon />}
             aria-label="Add task"
             onClick={handleOpenAddTaskModal}
+            h="1rem" // set the height of the IconButton
           />
-          )}
-          </Heading>
+        )}
+      </Heading>
+
           <Box
-            minH="60vh"
+            h="calc(100% - 3rem)" 
             bg="gray.200"
             borderRadius="md"
             p={4}
             style={columnStyle}
+            overflowY="auto"
           >
+
+
             {tasks.map((task, index) => (
               <TaskCard
                 key={task.id}

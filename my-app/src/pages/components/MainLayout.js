@@ -46,16 +46,19 @@ const [projects, setProjects] = useState([
 const [selectedProject, setSelectedProject] = useState(projects[0]);
 
 const handleSelectProject = (projectId) => {
-const selected = projects.find((project) => project.id === projectId);
-setSelectedProject(selected);
-};
+    const selected = projects.find((project) => project.id === projectId);
+    setSelectedProject(selected);
+  };
+  
 
 return (
-<Flex>
-<ProjectSidebar projects={projects} onSelectProject={handleSelectProject} />
-<TaskBoard columns={selectedProject.columns} />
-</Flex>
-);
+    <Flex w="100%" h="100vh"> {/* Add w and h attributes */}
+      <ProjectSidebar projects={projects} onSelectProject={handleSelectProject} />
+      <TaskBoard columns={selectedProject.columns} />
+    </Flex>
+  );
+  
+  
 };
 
 export default MainLayout;
