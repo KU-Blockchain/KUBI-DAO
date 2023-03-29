@@ -3,7 +3,7 @@ import { Box, Heading } from '@chakra-ui/react';
 import { useDrop } from 'react-dnd';
 import TaskCard from './TaskCard';
 
-const TaskColumn = ({ title, tasks = [], columnId, moveTask }) => {
+const TaskColumn = ({ title, tasks = [], columnId, moveTask, taskColumns }) => {
   const [{ isOver }, drop] = useDrop(() => ({
     accept: 'task',
     drop: (item, monitor) => {
@@ -11,39 +11,31 @@ const TaskColumn = ({ title, tasks = [], columnId, moveTask }) => {
       const targetIndex = tasks.length;
       const sourceColumnId = item.columnId;
       const targetColumnId = columnId;
-    
+
       if (sourceColumnId === targetColumnId) {
-        // If the drag and drop is happening within the same column,
-        // just update the index of the dragged task in the tasks array
         const newTasks = [...tasks];
         const [removed] = newTasks.splice(sourceIndex, 1);
         newTasks.splice(targetIndex, 0, removed);
         moveTask(newTasks, columnId);
       } else {
-        // If the drag and drop is happening between different columns,
-        // create a new task object with the same properties as the dragged task,
-        // and add it to the tasks array of the target column.
         const task = {
           id: item.id,
           name: item.name,
           description: item.description,
           kubixPayout: item.kubixPayout,
-          index: targetIndex // Set the index of the dragged task to the target index
+          index: targetIndex
         };
-    
+
         const newSourceTasks = [...tasks];
         newSourceTasks.splice(sourceIndex, 1);
-        moveTask(newSourceTasks, sourceColumnId);
-    
+
         const newTargetTasks = [...taskColumns[targetColumnId].tasks];
         newTargetTasks.splice(targetIndex, 0, task);
+        moveTask(newSourceTasks, sourceColumnId);
         moveTask(newTargetTasks, targetColumnId);
       }
     },
-    
-    
-    
-    
+
     collect: (monitor) => ({
       isOver: monitor.isOver(),
     }),
@@ -81,4 +73,3 @@ const TaskColumn = ({ title, tasks = [], columnId, moveTask }) => {
 };
 
 export default TaskColumn;
-

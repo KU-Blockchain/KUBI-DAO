@@ -50,4 +50,3 @@ const TaskCard = ({ id, name, description, kubixPayout, index, columnId }) => {
 };
 
 export default TaskCard;
-
