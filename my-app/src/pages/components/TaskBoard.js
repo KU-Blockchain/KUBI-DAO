@@ -24,7 +24,8 @@ const TaskBoardContent = () => {
       justifyContent='space-between'
       w='100%'
       overflowX='auto'
-      wrap={{ base: 'nowrap', md: 'wrap' }}
+      wrap={{ base: 'nowrap', md: 'nowrap' }}
+
     >
      
      {taskColumns.map((column, index) => (
