@@ -1,5 +1,19 @@
-import '@/styles/globals.css'
+import * as React from "react";
+import { ChakraProvider, extendTheme } from "@chakra-ui/react";
 
-export default function App({ Component, pageProps }) {
-  return <Component {...pageProps} />
+const theme = extendTheme({
+  config: {
+    initialColorMode: "light",
+    useSystemColorMode: false,
+  },
+});
+
+function MyApp({ Component, pageProps }) {
+  return (
+    <ChakraProvider theme={theme}>
+      <Component {...pageProps} />
+    </ChakraProvider>
+  );
 }
+
+export default MyApp;
