@@ -1,6 +1,6 @@
 import * as React from "react";
 import { ChakraProvider, extendTheme } from "@chakra-ui/react";
-import Navbar from '../components/Navbar';
+import Navbar from 'src/components/Navbar';
 
 const theme = extendTheme({
   config: {
