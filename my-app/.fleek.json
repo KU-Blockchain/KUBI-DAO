@@ -1,12 +1,11 @@
 {
-    "build": {
-      "src": "/",
-      "outputDir": "out",
-      "publicDir": "public",
-      "command": "yarn && yarn build && yarn next export"
-    },
-    "env": {
-      "PUBLIC_DIR": "./public"
-    }
+  "build": {
+    "src": "./",
+    "outputDir": "out",
+    "publicDir": "public",
+    "command": "yarn && yarn build && yarn next export"
+  },
+  "env": {
+    "PUBLIC_DIR": "./public"
   }
-  
+}
