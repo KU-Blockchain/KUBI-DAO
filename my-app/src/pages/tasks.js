@@ -1,13 +1,14 @@
-// src/pages/tasks.js
 import React from 'react';
+import { Box } from '@chakra-ui/react';
 import MainLayout from '../components/MainLayout';
 
 const Tasks = () => {
   return (
-    <div>
+    <Box p={8} minH="100vh" bg="gray.50">
       <MainLayout />
-    </div>
+    </Box>
   );
 };
 
 export default Tasks;
+

@@ -1,6 +1,5 @@
-// src/components/Navbar.js
 import React from 'react';
-import { Box, Flex, Link } from '@chakra-ui/react';
+import { Box, Flex, Button } from '@chakra-ui/react';
 import NextLink from 'next/link';
 
 const Navbar = () => {
@@ -8,19 +7,19 @@ const Navbar = () => {
     <Box bg="blue.500" p={4}>
       <Flex justifyContent="space-around">
         <NextLink href="/" passHref>
-          <Link color="white" fontWeight="bold">Home</Link>
+          <Button as="a" color="white" fontWeight="bold">Home</Button>
         </NextLink>
         <NextLink href="/tasks" passHref>
-          <Link color="white" fontWeight="bold">Tasks</Link>
+          <Button as="a" color="white" fontWeight="bold">Tasks</Button>
         </NextLink>
         <NextLink href="/leaderboard" passHref>
-          <Link color="white" fontWeight="bold">Leaderboard</Link>
+          <Button as="a" color="white" fontWeight="bold">Leaderboard</Button>
         </NextLink>
         <NextLink href="/voting" passHref>
-          <Link color="white" fontWeight="bold">Voting</Link>
+          <Button as="a" color="white" fontWeight="bold">Voting</Button>
         </NextLink>
         <NextLink href="/user" passHref>
-          <Link color="white" fontWeight="bold">User</Link>
+          <Button as="a" color="white" fontWeight="bold">User</Button>
         </NextLink>
       </Flex>
     </Box>
@@ -28,3 +27,4 @@ const Navbar = () => {
 };
 
 export default Navbar;
+

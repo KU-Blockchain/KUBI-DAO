@@ -1,4 +1,5 @@
 // src/pages/leaderboard.js
+
 import React from 'react';
 
 const Leaderboard = () => {
