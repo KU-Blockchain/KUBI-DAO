@@ -2,7 +2,7 @@ import { AddIcon } from '@chakra-ui/icons';
 import { Box, Heading, IconButton, useDisclosure } from '@chakra-ui/react';
 import { useDrop } from 'react-dnd';
 import TaskCard from './TaskCard';
-import { useTaskBoard } from './TaskBoardContext';
+import { useTaskBoard } from '../../contexts/TaskBoardContext';
 import AddTaskModal from './AddTaskModal';
 import React, { useState } from 'react';
 
