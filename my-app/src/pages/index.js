@@ -1,5 +1,5 @@
 import { Box } from "@chakra-ui/react";
-import MainLayout from "./components/MainLayout";
+import MainLayout from "../components/MainLayout";
 
 export default function Home() {
   return (
