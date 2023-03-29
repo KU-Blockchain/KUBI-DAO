@@ -1,10 +1,18 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Box, Flex } from '@chakra-ui/react';
 import { DndProvider } from 'react-dnd';
 import { HTML5Backend } from 'react-dnd-html5-backend';
 import TaskColumn from './TaskColumn';
 
 const TaskBoard = ({ columns }) => {
+  const [taskColumns, setTaskColumns] = useState(columns);
+
+  const moveTask = (newTasks, columnId) => {
+    const newTaskColumns = [...taskColumns];
+    newTaskColumns[columnId].tasks = newTasks;
+    setTaskColumns(newTaskColumns);
+  };
+
   return (
     <DndProvider backend={HTML5Backend}>
       <Flex
@@ -14,7 +22,7 @@ const TaskBoard = ({ columns }) => {
         overflowX='auto'
         wrap={{ base: 'nowrap', md: 'wrap' }}
       >
-        {columns.map((column) => (
+        {taskColumns.map((column, index) => (
           <Box
             key={column.id}
             flex={{ base: '1 1 100%', md: '1 1 24%' }}
@@ -24,13 +32,15 @@ const TaskBoard = ({ columns }) => {
             <TaskColumn
               title={column.title}
               tasks={column.tasks}
-              columnId={column.id}
-              />
-              </Box>
-              ))}
-              </Flex>
-              </DndProvider>
-              );
-              };
-              
-              export default TaskBoard;
+              columnId={index} // Use numeric index as columnId
+              moveTask={moveTask}
+            />
+          </Box>
+        ))}
+      </Flex>
+    </DndProvider>
+  );
+};
+
+export default TaskBoard;
+

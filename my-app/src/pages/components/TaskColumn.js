@@ -1,37 +1,83 @@
-import { Box, Heading } from "@chakra-ui/react";
-import { Droppable } from "react-beautiful-dnd";
-import TaskCard from "./TaskCard";
+import React from 'react';
+import { Box, Heading } from '@chakra-ui/react';
+import { useDrop } from 'react-dnd';
+import TaskCard from './TaskCard';
 
-const TaskColumn = ({ title, tasks, columnId }) => {
-return (
-<Box w="100%" px={4} py={6} bg="gray.100" borderRadius="md" boxShadow="sm">
-<Heading size="md" mb={4}>{title}</Heading>
-<Droppable droppableId={columnId}>
-{(provided) => (
-<Box
-ref={provided.innerRef}
-{...provided.droppableProps}
-minH="60vh"
-bg="gray.200"
-borderRadius="md"
-p={4}
->
-{tasks.map((task, index) => (
-<TaskCard
-             key={task.id}
-             id={task.id}
-             name={task.name}
-             description={task.description}
-             kubixPayout={task.kubixPayout}
-             index={index}
-           />
-))}
-{provided.placeholder}
-</Box>
-)}
-</Droppable>
-</Box>
-);
+const TaskColumn = ({ title, tasks = [], columnId, moveTask }) => {
+  const [{ isOver }, drop] = useDrop(() => ({
+    accept: 'task',
+    drop: (item, monitor) => {
+      const sourceIndex = item.index;
+      const targetIndex = tasks.length;
+      const sourceColumnId = item.columnId;
+      const targetColumnId = columnId;
+    
+      if (sourceColumnId === targetColumnId) {
+        // If the drag and drop is happening within the same column,
+        // just update the index of the dragged task in the tasks array
+        const newTasks = [...tasks];
+        const [removed] = newTasks.splice(sourceIndex, 1);
+        newTasks.splice(targetIndex, 0, removed);
+        moveTask(newTasks, columnId);
+      } else {
+        // If the drag and drop is happening between different columns,
+        // create a new task object with the same properties as the dragged task,
+        // and add it to the tasks array of the target column.
+        const task = {
+          id: item.id,
+          name: item.name,
+          description: item.description,
+          kubixPayout: item.kubixPayout,
+          index: targetIndex // Set the index of the dragged task to the target index
+        };
+    
+        const newSourceTasks = [...tasks];
+        newSourceTasks.splice(sourceIndex, 1);
+    
+        const newTargetTasks = [...tasks];
+        newTargetTasks.splice(targetIndex, 0, task);
+        moveTask(newSourceTasks, sourceColumnId);
+        moveTask(newTargetTasks, targetColumnId);
+      }
+    },
+    
+    
+    
+    collect: (monitor) => ({
+      isOver: monitor.isOver(),
+    }),
+  }));
+
+  const columnStyle = isOver
+    ? { backgroundColor: 'gray.300', minHeight: '60vh' }
+    : { minHeight: '60vh' };
+
+  return (
+    <Box
+      w='100%'
+      px={4}
+      py={6}
+      bg='gray.100'
+      borderRadius='md'
+      boxShadow='sm'
+      ref={drop}
+      style={columnStyle}
+    >
+      <Heading size="md" mb={4}>{title}</Heading>
+      {tasks.map((task, index) => (
+        <TaskCard
+          key={task?.id ?? index}
+          id={task?.id ?? ''}
+          name={task?.name ?? ''}
+          description={task?.description ?? ''}
+          kubixPayout={task?.kubixPayout ?? ''}
+          index={index}
+          columnId={columnId}
+        />
+      ))}
+    </Box>
+  );
 };
 
 export default TaskColumn;
+
