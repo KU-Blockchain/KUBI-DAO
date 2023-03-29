@@ -33,13 +33,14 @@ const TaskColumn = ({ title, tasks = [], columnId, moveTask }) => {
     
         const newSourceTasks = [...tasks];
         newSourceTasks.splice(sourceIndex, 1);
-    
-        const newTargetTasks = [...tasks];
-        newTargetTasks.splice(targetIndex, 0, task);
         moveTask(newSourceTasks, sourceColumnId);
+    
+        const newTargetTasks = [...taskColumns[targetColumnId].tasks];
+        newTargetTasks.splice(targetIndex, 0, task);
         moveTask(newTargetTasks, targetColumnId);
       }
     },
+    
     
     
     
