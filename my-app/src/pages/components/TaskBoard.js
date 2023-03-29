@@ -25,8 +25,9 @@ const TaskBoardContent = () => {
       w='100%'
       overflowX='auto'
       wrap={{ base: 'nowrap', md: 'nowrap' }}
-
+      minH="100vh" 
     >
+
      
      {taskColumns.map((column, index) => (
         <Box
