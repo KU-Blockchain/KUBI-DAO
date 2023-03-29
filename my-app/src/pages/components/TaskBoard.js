@@ -33,7 +33,7 @@ const TaskBoard = ({ columns }) => {
               title={column.title}
               tasks={column.tasks}
               columnId={index} // Use numeric index as columnId
-              moveTask={moveTask}
+              moveTask={moveTask} // Pass moveTask function as a prop
             />
           </Box>
         ))}
@@ -43,4 +43,3 @@ const TaskBoard = ({ columns }) => {
 };
 
 export default TaskBoard;
-
