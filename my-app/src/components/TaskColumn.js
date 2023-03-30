@@ -8,7 +8,7 @@ import React, { useState } from 'react';
 
 
 const TaskColumn = ({ title, tasks, columnId }) => {
-  const { moveTask } = useTaskBoard();
+  const { moveTask, addTask } = useTaskBoard();
   const [isAddTaskModalOpen, setIsAddTaskModalOpen] = useState(false);
 
   const handleOpenAddTaskModal = () => {
@@ -24,8 +24,8 @@ const TaskColumn = ({ title, tasks, columnId }) => {
   const handleAddTask = (newTask) => {
     if (title === 'Open') {
       const updatedTask = { ...newTask, id: `task-${Date.now()}` };
-      const newIndex = tasks.length;
-      moveTask(updatedTask, columnId, columnId, newIndex);
+      const newIndex = tasks.length;//
+      addTask(updatedTask, columnId, columnId, newIndex);
     }
   };
   

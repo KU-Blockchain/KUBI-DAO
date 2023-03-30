@@ -43,6 +43,7 @@ export const TaskBoardProvider = ({ children, initialColumns }) => {
     const value = {
       taskColumns,
       moveTask,
+      addTask,
     };
   
     return (
