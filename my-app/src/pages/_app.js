@@ -2,6 +2,8 @@ import * as React from "react";
 import { ChakraProvider, extendTheme } from "@chakra-ui/react";
 import Navbar from '@/components/navbar';
 
+
+
 const theme = extendTheme({
   config: {
     initialColorMode: "light",
