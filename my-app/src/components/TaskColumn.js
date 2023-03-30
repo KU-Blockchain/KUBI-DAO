@@ -24,21 +24,24 @@ const TaskColumn = ({ title, tasks, columnId }) => {
   const handleAddTask = (newTask) => {
     if (title === 'Open') {
       const updatedTask = { ...newTask, id: `task-${Date.now()}` };
-      moveTask(updatedTask, columnId, columnId);
+      const newIndex = tasks.length;
+      moveTask(updatedTask, columnId, columnId, newIndex);
     }
   };
+  
 
   const [{ isOver }, drop] = useDrop(() => ({
     accept: 'task',
     drop: (item) => {
       if (item.columnId !== columnId) {
+        const newIndex = tasks.length; // Use the length of the destination column's tasks as the newIndex
         const draggedTask = {
           id: item.id,
           name: item.name,
           description: item.description,
           kubixPayout: item.kubixPayout,
         };
-        moveTask(draggedTask, item.columnId, columnId);
+        moveTask(draggedTask, item.columnId, columnId, newIndex);
       }
     },
     collect: (monitor) => ({
@@ -62,6 +65,7 @@ const TaskColumn = ({ title, tasks, columnId }) => {
             h="1rem" // set the height of the IconButton
           />
         )}
+
       </Heading>
 
           <Box
