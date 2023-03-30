@@ -8,6 +8,7 @@ import {
   ModalBody,
   ModalCloseButton,
   ModalContent,
+  ModalFooter,
   ModalHeader,
   ModalOverlay,
   Text,
@@ -47,7 +48,7 @@ const TaskCardModal = ({ isOpen, onClose, task, columnId, onEditTask }) => {
     setIsEditTaskModalOpen(false);
   };
 
-  return (
+  return task ? (
     <>
       <Modal isOpen={isOpen} onClose={onClose} size="2xl">
         <ModalOverlay />
@@ -89,7 +90,7 @@ const TaskCardModal = ({ isOpen, onClose, task, columnId, onEditTask }) => {
         />
       )}
     </>
-  );
+  ) : null;
 };
 
 export default TaskCardModal;

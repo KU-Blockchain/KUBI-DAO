@@ -9,6 +9,7 @@ import {
   ModalCloseButton,
   ModalContent,
   ModalHeader,
+  ModalFooter,
   ModalOverlay,
   NumberInput,
   NumberInputField,
