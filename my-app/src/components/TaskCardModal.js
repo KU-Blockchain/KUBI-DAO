@@ -8,15 +8,14 @@ import {
   ModalBody,
   ModalCloseButton,
   ModalContent,
-  ModalFooter,
   ModalHeader,
   ModalOverlay,
   Text,
 } from '@chakra-ui/react';
 import { CheckIcon } from '@chakra-ui/icons';
+import EditTaskModal from './EditTaskModal';
 
-
-const TaskCardModal = ({ isOpen, onClose, name, description, kubixPayout, columnId }) => {
+const TaskCardModal = ({ isOpen, onClose, task, columnId, onEditTask }) => {
   const [submission, setSubmission] = useState('');
 
   const handleButtonClick = () => {
@@ -38,39 +37,58 @@ const TaskCardModal = ({ isOpen, onClose, name, description, kubixPayout, column
     }
   };
 
-  return (
-    <Modal isOpen={isOpen} onClose={onClose} size="2xl">
-      <ModalOverlay />
-      <ModalContent>
-        <ModalHeader>{name}</ModalHeader>
-        <ModalCloseButton />
-        <ModalBody>
-          <Text fontWeight="bold">KUBIX Payout: ${kubixPayout}</Text>
-          <Text>{description}</Text>
-          {columnId === 'inProgress' && (
-            <FormControl mt={4}>
-              <FormLabel>Submission:</FormLabel>
-              <Input
-                placeholder="Type your submission here"
-                value={submission}
-                onChange={(e) => setSubmission(e.target.value)}
-              />
-            </FormControl>
-          )}
-        </ModalBody>
-        <ModalFooter justifyContent="space-between">
-          {columnId === 'open' && (
-            <Button variant="outline">
-              Edit
-            </Button>
-          )}
-          <Button onClick={handleButtonClick} colorScheme="teal">
-            {buttonText()}
-          </Button>
-        </ModalFooter>
+  const [isEditTaskModalOpen, setIsEditTaskModalOpen] = useState(false);
 
-      </ModalContent>
-    </Modal>
+  const handleOpenEditTaskModal = () => {
+    setIsEditTaskModalOpen(true);
+  };
+
+  const handleCloseEditTaskModal = () => {
+    setIsEditTaskModalOpen(false);
+  };
+
+  return (
+    <>
+      <Modal isOpen={isOpen} onClose={onClose} size="2xl">
+        <ModalOverlay />
+        <ModalContent>
+          <ModalHeader>{task.name}</ModalHeader>
+          <ModalCloseButton />
+          <ModalBody>
+            <Text fontWeight="bold">KUBIX Payout: ${task.kubixPayout}</Text>
+            <Text>{task.description}</Text>
+            {columnId === 'inProgress' && (
+              <FormControl mt={4}>
+                <FormLabel>Submission:</FormLabel>
+                <Input
+                  placeholder="Type your submission here"
+                  value={submission}
+                  onChange={(e) => setSubmission(e.target.value)}
+                />
+              </FormControl>
+            )}
+          </ModalBody>
+          <ModalFooter justifyContent="space-between">
+            {columnId === 'open' && (
+              <Button variant="outline" onClick={handleOpenEditTaskModal}>
+                Edit
+              </Button>
+            )}
+            <Button onClick={handleButtonClick} colorScheme="teal">
+              {buttonText()}
+            </Button>
+          </ModalFooter>
+        </ModalContent>
+      </Modal>
+      {columnId === 'open' && (
+        <EditTaskModal
+          isOpen={isEditTaskModalOpen}
+          onClose={handleCloseEditTaskModal}
+          onEditTask={onEditTask}
+          task={task}
+        />
+      )}
+    </>
   );
 };
 
