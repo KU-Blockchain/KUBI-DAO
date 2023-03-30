@@ -49,16 +49,28 @@ const handleSelectProject = (projectId) => {
     const selected = projects.find((project) => project.id === projectId);
     setSelectedProject(selected);
   };
-  
 
-return (
-    <Flex w="100%" h="100vh"> {/* Add w and h attributes */}
-      <ProjectSidebar projects={projects} onSelectProject={handleSelectProject} />
+const handleCreateProject = (projectName) => {
+    const newProject = {
+      id: projects.length + 1,
+      name: projectName,
+      columns: [], // Start with an empty array or any initial columns
+    };
+    setProjects([...projects, newProject]);
+  };
+
+  return (
+    <Flex w="100%" h="100vh">
+      <ProjectSidebar
+        projects={projects}
+        onSelectProject={handleSelectProject}
+        onCreateProject={handleCreateProject}
+      />
       <TaskBoard columns={selectedProject.columns} />
     </Flex>
   );
-  
-  
 };
+  
+
 
 export default MainLayout;
