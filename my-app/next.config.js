@@ -1,18 +1,9 @@
-const path = require('path');
-
-const nextConfig = {
-  webpack: (config, { isServer }) => {
-    // Resolve aliases
-    config.resolve = {
-      ...config.resolve,
-      alias: {
-        ...config.resolve.alias,
-        '@/components': path.resolve(__dirname, 'components'),
-      },
+/** @type {import('next').NextConfig} */
+module.exports = {
+  trailingSlash: true,
+  exportPathMap: function() {
+    return {
+      '/': { page: '/' }
     };
-
-    return config;
-  },
-};
-
-module.exports = nextConfig;
+  }     
+ };
