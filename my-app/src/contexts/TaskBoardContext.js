@@ -1,36 +1,37 @@
-import React, { createContext, useContext, useState } from 'react';
+import { createContext, useContext, useState } from 'react';
 
 const TaskBoardContext = createContext();
 
-export const useTaskBoard = () => {
-  return useContext(TaskBoardContext);
-};
+export const useTaskBoard = () => useContext(TaskBoardContext);
 
 export const TaskBoardProvider = ({ children, initialColumns }) => {
   const [taskColumns, setTaskColumns] = useState(initialColumns);
 
-  const moveTask = (draggedTask, sourceColumnId, destColumnId) => {
-    const newTaskColumns = [...taskColumns];
+  const updateTask = (columnId, taskId, updates) => {
+    const updatedColumns = taskColumns.map((column) => {
+      if (column.id === columnId) {
+        return {
+          ...column,
+          tasks: column.tasks.map((task) =>
+            task.id === taskId ? { ...task, ...updates } : task
+          ),
+        };
+      }
+      return column;
+    });
 
-    newTaskColumns[sourceColumnId].tasks = newTaskColumns[sourceColumnId].tasks.filter(
-      (task) => task.id !== draggedTask.id
-    );
-
-    newTaskColumns[destColumnId].tasks = [
-        ...newTaskColumns[destColumnId].tasks,
-        draggedTask,
-      ];
-  
-      setTaskColumns(newTaskColumns);
-    };
-  
-    const value = {
-      taskColumns,
-      moveTask,
-    };
-  
-    return (
-      <TaskBoardContext.Provider value={value}>{children}</TaskBoardContext.Provider>
-    );
+    setTaskColumns(updatedColumns);
   };
+
+  const value = {
+    taskColumns,
+    updateTask,
+  };
+
+  return (
+    <TaskBoardContext.Provider value={value}>
+      {children}
+    </TaskBoardContext.Provider>
+  );
+};
   
