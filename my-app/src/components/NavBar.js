@@ -1,12 +1,21 @@
 import React from 'react';
-import { Box, Flex } from '@chakra-ui/react';
+import { Box, Flex, Image } from '@chakra-ui/react';
 import { Link } from '@chakra-ui/react';
 import NextLink from 'next/link';
 
 const Navbar = () => {
   return (
-    <Box bg="blue.500" p={4}>
-      <Flex justifyContent="space-around">
+    <Box bg="blue.800" p={4}>
+      <Flex justifyContent="space-around" alignItems="center" h="100%" maxH="64px">
+        <Box h="calc(100% - 6px)" w="auto" maxW="6%" mr={{ base: '4', md: '8' }}>
+          <Image
+            src="/images/simple-logo-white-smaller.png"
+            alt="KUBC Logo"
+            h="100%"
+            w="auto"
+            objectFit="contain"
+          />
+        </Box>
         <Link as={NextLink} href="/" color="white" fontWeight="bold">
           Home
         </Link>
@@ -28,3 +37,6 @@ const Navbar = () => {
 };
 
 export default Navbar;
+
+
+

@@ -23,12 +23,12 @@ const TaskColumn = ({ title, tasks, columnId }) => {
     const handleAddTask = (newTask) => {
       if (title === 'Open') {
         const updatedTask = { ...newTask, id: `task-${Date.now()}` };
-        const newIndex = tasks.length;
-        addTask(updatedTask, columnId, columnId, newIndex);
+        addTask(updatedTask, columnId);
       }
     };
   
     const handleEditTask = (updatedTask) => {
+      updatedTask = { ...updatedTask, id: `task-${Date.now()}` };
       editTask(updatedTask, columnId);
     };
   

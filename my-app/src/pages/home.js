@@ -7,7 +7,10 @@ import {
   Button,
   VStack,
   Container,
+  Image,
 } from '@chakra-ui/react';
+
+
 
 const Home = () => {
   return (
@@ -18,7 +21,7 @@ const Home = () => {
             Welcome to KUBI DAO
           </Heading>
           <Text fontSize="xl" color="white" mt={5}>
-            The Universitty of Kansas Blockchain Institute's decentralized platform for collaboration and reward distribution
+            The University of Kansas Blockchain Institute's decentralized platform for collaboration and reward distribution
           </Text>
           <Button colorScheme="whiteAlpha" mt={8}>
             Get Started
@@ -38,12 +41,12 @@ const Home = () => {
             platform that encourages active participation and fair
             distribution of rewards.
           </Text>
+
         </VStack>
       </Container>
-
-      {/* Add more sections as needed */}
     </VStack>
   );
 };
 
 export default Home;
+
