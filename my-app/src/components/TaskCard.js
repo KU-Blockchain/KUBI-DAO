@@ -3,7 +3,7 @@ import { Box, useDisclosure } from '@chakra-ui/react';
 import { useDrag } from 'react-dnd';
 import TaskCardModal from './TaskCardModal';
 
-const TaskCard = ({ id, name, description, kubixPayout, index, columnId, onEditTask }) => {
+const TaskCard = ({ id, name, description, kubixPayout, index, columnId, onEditTask, moveTask }) => {
   const [{ isDragging }, drag] = useDrag(() => ({
     type: 'task',
     item: { id, index, columnId, name, description, kubixPayout },
@@ -41,6 +41,7 @@ const TaskCard = ({ id, name, description, kubixPayout, index, columnId, onEditT
         task={{ id, name, description, kubixPayout }}
         columnId={columnId}
         onEditTask={onEditTask}
+        moveTask={moveTask}
       />
     </>
   );

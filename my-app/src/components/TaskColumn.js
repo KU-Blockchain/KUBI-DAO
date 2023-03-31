@@ -10,6 +10,8 @@ const TaskColumn = ({ title, tasks, columnId }) => {
   const { moveTask, addTask, editTask } = useTaskBoard();
   const [isAddTaskModalOpen, setIsAddTaskModalOpen] = useState(false);
 
+
+  
   const handleOpenAddTaskModal = () => {
     if (title === 'Open') {
       setIsAddTaskModalOpen(true);
