@@ -5,7 +5,7 @@ import NextLink from 'next/link';
 
 const Navbar = () => {
   return (
-    <Box bg="blue.500" p={4}>
+    <Box bg="blue.800" p={4}>
       <Flex justifyContent="space-around" alignItems="center" h="100%" maxH="64px">
         <Box h="calc(100% - 6px)" w="auto" maxW="6%" mr={{ base: '4', md: '8' }}>
           <Image
