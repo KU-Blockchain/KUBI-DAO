@@ -9,33 +9,33 @@ export const useTaskBoard = () => {
 export const TaskBoardProvider = ({ children, initialColumns }) => {
   const [taskColumns, setTaskColumns] = useState(initialColumns);
 
-  const moveTask = (draggedTask, sourceColumnId, destColumnId, newIndex) => {
-    const newTaskColumns = [...taskColumns];
+   const moveTask = (draggedTask, sourceColumnId, destColumnId, newIndex) => {
+     const newTaskColumns = [...taskColumns];
 
-    const sourceColumn = newTaskColumns.find((column) => column.id === sourceColumnId);
-    const destColumn = newTaskColumns.find((column) => column.id === destColumnId);
+     const sourceColumn = newTaskColumns.find((column) => column.id === sourceColumnId);
+     const destColumn = newTaskColumns.find((column) => column.id === destColumnId);
 
-    // Find and remove the dragged task from the source column
-    const sourceTaskIndex = sourceColumn.tasks.findIndex((task) => task.id === draggedTask.id);
-    const taskToUpdate = sourceColumn.tasks[sourceTaskIndex];
-    sourceColumn.tasks.splice(sourceTaskIndex, 1);
+     // Find and remove the dragged task from the source column
+     const sourceTaskIndex = sourceColumn.tasks.findIndex((task) => task.id === draggedTask.id);
+     const taskToUpdate = sourceColumn.tasks[sourceTaskIndex];
+     sourceColumn.tasks.splice(sourceTaskIndex, 1);
 
-    // Update the task object before moving it to the destination column
-    const updatedTask = {
-      ...taskToUpdate,
-      name: draggedTask.name,
-      description: draggedTask.description,
-      kubixPayout: draggedTask.kubixPayout,
-    };
+     // Update the task object before moving it to the destination column
+     const updatedTask = {
+       ...taskToUpdate,
+       name: draggedTask.name,
+       description: draggedTask.description,
+       kubixPayout: draggedTask.kubixPayout,
+     };
 
-    // Add the updated task to the destination column at the newIndex
-    destColumn.tasks.splice(newIndex, 0, updatedTask);
+     // Add the updated task to the destination column at the newIndex
+     destColumn.tasks.splice(newIndex, 0, updatedTask);
 
-    setTaskColumns(newTaskColumns);
-  };
+     setTaskColumns(newTaskColumns);
+   };
 
 
-  const addTask = (newTask, destColumnId) => {
+   const addTask = (newTask, destColumnId) => {
     const newTaskColumns = [...taskColumns];
   
     const destColumn = newTaskColumns.find((column) => column.id === destColumnId);
@@ -44,16 +44,15 @@ export const TaskBoardProvider = ({ children, initialColumns }) => {
   
     setTaskColumns(newTaskColumns);
   };
-  
-  //a function to edit a task
-  const editTask = (updatedTask, destColumnId) => {
-    const newTaskColumns = [...taskColumns]; // make a copy of the task columns
-    
-    const destColumn = newTaskColumns.find((column) => column.id === destColumnId); // find the destination column
-    //const destTaskIndex = destColumn.tasks.findIndex((task) => task.id === updatedTask.id); // find the index of the task to be updated
 
+   //a function to edit a task
+   const editTask = (updatedTask, destColumnId, destTaskIndex) => {
+    const newTaskColumns = [...taskColumns];
+    const destColumn = newTaskColumns.find((column) => column.id === destColumnId);
+    destColumn.tasks.splice(destTaskIndex, 1, updatedTask);
     setTaskColumns(newTaskColumns);
   };
+  
 
 
   

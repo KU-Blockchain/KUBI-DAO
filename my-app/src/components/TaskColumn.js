@@ -28,10 +28,10 @@ const TaskColumn = ({ title, tasks, columnId }) => {
         addTask(updatedTask, columnId);
       }
     };
-  
-    const handleEditTask = (updatedTask) => {
+
+    const handleEditTask = (updatedTask, taskIndex) => {
       updatedTask = { ...updatedTask, id: `task-${Date.now()}` };
-      editTask(updatedTask, columnId);
+      editTask(updatedTask, columnId, taskIndex);
     };
   
     const [{ isOver }, drop] = useDrop(() => ({
@@ -77,6 +77,7 @@ const TaskColumn = ({ title, tasks, columnId }) => {
           style={columnStyle}
           overflowY="auto"
         >
+          
           {tasks.map((task, index) => (
             <TaskCard
               key={task.id}
@@ -84,9 +85,8 @@ const TaskColumn = ({ title, tasks, columnId }) => {
               name={task.name}
               description={task.description}
               kubixPayout={task.kubixPayout}
-              index={index}
               columnId={columnId}
-              onEditTask={handleEditTask}
+              onEditTask={(updatedTask) => handleEditTask(updatedTask, index)} // pass index value to handleEditTask
             />
           ))}
         </Box>
