@@ -18,7 +18,7 @@ const Home = () => {
             Welcome to KUBI DAO
           </Heading>
           <Text fontSize="xl" color="white" mt={5}>
-            The Universitty of Kansas Blockchain Institute's decentralized platform for collaboration and reward distribution
+            The University of Kansas Blockchain Institute's decentralized platform for collaboration and reward distribution
           </Text>
           <Button colorScheme="whiteAlpha" mt={8}>
             Get Started
