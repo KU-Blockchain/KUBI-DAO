@@ -50,14 +50,12 @@ export const TaskBoardProvider = ({ children, initialColumns }) => {
     const newTaskColumns = [...taskColumns]; // make a copy of the task columns
     
     const destColumn = newTaskColumns.find((column) => column.id === destColumnId); // find the destination column
-    const destTaskIndex = destColumn.tasks.findIndex((task) => task.id === updatedTask.id); // find the index of the task to be updated
-    //const taskToUpdate = destColumn.tasks[destTaskIndex]; // find the task to be updated
-    //destColumn.tasks.push(updatedTask); // add the updated task to the destination column
-    destColumn.tasks.splice(destTaskIndex, 1, updatedTask);
+    //const destTaskIndex = destColumn.tasks.findIndex((task) => task.id === updatedTask.id); // find the index of the task to be updated
+
     setTaskColumns(newTaskColumns);
   };
 
-  
+
   
   
   

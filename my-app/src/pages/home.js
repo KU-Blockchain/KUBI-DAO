@@ -7,7 +7,10 @@ import {
   Button,
   VStack,
   Container,
+  Image,
 } from '@chakra-ui/react';
+
+
 
 const Home = () => {
   return (
@@ -38,12 +41,12 @@ const Home = () => {
             platform that encourages active participation and fair
             distribution of rewards.
           </Text>
+
         </VStack>
       </Container>
-
-      {/* Add more sections as needed */}
     </VStack>
   );
 };
 
 export default Home;
+
