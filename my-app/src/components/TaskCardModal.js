@@ -12,17 +12,30 @@ import {
   ModalHeader,
   ModalOverlay,
   Text,
+  Box,
 } from '@chakra-ui/react';
 import { CheckIcon } from '@chakra-ui/icons';
 import EditTaskModal from './EditTaskModal';
+import { useTaskBoard } from '../contexts/TaskBoardContext';
 
 const TaskCardModal = ({ isOpen, onClose, task, columnId, onEditTask }) => {
   const [submission, setSubmission] = useState('');
+  const { moveTask, addTask, editTask } = useTaskBoard();
 
   const handleButtonClick = () => {
-    // Handle button click based on columnId
+    if (columnId === 'open') {
+      moveTask(task, columnId, 'inProgress', 0); // Move the task to the 'inProgress' column
+      onClose(); // Close the modal
+    }
+    if (columnId === 'inProgress') {
+      moveTask(task, columnId, 'inReview', 0);
+      onClose();
+    }
+    if (columnId === 'inReview') {
+      moveTask(task, columnId, 'completed', 0);
+      onClose();
+    }
   };
-
   const buttonText = () => {
     switch (columnId) {
       case 'open':
@@ -56,8 +69,9 @@ const TaskCardModal = ({ isOpen, onClose, task, columnId, onEditTask }) => {
           <ModalHeader>{task.name}</ModalHeader>
           <ModalCloseButton />
           <ModalBody>
-            <Text fontWeight="bold">KUBIX Payout: ${task.kubixPayout}</Text>
-            <Text>{task.description}</Text>
+            
+            <Box>{task.description}</Box>
+            <Text fontWeight="bold">KUBIX Payout: {task.kubixPayout}</Text>
             {columnId === 'inProgress' && (
               <FormControl mt={4}>
                 <FormLabel>Submission:</FormLabel>
@@ -69,16 +83,17 @@ const TaskCardModal = ({ isOpen, onClose, task, columnId, onEditTask }) => {
               </FormControl>
             )}
           </ModalBody>
-          <ModalFooter justifyContent="space-between">
+          <ModalFooter>
             {columnId === 'open' && (
               <Button variant="outline" onClick={handleOpenEditTaskModal}>
                 Edit
               </Button>
             )}
-            <Button onClick={handleButtonClick} colorScheme="teal">
+            <Button onClick={handleButtonClick} colorScheme="teal" ml="auto">
               {buttonText()}
             </Button>
           </ModalFooter>
+
         </ModalContent>
       </Modal>
       {columnId === 'open' && (
