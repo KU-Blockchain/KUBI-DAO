@@ -32,7 +32,7 @@ const TaskCard = ({ id, name, description, kubixPayout, index, columnId, onEditT
         <Box fontWeight="bold">{name}</Box>
         <Box>{description}</Box>
         {kubixPayout && (
-          <Box mt={2} fontWeight="bold">KUBIX Payout: ${kubixPayout}</Box>
+          <Box mt={2} fontWeight="bold">KUBIX Payout: {kubixPayout}</Box>
         )}
       </Box>
       <TaskCardModal

@@ -12,6 +12,7 @@ import {
   ModalHeader,
   ModalOverlay,
   Text,
+  Box,
 } from '@chakra-ui/react';
 import { CheckIcon } from '@chakra-ui/icons';
 import EditTaskModal from './EditTaskModal';
@@ -68,8 +69,9 @@ const TaskCardModal = ({ isOpen, onClose, task, columnId, onEditTask }) => {
           <ModalHeader>{task.name}</ModalHeader>
           <ModalCloseButton />
           <ModalBody>
-            <Text fontWeight="bold">KUBIX Payout: ${task.kubixPayout}</Text>
-            <Text>{task.description}</Text>
+            
+            <Box>{task.description}</Box>
+            <Text fontWeight="bold">KUBIX Payout: {task.kubixPayout}</Text>
             {columnId === 'inProgress' && (
               <FormControl mt={4}>
                 <FormLabel>Submission:</FormLabel>

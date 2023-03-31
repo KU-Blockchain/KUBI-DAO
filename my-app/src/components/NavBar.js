@@ -16,19 +16,19 @@ const Navbar = () => {
             objectFit="contain"
           />
         </Box>
-        <Link as={NextLink} href="/" color="white" fontWeight="bold">
+        <Link as={NextLink} href="/" color="white" fontWeight="extrabold">
           Home
         </Link>
-        <Link as={NextLink} href="/tasks" color="white" fontWeight="bold">
+        <Link as={NextLink} href="/tasks" color="white" fontWeight="extrabold">
           Tasks
         </Link>
-        <Link as={NextLink} href="/leaderboard" color="white" fontWeight="bold">
+        <Link as={NextLink} href="/leaderboard" color="white" fontWeight="extrabold">
           Leaderboard
         </Link>
-        <Link as={NextLink} href="/voting" color="white" fontWeight="bold">
+        <Link as={NextLink} href="/voting" color="white" fontWeight="extrabold">
           Voting
         </Link>
-        <Link as={NextLink} href="/user" color="white" fontWeight="bold">
+        <Link as={NextLink} href="/user" color="white" fontWeight="extrabold">
           User
         </Link>
       </Flex>
