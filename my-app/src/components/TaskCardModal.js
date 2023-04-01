@@ -34,13 +34,13 @@ const TaskCardModal = ({ isOpen, onClose, task, columnId, onEditTask }) => {
       onClose();
     }
     if (columnId === 'inReview') {
-      const hasNFT = await checkNFTOwnership(); // Add this line
-      if (hasNFT) {
+      //const hasNFT = await checkNFTOwnership(); // Add this line
+      //if (hasNFT) {
         moveTask(task, columnId, 'completed', 0);
         onClose();
-      } else {
-        alert('You must own an NFT to complete the review');
-      }
+      //} else {
+      //  alert('You must own an NFT to complete the review');
+      //}
     }
   };
   const buttonText = () => {
