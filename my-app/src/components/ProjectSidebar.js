@@ -10,10 +10,10 @@ import {
   Flex,
 } from '@chakra-ui/react';
 
-const ProjectSidebar = ({ projects, onSelectProject, onCreateProject }) => {
+const ProjectSidebar = ({ projects,selectedProject, onSelectProject, onCreateProject }) => {
   const [newProjectName, setNewProjectName] = useState('');
   const [showInput, setShowInput] = useState(false);
-
+  
   const handleCreateProject = () => {
     onCreateProject(newProjectName);
     setNewProjectName('');
@@ -33,18 +33,22 @@ const ProjectSidebar = ({ projects, onSelectProject, onCreateProject }) => {
     >
       <Heading size="md" mb={4}>
         Projects
-      </Heading>
+        </Heading>
       <Box flexGrow={1} overflowY="auto" pr={4}>
         <VStack spacing={4} align="start">
-          {projects.map((project) => (
-            <Button
-              key={project.id}
-              onClick={() => onSelectProject(project.id)}
-              width="100%" // Set width to 100%
-            >
-              {project.name}
-            </Button>
-          ))}
+          {projects.map((project) => {
+            const isSelected = project.id === selectedProject.id;
+            return (
+              <Button
+                key={project.id}
+                onClick={() => onSelectProject(project.id)}
+                width="100%"
+                bg={isSelected ? "gray.300" : undefined}
+              >
+                {project.name}
+              </Button>
+            );
+          })}
         </VStack>
       </Box>
       <Spacer />

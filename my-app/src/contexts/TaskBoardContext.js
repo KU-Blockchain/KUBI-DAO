@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useState } from 'react';
+import React, { createContext, useContext, useState, useEffect } from 'react';
 
 const TaskBoardContext = createContext();
 
@@ -6,33 +6,38 @@ export const useTaskBoard = () => {
   return useContext(TaskBoardContext);
 };
 
-export const TaskBoardProvider = ({ children, initialColumns }) => {
+export const TaskBoardProvider = ({ children, initialColumns, onColumnChange }) => {
   const [taskColumns, setTaskColumns] = useState(initialColumns);
 
-   const moveTask = (draggedTask, sourceColumnId, destColumnId, newIndex) => {
-     const newTaskColumns = [...taskColumns];
+  useEffect(() => {
+    setTaskColumns(initialColumns);
+  }, [initialColumns]);
 
-     const sourceColumn = newTaskColumns.find((column) => column.id === sourceColumnId);
-     const destColumn = newTaskColumns.find((column) => column.id === destColumnId);
+  const moveTask = (draggedTask, sourceColumnId, destColumnId, newIndex) => {
+    const newTaskColumns = [...taskColumns];
 
-     // Find and remove the dragged task from the source column
-     const sourceTaskIndex = sourceColumn.tasks.findIndex((task) => task.id === draggedTask.id);
-     const taskToUpdate = sourceColumn.tasks[sourceTaskIndex];
-     sourceColumn.tasks.splice(sourceTaskIndex, 1);
+    const sourceColumn = newTaskColumns.find((column) => column.id === sourceColumnId);
+    const destColumn = newTaskColumns.find((column) => column.id === destColumnId);
 
-     // Update the task object before moving it to the destination column
-     const updatedTask = {
-       ...taskToUpdate,
-       name: draggedTask.name,
-       description: draggedTask.description,
-       kubixPayout: draggedTask.kubixPayout,
-     };
+    const sourceTaskIndex = sourceColumn.tasks.findIndex((task) => task.id === draggedTask.id);
+    sourceColumn.tasks.splice(sourceTaskIndex, 1);
 
-     // Add the updated task to the destination column at the newIndex
-     destColumn.tasks.splice(newIndex, 0, updatedTask);
+    const updatedTask = {
+      ...draggedTask,
+      name: draggedTask.name,
+      description: draggedTask.description,
+      kubixPayout: draggedTask.kubixPayout,
+    };
 
-     setTaskColumns(newTaskColumns);
-   };
+    destColumn.tasks.splice(newIndex, 0, updatedTask);
+
+    setTaskColumns(newTaskColumns);
+
+    // Call the onColumnChange prop when the columns are updated
+    if (onColumnChange) {
+      onColumnChange(newTaskColumns);
+    }
+  };
 
 
    const addTask = (newTask, destColumnId) => {
@@ -63,6 +68,7 @@ export const TaskBoardProvider = ({ children, initialColumns }) => {
       moveTask,
       addTask,
       editTask,
+      setTaskColumns
     };
   
     return (

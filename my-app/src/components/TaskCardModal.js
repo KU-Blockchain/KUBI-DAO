@@ -17,12 +17,14 @@ import {
 import { CheckIcon } from '@chakra-ui/icons';
 import EditTaskModal from './EditTaskModal';
 import { useTaskBoard } from '../contexts/TaskBoardContext';
+import { useWeb3Context } from '../contexts/Web3Context';
 
 const TaskCardModal = ({ isOpen, onClose, task, columnId, onEditTask }) => {
   const [submission, setSubmission] = useState('');
-  const { moveTask, addTask, editTask } = useTaskBoard();
+  const { moveTask} = useTaskBoard();
+  const { checkNFTOwnership } = useWeb3Context();
 
-  const handleButtonClick = () => {
+  const handleButtonClick = async () => {
     if (columnId === 'open') {
       moveTask(task, columnId, 'inProgress', 0); // Move the task to the 'inProgress' column
       onClose(); // Close the modal
@@ -32,8 +34,13 @@ const TaskCardModal = ({ isOpen, onClose, task, columnId, onEditTask }) => {
       onClose();
     }
     if (columnId === 'inReview') {
-      moveTask(task, columnId, 'completed', 0);
-      onClose();
+      //const hasNFT = await checkNFTOwnership(); // Add this line
+      //if (hasNFT) {
+        moveTask(task, columnId, 'completed', 0);
+        onClose();
+      //} else {
+      //  alert('You must own an NFT to complete the review');
+      //}
     }
   };
   const buttonText = () => {
