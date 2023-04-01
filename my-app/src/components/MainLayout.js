@@ -55,12 +55,19 @@ useEffect(() => {
 
 
 const handleUpdateColumns = (newColumns) => {
-  setProjects(
-    projects.map((project) =>
+  setSelectedProject((prevSelectedProject) => ({
+    ...prevSelectedProject,
+    columns: newColumns,
+  }));
+
+  setProjects((prevProjects) =>
+    prevProjects.map((project) =>
       project.id === selectedProject.id ? { ...project, columns: newColumns } : project
     )
   );
 };
+
+
 
 
 const handleSelectProject = (projectId) => {
@@ -92,6 +99,7 @@ const handleSelectProject = (projectId) => {
         onCreateProject={handleCreateProject}
       />
       <TaskBoardProvider
+        key={selectedProject.id} // Add this line
         projectId={selectedProject.id}
         initialColumns={selectedProject.columns}
         onColumnChange={(newColumns) => handleUpdateColumns(newColumns)}
@@ -100,6 +108,7 @@ const handleSelectProject = (projectId) => {
       </TaskBoardProvider>
     </Flex>
   );
+  
 };
   
 

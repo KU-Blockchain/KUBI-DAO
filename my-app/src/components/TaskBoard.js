@@ -1,4 +1,4 @@
-import React from 'react';
+import {useEffect} from 'react';
 import { Box, Flex } from '@chakra-ui/react';
 import { DndProvider } from 'react-dnd';
 import { HTML5Backend } from 'react-dnd-html5-backend';
@@ -6,7 +6,10 @@ import { TaskBoardProvider, useTaskBoard } from '../contexts/TaskBoardContext';
 import TaskColumn from './TaskColumn';
 
 const TaskBoard = ({ columns, projectId, onUpdateColumns }) => {
-  const {taskColumns}= useTaskBoard();
+  const { taskColumns, setTaskColumns } = useTaskBoard();
+  useEffect(() => {
+    setTaskColumns(columns);
+  }, [columns, setTaskColumns]);
 
     return (
     <DndProvider backend={HTML5Backend}>
