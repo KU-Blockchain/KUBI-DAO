@@ -68,7 +68,7 @@ export const TaskBoardProvider = ({ children, initialColumns, onColumnChange }) 
       moveTask,
       addTask,
       editTask,
-      setTaskColumns,
+      setTaskColumns
     };
   
     return (

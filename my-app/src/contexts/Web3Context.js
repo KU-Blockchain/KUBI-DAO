@@ -32,6 +32,7 @@ export const Web3Provider = ({ children }) => {
         // Fallback to Infura provider
         const infuraProvider = new ethers.providers.InfuraProvider('mainnet', INFURA_PROJECT_ID);
         setProvider(infuraProvider);
+        
         const privateKey = 'YOUR_PRIVATE_KEY_HERE';
         const wallet = new ethers.Wallet(privateKey, infuraProvider);
         const signer = wallet.connect(infuraProvider);
