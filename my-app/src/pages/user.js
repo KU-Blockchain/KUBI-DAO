@@ -1,12 +1,25 @@
 import { useState, useEffect } from "react";
 import Web3 from "web3";
 import DirectDemocracyTokenArtifact from "../abi/DirectDemocracyToken.json";
+import {
+  Box,
+  Button,
+  FormControl,
+  FormLabel,
+  Input,
+  Stack,
+  Text,
+  useToast,
+} from "@chakra-ui/react";
 
 const User = () => {
   const [web3, setWeb3] = useState(null);
   const [account, setAccount] = useState("");
   const [email, setEmail] = useState("");
   const [contract, setContract] = useState(null);
+  const [balance, setBalance] = useState(0);
+
+  const toast = useToast();
 
   const contractAddress = "0x9B5AE4442654281438aFD95c54C212e1eb5cEB2c";
 
@@ -40,6 +53,16 @@ const User = () => {
     connectWallet();
   }, []);
 
+  useEffect(() => {
+    const fetchBalance = async () => {
+      if (contract && account) {
+        const currentBalance = await contract.methods.balanceOf(account).call();
+        setBalance(currentBalance);
+      }
+    };
+    fetchBalance();
+  }, [contract, account]);
+
   const handleChange = (event) => {
     setEmail(event.target.value);
   };
@@ -48,31 +71,63 @@ const User = () => {
     if (email.endsWith("@ku.edu")) {
       if (contract) {
         try {
-          const mintTx = await contract.methods.mint().send({ from: account });
-          const balance = await contract.methods.balanceOf(account).call();
-          console.log("Successfully minted tokens", mintTx);
-          alert(`Successfully minted ${balance} tokens`);
+          await contract.methods.mint().send({ from: account });
+          const newBalance = await contract.methods.balanceOf(account).call();
+          setBalance(newBalance);
 
+          toast({
+            title: "Success",
+            description: `Successfully minted ${newBalance} tokens`,
+            status: "success",
+            duration: 5000,
+            isClosable: true,
+          });
         } catch (error) {
           console.error(error);
-          alert("Error minting tokens");
+
+          toast({
+            title: "Error",
+            description: "Error minting tokens",
+            status: "error",
+            duration: 5000,
+            isClosable: true,
+          });
         }
       }
     } else {
-      alert("Invalid email domain");
+      toast({
+        title: "Error",
+        description: "Invalid email domain",
+        status: "error",
+        duration: 5000,
+        isClosable: true,
+      });
     }
   };
 
   return (
-    <div>
-      {web3 && <p>Connected to blockchain network</p>}
-      <p>Account: {account}</p>
-      {contract && <p>Connected to DirectDemocracyToken Contract</p>}
-      <input type="email" placeholder="Email" value={email} onChange={handleChange} />
-      <button onClick={handleJoin}>Join</button>
-    </div>
+    <Box>
+      {web3 && (
+        <Text color="green.500" fontWeight="bold">
+          Connected to blockchain network
+        </Text>
+      )}
+      <Text>Account: {account}</Text>
+      <Text>KUBI Token Balance: {balance}</Text>
+      {contract && (
+        <Text color="blue.500" fontWeight="bold">
+          Connected to DirectDemocracyToken Contract
+        </Text>
+      )}
+      <FormControl id="email">
+        <FormLabel>Email</FormLabel>
+        <Input type="email" placeholder="Email" value={email} onChange={handleChange} />
+      </FormControl>
+      <Button colorScheme="blue" onClick={handleJoin}>
+        Join
+      </Button>
+    </Box>
   );
 };
 
 export default User;
-
