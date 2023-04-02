@@ -1,12 +1,15 @@
 import { useState, useEffect } from "react";
 import Web3 from "web3";
 import { ethers } from "ethers";
-import DirectDemocracyTokenArtifact from "../artifacts/contracts/DirectDemocracyToken.sol/DirectDemocracyToken.json";
+import DirectDemocracyTokenArtifact from "../abi/DirectDemocracyToken.json";
 
 const User = () => {
   const [web3, setWeb3] = useState(null);
   const [account, setAccount] = useState("");
+  const [email, setEmail] = useState("");
   const [contract, setContract] = useState(null);
+
+  const contractAddress = "0xB2025CA7BeD1d0c253c0FDb827ccD2Dc34CEc40F";
 
   useEffect(() => {
     const connectWallet = async () => {
@@ -20,6 +23,13 @@ const User = () => {
           // Get the user's account address
           const accounts = await web3.eth.getAccounts();
           setAccount(accounts[0]);
+
+          // Create contract instance
+          const contractInstance = new web3.eth.Contract(
+            DirectDemocracyTokenArtifact.abi,
+            contractAddress
+          );
+          setContract(contractInstance);
         } catch (error) {
           console.error(error);
         }
@@ -31,37 +41,37 @@ const User = () => {
     connectWallet();
   }, []);
 
-  const deployContract = async () => {
-    if (!web3) {
-      console.log("Web3 not initialized");
-      return;
+  const handleChange = (event) => {
+    setEmail(event.target.value);
+  };
+
+  const handleJoin = async () => {
+    if (email.endsWith("@ku.edu")) {
+      if (contract) {
+        try {
+          const mintTx = await contract.methods.mint().send({ from: account });
+          const balance = await contract.methods.balanceOf(account).call();
+          const formattedBalance = balance / 10 ** 18;
+          console.log("Successfully minted tokens", mintTx);
+          alert(`Successfully minted ${formattedBalance} tokens`);
+
+        } catch (error) {
+          console.error(error);
+          alert("Error minting tokens");
+        }
+      }
+    } else {
+      alert("Invalid email domain");
     }
-
-    // Create an instance of the ethers.ContractFactory
-    const factory = new ethers.ContractFactory(
-      DirectDemocracyTokenArtifact.abi,
-      DirectDemocracyTokenArtifact.bytecode,
-      new ethers.providers.Web3Provider(window.ethereum).getSigner()
-    );
-
-    // Deploy the contract
-    const contractInstance = await factory.deploy();
-
-    // Wait for the contract deployment to be mined
-    await contractInstance.deployTransaction.wait();
-
-    // Update the state with the deployed contract
-    setContract(contractInstance);
-
-    console.log("Contract deployed at:", contractInstance.address);
   };
 
   return (
     <div>
       {web3 && <p>Connected to blockchain network</p>}
       <p>Account: {account}</p>
-      <button onClick={deployContract}>Deploy DirectDemocracyToken Contract</button>
-      {contract && <p>Contract Address: {contract.address}</p>}
+      {contract && <p>Connected to DirectDemocracyToken Contract</p>}
+      <input type="email" placeholder="Email" value={email} onChange={handleChange} />
+      <button onClick={handleJoin}>Join</button>
     </div>
   );
 };
