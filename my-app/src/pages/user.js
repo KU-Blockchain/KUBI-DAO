@@ -1,6 +1,5 @@
 import { useState, useEffect } from "react";
 import Web3 from "web3";
-import { ethers } from "ethers";
 import DirectDemocracyTokenArtifact from "../abi/DirectDemocracyToken.json";
 
 const User = () => {
@@ -9,7 +8,7 @@ const User = () => {
   const [email, setEmail] = useState("");
   const [contract, setContract] = useState(null);
 
-  const contractAddress = "0xB2025CA7BeD1d0c253c0FDb827ccD2Dc34CEc40F";
+  const contractAddress = "0x9B5AE4442654281438aFD95c54C212e1eb5cEB2c";
 
   useEffect(() => {
     const connectWallet = async () => {
@@ -51,9 +50,8 @@ const User = () => {
         try {
           const mintTx = await contract.methods.mint().send({ from: account });
           const balance = await contract.methods.balanceOf(account).call();
-          const formattedBalance = balance / 10 ** 18;
           console.log("Successfully minted tokens", mintTx);
-          alert(`Successfully minted ${formattedBalance} tokens`);
+          alert(`Successfully minted ${balance} tokens`);
 
         } catch (error) {
           console.error(error);
@@ -77,3 +75,4 @@ const User = () => {
 };
 
 export default User;
+
