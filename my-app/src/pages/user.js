@@ -1,6 +1,8 @@
 import { useState, useEffect } from "react";
 import Web3 from "web3";
 import DirectDemocracyTokenArtifact from "../abi/DirectDemocracyToken.json";
+import KUBIMembershipNFTArtifact from "../abi/MembershipNFT.json";
+
 import {
   Box,
   Button,
@@ -18,10 +20,14 @@ const User = () => {
   const [email, setEmail] = useState("");
   const [contract, setContract] = useState(null);
   const [balance, setBalance] = useState(0);
+  const [kubiMembershipNFTContract, setKUBIMembershipNFTContract] = useState(null);
 
   const toast = useToast();
 
   const contractAddress = "0x9B5AE4442654281438aFD95c54C212e1eb5cEB2c";
+  const kubiMembershipNFTAddress = "0x425111052B935B4E7ddb99E609aF84660d5DB94d";
+
+
 
   useEffect(() => {
     const connectWallet = async () => {
@@ -35,13 +41,21 @@ const User = () => {
           // Get the user's account address
           const accounts = await web3.eth.getAccounts();
           setAccount(accounts[0]);
-
-          // Create contract instance
+  
+          // Create contract instance for DirectDemocracyToken
           const contractInstance = new web3.eth.Contract(
             DirectDemocracyTokenArtifact.abi,
             contractAddress
           );
           setContract(contractInstance);
+  
+          // Create contract instance for KUBIMembershipNFT
+          const kubiMembershipNFTContractInstance = new web3.eth.Contract(
+            KUBIMembershipNFTArtifact.abi,
+            kubiMembershipNFTAddress
+          );
+          setKUBIMembershipNFTContract(kubiMembershipNFTContractInstance);
+  
         } catch (error) {
           console.error(error);
         }
@@ -49,9 +63,10 @@ const User = () => {
         console.log("No ethereum browser extension detected");
       }
     };
-
+  
     connectWallet();
   }, []);
+  
 
   useEffect(() => {
     const fetchBalance = async () => {
@@ -67,27 +82,63 @@ const User = () => {
     setEmail(event.target.value);
   };
 
+  const mintMembershipNFT = async () => {
+    if (kubiMembershipNFTContract) {
+      try {
+        const id = 1; // Set the NFT id, this should be unique
+        const schoolYear = 2023;
+        const tier = 1;
+        const ipfsLink = "ipfs://QmSXjGAfQacm25UappNPgVq3ZxnFfH5XBM773WEzUCBBSG";
+  
+        await kubiMembershipNFTContract.methods
+          .mintMembershipNFT(account, id, schoolYear, tier, ipfsLink)
+          .send({ from: account });
+  
+        toast({
+          title: "Success",
+          description: "Successfully minted Membership NFT",
+          status: "success",
+          duration: 5000,
+          isClosable: true,
+        });
+      } catch (error) {
+        console.error(error);
+  
+        toast({
+          title: "Error",
+          description: "Error minting Membership NFT",
+          status: "error",
+          duration: 5000,
+          isClosable: true,
+        });
+      }
+    }
+  };
+  
+  
   const handleJoin = async () => {
     if (email.endsWith("@ku.edu")) {
       if (contract) {
         try {
-          await contract.methods.mint().send({ from: account });
-          const newBalance = await contract.methods.balanceOf(account).call();
-          setBalance(newBalance);
-
+          //await contract.methods.mint().send({ from: account });
+          //const newBalance = await contract.methods.balanceOf(account).call();
+          //setBalance(newBalance);
+  
+          await mintMembershipNFT();
+  
           toast({
             title: "Success",
-            description: `Successfully minted ${newBalance} tokens`,
+            description: `Successfully minted ${newBalance} tokens and Membership NFT`,
             status: "success",
             duration: 5000,
             isClosable: true,
           });
         } catch (error) {
           console.error(error);
-
+  
           toast({
             title: "Error",
-            description: "Error minting tokens",
+            description: "Error minting tokens and Membership NFT",
             status: "error",
             duration: 5000,
             isClosable: true,
@@ -102,6 +153,7 @@ const User = () => {
         duration: 5000,
         isClosable: true,
       });
+  
     }
   };
 
@@ -126,6 +178,8 @@ const User = () => {
       <Button colorScheme="blue" onClick={handleJoin}>
         Join
       </Button>
+
+
     </Box>
   );
 };
