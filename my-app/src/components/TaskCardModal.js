@@ -26,7 +26,7 @@ const TaskCardModal = ({ isOpen, onClose, task, columnId, onEditTask }) => {
 
   const handleButtonClick = async () => {
     if (columnId === 'open') {
-      const hasNFT = await checkNFTOwnership(); // Add this line
+      const hasNFT = await checkNFTOwnership(); 
       if (hasNFT) {
         moveTask(task, columnId, 'inProgress', 0);
         onClose();
@@ -35,7 +35,7 @@ const TaskCardModal = ({ isOpen, onClose, task, columnId, onEditTask }) => {
       }
     }
     if (columnId === 'inProgress') {
-      const hasNFT = await checkNFTOwnership(); // Add this line
+      const hasNFT = await checkNFTOwnership(); 
       if (hasNFT) {
         moveTask(task, columnId, 'inReview', 0);
         onClose();
@@ -44,7 +44,7 @@ const TaskCardModal = ({ isOpen, onClose, task, columnId, onEditTask }) => {
       }
     }
     if (columnId === 'inReview') {
-      const hasNFT = await checkNFTOwnership(); // Add this line
+      const hasNFT = await checkNFTOwnership(); 
       if (hasNFT) {
         moveTask(task, columnId, 'completed', 0);
         onClose();

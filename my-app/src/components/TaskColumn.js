@@ -5,16 +5,23 @@ import { useDrop } from 'react-dnd';
 import TaskCard from './TaskCard';
 import { useTaskBoard } from '../contexts/TaskBoardContext';
 import AddTaskModal from './AddTaskModal';
+import { useWeb3Context } from '../contexts/Web3Context';
 
 const TaskColumn = ({ title, tasks, columnId }) => {
   const { moveTask, addTask, editTask } = useTaskBoard();
   const [isAddTaskModalOpen, setIsAddTaskModalOpen] = useState(false);
-
+  const { checkNFTOwnership } = useWeb3Context();
 
   
-  const handleOpenAddTaskModal = () => {
+  const handleOpenAddTaskModal = async() => {
     if (title === 'Open') {
-      setIsAddTaskModalOpen(true);
+      const hasNFT = await checkNFTOwnership(); 
+      if (hasNFT) {
+        setIsAddTaskModalOpen(true);
+      } else {
+         alert('You must own an NFT to add task. Go to user to join ');
+      }
+      
     }
     };
 
