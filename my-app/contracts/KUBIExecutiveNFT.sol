@@ -3,7 +3,7 @@ pragma solidity ^0.8.0;
 import "@openzeppelin/contracts/token/ERC721/extensions/ERC721Enumerable.sol";
 import "@openzeppelin/contracts/access/Ownable.sol";
 
-contract KUBIExecutiveNFT is ERC721Enumerable, Ownable {
+contract KUBIExecutiveNFT is Ownable, ERC721 {
     mapping(uint256=>uint256) nftToTerm;
     mapping(address=>uint256) ExecToNFT; 
     
@@ -18,7 +18,7 @@ contract KUBIExecutiveNFT is ERC721Enumerable, Ownable {
     function mint(address _address) public onlyOwner{
         tokenIds += 1;
         _safeMint(_address, tokenIds);
-        require(ownerOf(_address)==_address, "NFT Failed to Mint");
+        require(ownerOf(tokenIds)==_address, "NFT Failed to Mint");
         nftToTerm[tokenIds]=block.timestamp;
         ExecToNFT[_address]=tokenIds;
     }
@@ -28,15 +28,15 @@ contract KUBIExecutiveNFT is ERC721Enumerable, Ownable {
         return startTime + 31536000;
     }
 
-    function transferFrom(address from, address to, uint256 tokenId) public override {
+    function transferFrom(address /*from*/, address /*to*/, uint256 /*tokenId*/) public override {
         revert("This token is non-transferable");
     }
 
-    function approve(address to, uint256 tokenId) public override {
+    function approve(address /*to*/, uint256 /*tokenId*/) public override {
         revert("This token is non-allowable");
     }
 
-    function setApprovalForAll(address operator, bool approved) public override {
+    function setApprovalForAll(address /*operator*/, bool /*approved*/) public override {
         revert("This token is non-allowable");
     }
 
