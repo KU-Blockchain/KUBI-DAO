@@ -14,7 +14,13 @@ const ProjectSidebar = ({ projects,selectedProject, onSelectProject, onCreatePro
   const [newProjectName, setNewProjectName] = useState('');
   const [showInput, setShowInput] = useState(false);
   
-  const handleCreateProject = () => {
+  const handleCreateProject = async() => {
+    const hasNFT = await checkNFTOwnership(); 
+      if (hasNFT) {
+        setIsAddTaskModalOpen(true);
+      } else {
+         alert('You must own an NFT to add task. Go to user to join ');
+      }
     onCreateProject(newProjectName);
     setNewProjectName('');
     setShowInput(false);

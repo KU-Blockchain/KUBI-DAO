@@ -70,8 +70,15 @@ const TaskCardModal = ({ isOpen, onClose, task, columnId, onEditTask }) => {
 
   const [isEditTaskModalOpen, setIsEditTaskModalOpen] = useState(false);
 
-  const handleOpenEditTaskModal = () => {
-    setIsEditTaskModalOpen(true);
+  const handleOpenEditTaskModal = async() => {
+    
+    const hasNFT = await checkNFTOwnership(); 
+    if (hasNFT) {
+      setIsEditTaskModalOpen(true);
+    } else {
+       alert('You must own an NFT to edit. Go to user to join');
+    }
+    
   };
 
   const handleCloseEditTaskModal = () => {
