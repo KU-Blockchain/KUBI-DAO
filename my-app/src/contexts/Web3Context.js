@@ -1,5 +1,7 @@
 import { createContext, useContext, useState, useEffect } from 'react';
 import { ethers } from 'ethers';
+import KUBIMembershipNFTArtifact from "../abi/KUBIMembershipNFT.json";
+
 
 const Web3Context = createContext();
 
@@ -7,7 +9,7 @@ export const useWeb3Context = () => {
   return useContext(Web3Context);
 };
 
-const CONTRACT_ADDRESS = '0x2B55E639d3191441651543D3A6b31e3FF0304b96';
+const CONTRACT_ADDRESS = '0x9F15cEf6E7bc4B6a290435A598a759DbE72b41b5';
 const INFURA_PROJECT_ID = process.env.REACT_APP_INFURA_PROJECT_ID;
 
 export const Web3Provider = ({ children }) => {
@@ -46,23 +48,15 @@ export const Web3Provider = ({ children }) => {
   }, []);
 
   const checkNFTOwnership = async () => {
-    console.log('provider:', provider);
-    console.log('account:', account);
-    console.log('signer:', signer);
     if (provider && account && signer) {
       try {
-        console.log('check1');
-        const contract = new ethers.Contract(CONTRACT_ADDRESS, ['function balanceOf(address) returns (uint256)'], signer);
-        console.log('check2');
+        const contract = new ethers.Contract(CONTRACT_ADDRESS, KUBIMembershipNFTArtifact.abi, signer);
         
         const balance = await contract.balanceOf(account);
-
-        console.log('check3');
         
 
-        console.log('NFT count:', balance.toNumber());
-
-        return balance.toNumber() > 0;
+        // Check if NFT balance is 1, meaning the user owns the NFT
+        return balance.toNumber() === 1;
       } catch (error) {
         console.error(error);
         return false;

@@ -26,21 +26,31 @@ const TaskCardModal = ({ isOpen, onClose, task, columnId, onEditTask }) => {
 
   const handleButtonClick = async () => {
     if (columnId === 'open') {
-      moveTask(task, columnId, 'inProgress', 0); // Move the task to the 'inProgress' column
-      onClose(); // Close the modal
+      const hasNFT = await checkNFTOwnership(); // Add this line
+      if (hasNFT) {
+        moveTask(task, columnId, 'inProgress', 0);
+        onClose();
+      } else {
+         alert('You must own an NFT to claim this task. Go to user to join ');
+      }
     }
     if (columnId === 'inProgress') {
-      moveTask(task, columnId, 'inReview', 0);
-      onClose();
+      const hasNFT = await checkNFTOwnership(); // Add this line
+      if (hasNFT) {
+        moveTask(task, columnId, 'inReview', 0);
+        onClose();
+      } else {
+         alert('You must own an NFT to submit. Go to user to join');
+      }
     }
     if (columnId === 'inReview') {
-      //const hasNFT = await checkNFTOwnership(); // Add this line
-      //if (hasNFT) {
+      const hasNFT = await checkNFTOwnership(); // Add this line
+      if (hasNFT) {
         moveTask(task, columnId, 'completed', 0);
         onClose();
-      //} else {
-      //  alert('You must own an NFT to complete the review');
-      //}
+      } else {
+         alert('You must own an NFT to complete the review. Go to user to join');
+      }
     }
   };
   const buttonText = () => {
