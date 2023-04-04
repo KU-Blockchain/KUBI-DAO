@@ -1,16 +1,16 @@
 
 pragma solidity ^0.8.0;
 
-import "@openzeppelin/contracts/token/ERC721/extensions/ERC721Enumerable.sol";
+import "@openzeppelin/contracts/token/ERC721/extensions/ERC721URIStorage.sol";
 import "@openzeppelin/contracts/access/Ownable.sol";
 
-contract KUBIExecutiveNFT is Ownable, ERC721 {
+contract KUBIExecutiveNFT is Ownable, ERC721URIStorage{
     mapping(uint256=>uint256) nftToTerm;
     mapping(address=>uint256) ExecToNFT; 
     
-    uint256 tokenIds=0;
+    uint256  private tokenIds=0;
 
-    string baseTokenURI;
+    string public baseTokenURI;
 
     constructor(string memory _baseTokenURI) ERC721("KUBIExecutive", "KUBIEx"){
         baseTokenURI=_baseTokenURI;
@@ -19,6 +19,7 @@ contract KUBIExecutiveNFT is Ownable, ERC721 {
     function mint(address _address) public onlyOwner{
         tokenIds += 1;
         _safeMint(_address, tokenIds);
+        _setTokenURI(tokenIds, baseTokenURI);
         require(ownerOf(tokenIds)==_address, "NFT Failed to Mint");
         nftToTerm[tokenIds]=block.timestamp;
         ExecToNFT[_address]=tokenIds;
