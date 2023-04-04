@@ -14,10 +14,10 @@ import { useWeb3Context } from '../contexts/Web3Context';
 const ProjectSidebar = ({ projects,selectedProject, onSelectProject, onCreateProject }) => {
   const [newProjectName, setNewProjectName] = useState('');
   const [showInput, setShowInput] = useState(false);
-  const { checkNFTOwnership } = useWeb3Context();
+  const { hasNFT} = useWeb3Context();
   
-  const handleCreateProject = async() => {
-    const hasNFT = await checkNFTOwnership(); 
+  const handleCreateProject = () => {
+    
       if (hasNFT) {
         onCreateProject(newProjectName);
         setNewProjectName('');

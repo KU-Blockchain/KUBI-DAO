@@ -16,8 +16,9 @@ export const Web3Provider = ({ children }) => {
   const [provider, setProvider] = useState(null);
   const [account, setAccount] = useState(null);
   const [signer, setSigner] = useState(null);
+  const [hasNFT, setHasNFT] = useState(false);
 
-  useEffect(() => {
+
     const initProvider = async () => {
       // Check if Web3 has been injected by MetaMask
       if (typeof window.ethereum !== 'undefined') {
@@ -44,32 +45,62 @@ export const Web3Provider = ({ children }) => {
       }
     };
 
-    initProvider();
-  }, []);
+    useEffect(() => {
+        initProvider();
+        window.addEventListener('load', initProvider);
+    
+        return () => {
+          window.removeEventListener('load', initProvider);
+        };
+      }, []);
 
-  const checkNFTOwnership = async () => {
-    if (provider && account && signer) {
-      try {
-        const contract = new ethers.Contract(CONTRACT_ADDRESS, KUBIMembershipNFTArtifact.abi, signer);
-        
-        const balance = await contract.balanceOf(account);
-        
+      useEffect(() => {
+        const handleAccountsChanged = async (accounts) => {
+          if (accounts.length > 0) {
+            const signer = provider.getSigner(accounts[0]);
+            setSigner(signer);
+            setAccount(accounts[0]);
+          }
+        };
+    
+        if (provider) {
+          provider.on('accountsChanged', handleAccountsChanged);
+        }
+    
+        return () => {
+          if (provider) {
+            provider.off('accountsChanged', handleAccountsChanged);
+          }
+        };
+      }, [provider]);
 
-        // Check if NFT balance is 1, meaning the user owns the NFT
-        return balance.toNumber() === 1;
-      } catch (error) {
-        console.error(error);
-        return false;
+  useEffect(() => {
+    const fetchNFTOwnership = async () => {
+      if (provider && account && signer) {
+        try {
+          const contract = new ethers.Contract(CONTRACT_ADDRESS, KUBIMembershipNFTArtifact.abi, signer);
+
+          const balance = await contract.balanceOf(account);
+
+          // Check if NFT balance is 1, meaning the user owns the NFT
+          setHasNFT(balance.toNumber() === 1);
+        } catch (error) {
+          console.error(error);
+          setHasNFT(false);
+        }
+      } else {
+        setHasNFT(false);
       }
-    }
-    return false;
-  };
+    };
+
+    fetchNFTOwnership();
+  }, [provider, account, signer]);
 
   const value = {
     provider,
     account,
     signer,
-    checkNFTOwnership,
+    hasNFT,
   };
 
   return <Web3Context.Provider value={value}>{children}</Web3Context.Provider>;

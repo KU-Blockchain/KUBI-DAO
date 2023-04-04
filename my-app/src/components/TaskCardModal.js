@@ -22,11 +22,11 @@ import { useWeb3Context } from '../contexts/Web3Context';
 const TaskCardModal = ({ isOpen, onClose, task, columnId, onEditTask }) => {
   const [submission, setSubmission] = useState('');
   const { moveTask} = useTaskBoard();
-  const { checkNFTOwnership } = useWeb3Context();
+  const { hasNFT } = useWeb3Context();
 
-  const handleButtonClick = async () => {
+  const handleButtonClick =  () => {
     if (columnId === 'open') {
-      const hasNFT = await checkNFTOwnership(); 
+      
       if (hasNFT) {
         moveTask(task, columnId, 'inProgress', 0);
         onClose();
@@ -35,7 +35,7 @@ const TaskCardModal = ({ isOpen, onClose, task, columnId, onEditTask }) => {
       }
     }
     if (columnId === 'inProgress') {
-      const hasNFT = await checkNFTOwnership(); 
+      
       if (hasNFT) {
         moveTask(task, columnId, 'inReview', 0);
         onClose();
@@ -44,7 +44,7 @@ const TaskCardModal = ({ isOpen, onClose, task, columnId, onEditTask }) => {
       }
     }
     if (columnId === 'inReview') {
-      const hasNFT = await checkNFTOwnership(); 
+      
       if (hasNFT) {
         moveTask(task, columnId, 'completed', 0);
         onClose();
@@ -70,9 +70,9 @@ const TaskCardModal = ({ isOpen, onClose, task, columnId, onEditTask }) => {
 
   const [isEditTaskModalOpen, setIsEditTaskModalOpen] = useState(false);
 
-  const handleOpenEditTaskModal = async() => {
+  const handleOpenEditTaskModal = () => {
     
-    const hasNFT = await checkNFTOwnership(); 
+    
     if (hasNFT) {
       setIsEditTaskModalOpen(true);
     } else {

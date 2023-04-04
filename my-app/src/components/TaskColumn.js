@@ -1,6 +1,6 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { AddIcon } from '@chakra-ui/icons';
-import { Box, Heading, IconButton, useDisclosure } from '@chakra-ui/react';
+import { Box, Heading, IconButton} from '@chakra-ui/react';
 import { useDrop } from 'react-dnd';
 import TaskCard from './TaskCard';
 import { useTaskBoard } from '../contexts/TaskBoardContext';
@@ -10,12 +10,17 @@ import { useWeb3Context } from '../contexts/Web3Context';
 const TaskColumn = ({ title, tasks, columnId }) => {
   const { moveTask, addTask, editTask } = useTaskBoard();
   const [isAddTaskModalOpen, setIsAddTaskModalOpen] = useState(false);
-  const { checkNFTOwnership } = useWeb3Context();
+  const { hasNFT } = useWeb3Context();
+  const hasNFTRef = useRef(hasNFT);
+
+  useEffect(() => {
+    hasNFTRef.current = hasNFT;
+  }, [hasNFT]);
 
   
-  const handleOpenAddTaskModal = async() => {
+  const handleOpenAddTaskModal = () => {
     if (title === 'Open') {
-      const hasNFT = await checkNFTOwnership(); 
+      console.log(hasNFT)
       if (hasNFT) {
         setIsAddTaskModalOpen(true);
       } else {
@@ -43,9 +48,9 @@ const TaskColumn = ({ title, tasks, columnId }) => {
   
     const [{ isOver }, drop] = useDrop(() => ({
       accept: 'task',
-      drop: async (item) => {
-        const hasNFT = await checkNFTOwnership();
-        if (!hasNFT) {
+      drop: (item) => {
+        
+        if (!hasNFTRef.current) {
           alert('You must own an NFT to move tasks. Go to user to join');
           return;
         }
