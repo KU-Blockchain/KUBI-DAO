@@ -43,7 +43,13 @@ const TaskColumn = ({ title, tasks, columnId }) => {
   
     const [{ isOver }, drop] = useDrop(() => ({
       accept: 'task',
-      drop: (item) => {
+      drop: async (item) => {
+        const hasNFT = await checkNFTOwnership();
+        if (!hasNFT) {
+          alert('You must own an NFT to move tasks. Go to user to join');
+          return;
+        }
+  
         if (item.columnId !== columnId) {
           const newIndex = tasks.length;
           const draggedTask = {

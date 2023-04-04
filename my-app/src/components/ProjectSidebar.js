@@ -9,21 +9,25 @@ import {
   Spacer,
   Flex,
 } from '@chakra-ui/react';
+import { useWeb3Context } from '../contexts/Web3Context';
 
 const ProjectSidebar = ({ projects,selectedProject, onSelectProject, onCreateProject }) => {
   const [newProjectName, setNewProjectName] = useState('');
   const [showInput, setShowInput] = useState(false);
+  const { checkNFTOwnership } = useWeb3Context();
   
   const handleCreateProject = async() => {
     const hasNFT = await checkNFTOwnership(); 
       if (hasNFT) {
-        setIsAddTaskModalOpen(true);
+        onCreateProject(newProjectName);
+        setNewProjectName('');
+        setShowInput(false);
       } else {
-         alert('You must own an NFT to add task. Go to user to join ');
+         alert('You must own an NFT to create project. Go to user to join ');
+         setNewProjectName('');
+         setShowInput(false);
       }
-    onCreateProject(newProjectName);
-    setNewProjectName('');
-    setShowInput(false);
+
   };
 
   return (
