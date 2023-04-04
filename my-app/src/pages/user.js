@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import Web3 from "web3";
 import DirectDemocracyTokenArtifact from "../abi/DirectDemocracyToken.json";
-import KUBIMembershipNFTArtifact from "../abi/MembershipNFT.json";
+import KUBIMembershipNFTArtifact from "../abi/KUBIMembershipNFT.json";
 
 import {
   Box,
@@ -21,12 +21,14 @@ const User = () => {
   const [contract, setContract] = useState(null);
   const [balance, setBalance] = useState(0);
   const [kubiMembershipNFTContract, setKUBIMembershipNFTContract] = useState(null);
+  const [nftBalance, setNftBalance] = useState(0);
+
+
 
   const toast = useToast();
 
   const contractAddress = "0x9B5AE4442654281438aFD95c54C212e1eb5cEB2c";
-  const kubiMembershipNFTAddress = "0x425111052B935B4E7ddb99E609aF84660d5DB94d";
-
+  const kubiMembershipNFTAddress = "0x9F15cEf6E7bc4B6a290435A598a759DbE72b41b5";
 
 
   useEffect(() => {
@@ -81,17 +83,27 @@ const User = () => {
   const handleChange = (event) => {
     setEmail(event.target.value);
   };
-
+  useEffect(() => {
+    fetchNFTBalance();
+  }, [kubiMembershipNFTContract, account]);
+  
+  const fetchNFTBalance = async () => {
+    if (kubiMembershipNFTContract && account) {
+      const currentNFTBalance = await kubiMembershipNFTContract.methods.balanceOf(account).call();
+      setNftBalance(currentNFTBalance);
+    }
+  };
+  
   const mintMembershipNFT = async () => {
     if (kubiMembershipNFTContract) {
       try {
-        const id = 1; // Set the NFT id, this should be unique
+
         const schoolYear = 2023;
         const tier = 1;
         const ipfsLink = "ipfs://QmSXjGAfQacm25UappNPgVq3ZxnFfH5XBM773WEzUCBBSG";
   
         await kubiMembershipNFTContract.methods
-          .mintMembershipNFT(account, id, schoolYear, tier, ipfsLink)
+          .mintMembershipNFT(account, schoolYear, tier, ipfsLink)
           .send({ from: account });
   
         toast({
@@ -115,14 +127,13 @@ const User = () => {
     }
   };
   
-  
   const handleJoin = async () => {
     if (email.endsWith("@ku.edu")) {
       if (contract) {
         try {
-          //await contract.methods.mint().send({ from: account });
-          //const newBalance = await contract.methods.balanceOf(account).call();
-          //setBalance(newBalance);
+          await contract.methods.mint().send({ from: account });
+          const newBalance = await contract.methods.balanceOf(account).call();
+          setBalance(newBalance);
   
           await mintMembershipNFT();
   
@@ -166,6 +177,8 @@ const User = () => {
       )}
       <Text>Account: {account}</Text>
       <Text>KUBI Token Balance: {balance}</Text>
+      <Text>Membership NFT Balance: {nftBalance}</Text>
+
       {contract && (
         <Text color="blue.500" fontWeight="bold">
           Connected to DirectDemocracyToken Contract
@@ -178,8 +191,6 @@ const User = () => {
       <Button colorScheme="blue" onClick={handleJoin}>
         Join
       </Button>
-
-
     </Box>
   );
 };

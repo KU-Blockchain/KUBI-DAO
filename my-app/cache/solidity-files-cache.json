@@ -552,44 +552,6 @@
         "ERC721URIStorage"
       ]
     },
-    "/Users/hudsonheadley/Desktop/Code/DAO2/my-app/contracts/KUBImemberNFT.sol": {
-      "lastModificationDate": 1680569100454,
-      "contentHash": "b5eca05182021927839a8943d737fcd5",
-      "sourceName": "contracts/KUBImemberNFT.sol",
-      "solcConfig": {
-        "version": "0.8.18",
-        "settings": {
-          "optimizer": {
-            "enabled": false,
-            "runs": 200
-          },
-          "outputSelection": {
-            "*": {
-              "*": [
-                "abi",
-                "evm.bytecode",
-                "evm.deployedBytecode",
-                "evm.methodIdentifiers",
-                "metadata"
-              ],
-              "": [
-                "ast"
-              ]
-            }
-          }
-        }
-      },
-      "imports": [
-        "@openzeppelin/contracts/token/ERC721/extensions/ERC721URIStorage.sol",
-        "@openzeppelin/contracts/access/Ownable.sol"
-      ],
-      "versionPragmas": [
-        "^0.8.0"
-      ],
-      "artifacts": [
-        "MembershipNFT"
-      ]
-    },
     "/Users/hudsonheadley/Desktop/Code/DAO2/my-app/node_modules/@openzeppelin/contracts/access/Ownable.sol": {
       "lastModificationDate": 1680449808341,
       "contentHash": "e436cea06129be2c73cda4b1acc848b5",
@@ -625,6 +587,44 @@
       ],
       "artifacts": [
         "Ownable"
+      ]
+    },
+    "/Users/hudsonheadley/Desktop/Code/DAO2/my-app/contracts/KUBImemberNFT.sol": {
+      "lastModificationDate": 1680570888103,
+      "contentHash": "b02cc35cc2aa585d86d15d0143ef3bef",
+      "sourceName": "contracts/KUBImemberNFT.sol",
+      "solcConfig": {
+        "version": "0.8.18",
+        "settings": {
+          "optimizer": {
+            "enabled": false,
+            "runs": 200
+          },
+          "outputSelection": {
+            "*": {
+              "*": [
+                "abi",
+                "evm.bytecode",
+                "evm.deployedBytecode",
+                "evm.methodIdentifiers",
+                "metadata"
+              ],
+              "": [
+                "ast"
+              ]
+            }
+          }
+        }
+      },
+      "imports": [
+        "@openzeppelin/contracts/token/ERC721/extensions/ERC721URIStorage.sol",
+        "@openzeppelin/contracts/access/Ownable.sol"
+      ],
+      "versionPragmas": [
+        "^0.8.0"
+      ],
+      "artifacts": [
+        "KUBIMembershipNFT"
       ]
     }
   }
