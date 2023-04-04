@@ -1,37 +1,44 @@
 
 pragma solidity ^0.8.0;
 
-import "@openzeppelin/contracts/token/ERC20/ERC20.sol";
+import "@openzeppelin/contracts/token/ERC721/extensions/ERC721Enumerable.sol";
+import "@openzeppelin/contracts/access/Ownable.sol";
 
-contract DirectDemocracyToken is ERC20{
-    uint256 public constant maxSupplyPerPerson= 100;
-
-    constructor() ERC20("KUBIDem", "KUBID"){
-
-    }
-
-    function mint() public {
-        require(balanceOf(msg.sender)==0, "You Have Already Claimed Your Coins!"  );
-        _mint(msg.sender, maxSupplyPerPerson);
-        require(balanceOf(msg.sender)==maxSupplyPerPerson, "Coins failed to mint");
-    }
-    function getBalance(address _address)public view returns(uint256){
-        return balanceOf(_address);
-    }
-    function transfer(address /*to*/, uint256 /*amount*/)public virtual override returns(bool){
-        revert("Transfer of tokens is not allowed");
-    }
-
+contract KUBIExecutiveNFT is Ownable, ERC721 {
+    mapping(uint256=>uint256) nftToTerm;
+    mapping(address=>uint256) ExecToNFT; 
     
+    uint256 tokenIds=0;
 
-    function approve(address /*spender*/, uint256 /*amount*/) public virtual override returns (bool){
-        revert("Approval of Token allowance is not allowed");
+    string baseTokenURI;
+
+    constructor(string memory _baseTokenURI) ERC721("KUBIExecutive", "KUBIEx"){
+        baseTokenURI=_baseTokenURI;
     }
 
-    function transferFrom(address /*from*/, address /*to*/, uint256 /*amount*/) public virtual override returns (bool){
-        revert("Transfer of Tokens is not allowed");
+    function mint(address _address) public onlyOwner{
+        tokenIds += 1;
+        _safeMint(_address, tokenIds);
+        require(ownerOf(tokenIds)==_address, "NFT Failed to Mint");
+        nftToTerm[tokenIds]=block.timestamp;
+        ExecToNFT[_address]=tokenIds;
+    }
+    function getTermLimit(address _address)public view returns(uint256){
+        uint256 nft = ExecToNFT[_address];
+        uint256 startTime = nftToTerm[nft];
+        return startTime + 31536000;
     }
 
+    function transferFrom(address /*from*/, address /*to*/, uint256 /*tokenId*/) public override pure {
+        revert("This token is non-transferable");
+    }
 
+    function approve(address /*to*/, uint256 /*tokenId*/) public override pure {
+        revert("This token is non-allowable");
+    }
+
+    function setApprovalForAll(address /*operator*/, bool /*approved*/) public override pure {
+        revert("This token is non-allowable");
+    }
 
 }
