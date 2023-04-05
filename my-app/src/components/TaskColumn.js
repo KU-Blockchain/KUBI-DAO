@@ -34,15 +34,27 @@ const TaskColumn = ({ title, tasks, columnId }) => {
       setIsAddTaskModalOpen(false);
     };
   
-    const handleAddTask = (newTask) => {
+    const handleAddTask = (updatedTask) => {
       if (title === 'Open') {
-        const updatedTask = { ...newTask, id: `task-${Date.now()}` };
+       
+        updatedTask = {
+          ...updatedTask,
+          id: `task-${Date.now()}`,
+          difficulty: updatedTask.difficulty, 
+          estHours: updatedTask.estHours, 
+        };
         addTask(updatedTask, columnId);
       }
     };
+    
 
     const handleEditTask = (updatedTask, taskIndex) => {
-      updatedTask = { ...updatedTask, id: `task-${Date.now()}` };
+      updatedTask = {
+        ...updatedTask,
+        id: `task-${Date.now()}`,
+        difficulty: updatedTask.difficulty, 
+        estHours: updatedTask.estHours, 
+      };
       editTask(updatedTask, columnId, taskIndex);
     };
   
@@ -57,11 +69,13 @@ const TaskColumn = ({ title, tasks, columnId }) => {
   
         if (item.columnId !== columnId) {
           const newIndex = tasks.length;
+          console.log(item.difficulty)
           const draggedTask = {
             id: item.id,
             name: item.name,
             description: item.description,
-            kubixPayout: item.kubixPayout,
+            difficulty: item.difficulty,
+            estHours: item.estHours,
           };
           moveTask(draggedTask, item.columnId, columnId, newIndex);
         }
@@ -97,16 +111,19 @@ const TaskColumn = ({ title, tasks, columnId }) => {
         >
           
           {tasks.map((task, index) => (
+            
             <TaskCard
               key={task.id}
               id={task.id}
               name={task.name}
               description={task.description}
-              kubixPayout={task.kubixPayout}
+              difficulty={task.difficulty} 
+              estHours={task.estHours} 
               columnId={columnId}
-              onEditTask={(updatedTask) => handleEditTask(updatedTask, index)} // pass index value to handleEditTask
+              onEditTask={(updatedTask) => handleEditTask(updatedTask, index)}
             />
           ))}
+
         </Box>
         {title === 'Open' && (
           <AddTaskModal

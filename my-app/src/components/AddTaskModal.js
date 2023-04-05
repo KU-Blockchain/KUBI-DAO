@@ -19,28 +19,13 @@ const AddTaskModal = ({ isOpen, onClose, onAddTask }) => {
   const [name, setName] = useState('');
   const [description, setDescription] = useState('');
   const [difficulty, setDifficulty] = useState('easy');
-  const [estimatedHours, setEstimatedHours] = useState(1);
+  const [estHours, setEstHours] = useState(1);
 
-  const calculateKubixPayout = (difficulty, estimatedHours) => {
-    const difficulties = {
-      easy: { baseKubix: 1, multiplier: 16.5 },
-      medium: { baseKubix: 4, multiplier: 24 },
-      hard: { baseKubix: 10, multiplier: 30 },
-      veryHard: { baseKubix: 25, multiplier: 37.5 },
-    };
 
-    const { baseKubix, multiplier } = difficulties[difficulty];
-    const totalKubix = Math.round(baseKubix + multiplier * estimatedHours);
-    return totalKubix;
-  };
+  
 
   const handleSubmit = () => {
-    const kubixPayout = calculateKubixPayout(difficulty, estimatedHours);
-    onAddTask({ name, description, kubixPayout });
-    setName('');
-    setDescription('');
-    setDifficulty('easy');
-    setEstimatedHours(1);
+    onAddTask({ name, description, difficulty,estHours });
     onClose();
   };
 
@@ -85,8 +70,8 @@ const AddTaskModal = ({ isOpen, onClose, onAddTask }) => {
               <Input
                 type="number"
                 min="1"
-                value={estimatedHours}
-                onChange={(e) => setEstimatedHours(Math.round(parseFloat(e.target.value)))}
+                value={estHours}
+                onChange={(e) => setEstHours(Math.round(parseFloat(e.target.value)))}
               />
             </FormControl>
           </VStack>

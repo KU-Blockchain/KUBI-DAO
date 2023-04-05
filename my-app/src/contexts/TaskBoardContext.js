@@ -26,7 +26,8 @@ export const TaskBoardProvider = ({ children, initialColumns, onColumnChange }) 
       ...draggedTask,
       name: draggedTask.name,
       description: draggedTask.description,
-      kubixPayout: draggedTask.kubixPayout,
+      difficulty: draggedTask.difficulty,
+      estHours: draggedTask.estHours,
     };
 
     destColumn.tasks.splice(newIndex, 0, updatedTask);
