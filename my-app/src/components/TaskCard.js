@@ -16,6 +16,16 @@ const TaskCard = ({ id, name, description, kubixPayout, index, columnId, onEditT
 
   const { isOpen, onOpen, onClose } = useDisclosure();
 
+  const truncateDescription = (desc, maxLength) => {
+    console.log(desc.length)
+    console.log(maxLength)
+    if (desc.length > maxLength) {
+      console.log("check")
+      return desc.substring(0, maxLength) + '...';
+    }
+    return desc;
+  };
+
   return (
     <>
       <Box
@@ -30,7 +40,7 @@ const TaskCard = ({ id, name, description, kubixPayout, index, columnId, onEditT
         onClick={onOpen}
       >
         <Box fontWeight="bold">{name}</Box>
-        <Box>{description}</Box>
+        <Box>{truncateDescription(description, 33)}</Box>
         {kubixPayout && (
           <Box mt={2} fontWeight="bold">KUBIX Payout: {kubixPayout}</Box>
         )}
