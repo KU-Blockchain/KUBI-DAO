@@ -26,6 +26,10 @@ const AddTaskModal = ({ isOpen, onClose, onAddTask }) => {
 
   const handleSubmit = () => {
     onAddTask({ name, description, difficulty,estHours });
+    setDescription('');
+    setName('');
+    setDifficulty('easy');
+    setEstHours(1);
     onClose();
   };
 
