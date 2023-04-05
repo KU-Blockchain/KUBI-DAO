@@ -63,7 +63,7 @@ const TaskCard = ({ id, name, description, difficulty, estHours, index, columnId
       <TaskCardModal
         isOpen={isOpen}
         onClose={onClose}
-        task={{ id, name, description, kubixPayout }}
+        task={{ id, name, description, difficulty, estHours,kubixPayout }}
         columnId={columnId}
         onEditTask={onEditTask}
         moveTask={moveTask}

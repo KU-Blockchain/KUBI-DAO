@@ -17,8 +17,9 @@ import {
 const EditTaskModal = ({ isOpen, onClose, onEditTask, onDeleteTask, task }) => {
   const [name, setName] = useState(task.name);
   const [description, setDescription] = useState(task.description);
-  const [difficulty, setDifficulty] = useState('easy');
-  const [estHours, setEstimatedHours] = useState(1);
+  
+  const [difficulty, setDifficulty] = useState(task.difficulty);
+  const [estHours, setEstimatedHours] = useState(task.estHours);
 
   
 
