@@ -21,7 +21,7 @@ import { useWeb3Context } from '../contexts/Web3Context';
 
 const TaskCardModal = ({ isOpen, onClose, task, columnId, onEditTask }) => {
   const [submission, setSubmission] = useState('');
-  const { moveTask} = useTaskBoard();
+  const { moveTask, deleteTask} = useTaskBoard();
   const { hasNFT } = useWeb3Context();
 
   const handleButtonClick =  () => {
@@ -51,6 +51,9 @@ const TaskCardModal = ({ isOpen, onClose, task, columnId, onEditTask }) => {
       } else {
          alert('You must own an NFT to complete the review. Go to user to join');
       }
+    }
+    if (columnId === 'completed') {
+      deleteTask(task.id, columnId);
     }
   };
   const buttonText = () => {
@@ -126,6 +129,7 @@ const TaskCardModal = ({ isOpen, onClose, task, columnId, onEditTask }) => {
           onClose={handleCloseEditTaskModal}
           onEditTask={onEditTask}
           task={task}
+          onDeleteTask={(taskId) => deleteTask(taskId, columnId)}
         />
       )}
     </>

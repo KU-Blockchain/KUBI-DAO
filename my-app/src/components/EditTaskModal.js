@@ -15,7 +15,7 @@ import {
   NumberInputField,
 } from '@chakra-ui/react';
 
-const EditTaskModal = ({ isOpen, onClose, onEditTask, task }) => {
+const EditTaskModal = ({ isOpen, onClose, onEditTask, onDeleteTask, task }) => {
   const [name, setName] = useState(task.name);
   const [description, setDescription] = useState(task.description);
   const [kubixPayout, setKubixPayout] = useState(task.kubixPayout);
@@ -50,6 +50,9 @@ const EditTaskModal = ({ isOpen, onClose, onEditTask, task }) => {
         <ModalFooter>
           <Button colorScheme="teal" onClick={handleEditTask}>
             Save Changes
+          </Button>
+          <Button colorScheme="red" mr={3} onClick={() => onDeleteTask(task.id)}>
+            Delete
           </Button>
         </ModalFooter>
       </ModalContent>

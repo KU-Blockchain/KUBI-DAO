@@ -32,16 +32,8 @@ export const Web3Provider = ({ children }) => {
         setAccount(accounts);
 
       } else {
-        // Fallback to Infura provider
-        const infuraProvider = new ethers.providers.InfuraProvider('mainnet', INFURA_PROJECT_ID);
-        setProvider(infuraProvider);
-        
-        const privateKey = 'YOUR_PRIVATE_KEY_HERE';
-        const wallet = new ethers.Wallet(privateKey, infuraProvider);
-        const signer = wallet.connect(infuraProvider);
-        setSigner(signer);
-        const accounts = await signer.getAddress();
-        setAccount(accounts);
+        alert('Reload the page with MetaMask');
+
       }
     };
 

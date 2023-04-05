@@ -39,7 +39,7 @@ export const TaskBoardProvider = ({ children, initialColumns, onColumnChange }) 
     }
   };
 
-
+  //a function to add a task
    const addTask = (newTask, destColumnId) => {
     const newTaskColumns = [...taskColumns];
   
@@ -57,10 +57,16 @@ export const TaskBoardProvider = ({ children, initialColumns, onColumnChange }) 
     destColumn.tasks.splice(destTaskIndex, 1, updatedTask);
     setTaskColumns(newTaskColumns);
   };
+
+  const deleteTask = (taskId, columnId) => {
+    const newTaskColumns = [...taskColumns];
+    const column = newTaskColumns.find((col) => col.id === columnId);
+    const taskIndex = column.tasks.findIndex((task) => task.id === taskId);
+    column.tasks.splice(taskIndex, 1);
+    setTaskColumns(newTaskColumns);
+  };
   
 
-
-  
   
   
     const value = {
@@ -68,7 +74,8 @@ export const TaskBoardProvider = ({ children, initialColumns, onColumnChange }) 
       moveTask,
       addTask,
       editTask,
-      setTaskColumns
+      setTaskColumns,
+      deleteTask,
     };
   
     return (
