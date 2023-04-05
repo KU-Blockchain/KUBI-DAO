@@ -48,12 +48,13 @@ const EditTaskModal = ({ isOpen, onClose, onEditTask, onDeleteTask, task }) => {
           </FormControl>
         </ModalBody>
         <ModalFooter>
+          <Button colorScheme="red"  mr ="auto" onClick={() => onDeleteTask(task.id)}>
+            Delete
+          </Button>
           <Button colorScheme="teal" onClick={handleEditTask}>
             Save Changes
           </Button>
-          <Button colorScheme="red" mr={3} onClick={() => onDeleteTask(task.id)}>
-            Delete
-          </Button>
+
         </ModalFooter>
       </ModalContent>
     </Modal>

@@ -53,7 +53,12 @@ const TaskCardModal = ({ isOpen, onClose, task, columnId, onEditTask }) => {
       }
     }
     if (columnId === 'completed') {
-      deleteTask(task.id, columnId);
+      if (hasNFT) {
+        deleteTask(task.id, columnId);
+      } else {
+        alert('You must own an NFT to delete task. Go to user to join');
+      }
+      
     }
   };
   const buttonText = () => {
