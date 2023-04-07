@@ -2,6 +2,8 @@ import { useState, useEffect } from "react";
 import Web3 from "web3";
 import DirectDemocracyTokenArtifact from "../abi/DirectDemocracyToken.json";
 import KUBIMembershipNFTArtifact from "../abi/KUBIMembershipNFT.json";
+import ProjectManagerArtifact from "../abi/ProjectManager.json";
+
 import {
   Box,
   Button,
@@ -23,6 +25,8 @@ const User = () => {
   const [balance, setBalance] = useState(0);
   const [kubiMembershipNFTContract, setKUBIMembershipNFTContract] = useState(null);
   const [nftBalance, setNftBalance] = useState(0);
+  const [deployedContract, setDeployedContract] = useState(null);
+  
   const toast = useToast();
 
   const connectWallet = async () => {
@@ -44,6 +48,27 @@ const User = () => {
   };
 
   useEffect(() => { connectWallet() }, []);
+
+  const deployContract = async () => {
+    if (!web3 || !account) return;
+  
+    const projectManagerContract = new web3.eth.Contract(ProjectManagerArtifact.abi);
+    const deployOptions = {
+      data: ProjectManagerArtifact.bytecode,
+      arguments: [],
+    };
+  
+    try {
+      const instance = await projectManagerContract.deploy(deployOptions).send({ from: account });
+      setDeployedContract(instance);
+      console.log("Contract deployed at address:", instance.options.address);
+    } catch (error) {
+      console.error("Error deploying contract:", error);
+    }
+  };
+  
+
+
 
   const fetchBalance = async () => {
     if (contract && account) setBalance(await contract.methods.balanceOf(account).call());
@@ -126,6 +151,10 @@ const User = () => {
       <Button colorScheme="blue" onClick={handleJoin}>
         Join
       </Button>
+      <Button colorScheme="teal" onClick={deployContract}>
+        Deploy Project Manager Contract
+      </Button>
+      {deployedContract && <Text>Contract address: {deployedContract.options.address}</Text>}
     </Box>
   );
 };

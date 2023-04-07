@@ -589,6 +589,81 @@
         "Ownable"
       ]
     },
+    "/Users/hudsonheadley/Desktop/Code/DAO2/my-app/contracts/ProjectManager.sol": {
+      "lastModificationDate": 1680893398197,
+      "contentHash": "d67010d5bf19dff63bd240d88ef42f81",
+      "sourceName": "contracts/ProjectManager.sol",
+      "solcConfig": {
+        "version": "0.8.18",
+        "settings": {
+          "optimizer": {
+            "enabled": false,
+            "runs": 200
+          },
+          "outputSelection": {
+            "*": {
+              "*": [
+                "abi",
+                "evm.bytecode",
+                "evm.deployedBytecode",
+                "evm.methodIdentifiers",
+                "metadata"
+              ],
+              "": [
+                "ast"
+              ]
+            }
+          }
+        }
+      },
+      "imports": [
+        "@openzeppelin/contracts/token/ERC721/ERC721.sol",
+        "@openzeppelin/contracts/token/ERC721/extensions/ERC721URIStorage.sol",
+        "@openzeppelin/contracts/access/Ownable.sol",
+        "@openzeppelin/contracts/utils/Counters.sol"
+      ],
+      "versionPragmas": [
+        "^0.8.0"
+      ],
+      "artifacts": [
+        "ProjectManager"
+      ]
+    },
+    "/Users/hudsonheadley/Desktop/Code/DAO2/my-app/node_modules/@openzeppelin/contracts/utils/Counters.sol": {
+      "lastModificationDate": 1680449808723,
+      "contentHash": "74654e3ae5d7f39555055dfe244dab7a",
+      "sourceName": "@openzeppelin/contracts/utils/Counters.sol",
+      "solcConfig": {
+        "version": "0.8.18",
+        "settings": {
+          "optimizer": {
+            "enabled": false,
+            "runs": 200
+          },
+          "outputSelection": {
+            "*": {
+              "*": [
+                "abi",
+                "evm.bytecode",
+                "evm.deployedBytecode",
+                "evm.methodIdentifiers",
+                "metadata"
+              ],
+              "": [
+                "ast"
+              ]
+            }
+          }
+        }
+      },
+      "imports": [],
+      "versionPragmas": [
+        "^0.8.0"
+      ],
+      "artifacts": [
+        "Counters"
+      ]
+    },
     "/Users/hudsonheadley/Desktop/Code/DAO2/my-app/contracts/KUBImemberNFT.sol": {
       "lastModificationDate": 1680570888103,
       "contentHash": "b02cc35cc2aa585d86d15d0143ef3bef",

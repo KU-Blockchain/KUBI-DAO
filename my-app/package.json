@@ -17,6 +17,7 @@
     "@emotion/styled": "^11.10.6",
     "@openzeppelin/contracts": "^4.8.2",
     "@walletconnect/web3-provider": "^1.8.0",
+    "dotenv": "^16.0.3",
     "ethers": "5.7.2",
     "framer-motion": "^10.9.2",
     "fs": "^0.0.1-security",
