@@ -6,7 +6,7 @@ export const useTaskBoard = () => {
   return useContext(TaskBoardContext);
 };
 
-export const TaskBoardProvider = ({ children, initialColumns, onColumnChange }) => {
+export const TaskBoardProvider = ({ children, initialColumns, onColumnChange, onUpdateColumns }) => {
   const [taskColumns, setTaskColumns] = useState(initialColumns);
 
   useEffect(() => {
@@ -40,47 +40,54 @@ export const TaskBoardProvider = ({ children, initialColumns, onColumnChange }) 
     }
   };
 
-  //a function to add a task
-   const addTask = (newTask, destColumnId) => {
+  const addTask = async (newTask, destColumnId) => {
     const newTaskColumns = [...taskColumns];
-  
+
     const destColumn = newTaskColumns.find((column) => column.id === destColumnId);
-  
+
     destColumn.tasks.push(newTask);
-  
+
     setTaskColumns(newTaskColumns);
+
+    // Call the onUpdateColumns prop when the columns are updated
+    if (onUpdateColumns) {
+      await onUpdateColumns(newTaskColumns);
+    }
   };
 
-   //a function to edit a task
-   const editTask = (updatedTask, destColumnId, destTaskIndex) => {
+  //a function to edit a task
+  const editTask = async(updatedTask, destColumnId, destTaskIndex) => {
     const newTaskColumns = [...taskColumns];
     const destColumn = newTaskColumns.find((column) => column.id === destColumnId);
     destColumn.tasks.splice(destTaskIndex, 1, updatedTask);
     setTaskColumns(newTaskColumns);
+
+    if (onUpdateColumns) {
+      await onUpdateColumns(newTaskColumns);
+    }
   };
 
-  const deleteTask = (taskId, columnId) => {
+  const deleteTask = async(taskId, columnId) => {
     const newTaskColumns = [...taskColumns];
     const column = newTaskColumns.find((col) => col.id === columnId);
     const taskIndex = column.tasks.findIndex((task) => task.id === taskId);
     column.tasks.splice(taskIndex, 1);
     setTaskColumns(newTaskColumns);
+    if (onUpdateColumns) {
+      await onUpdateColumns(newTaskColumns);
+    }
   };
-  
 
-  
-  
-    const value = {
-      taskColumns,
-      moveTask,
-      addTask,
-      editTask,
-      setTaskColumns,
-      deleteTask,
-    };
-  
-    return (
-      <TaskBoardContext.Provider value={value}>{children}</TaskBoardContext.Provider>
-    );
+  const value = {
+    taskColumns,
+    moveTask,
+    addTask,
+    editTask,
+    setTaskColumns,
+    deleteTask,
   };
-  
+
+  return (
+    <TaskBoardContext.Provider value={value}>{children}</TaskBoardContext.Provider>
+  );
+};

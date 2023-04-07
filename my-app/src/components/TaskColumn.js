@@ -20,7 +20,7 @@ const TaskColumn = ({ title, tasks, columnId }) => {
   
   const handleOpenAddTaskModal = () => {
     if (title === 'Open') {
-      console.log(hasNFT)
+      
       if (hasNFT) {
         setIsAddTaskModalOpen(true);
       } else {
@@ -69,7 +69,7 @@ const TaskColumn = ({ title, tasks, columnId }) => {
   
         if (item.columnId !== columnId) {
           const newIndex = tasks.length;
-          console.log(item.difficulty)
+  
           const draggedTask = {
             id: item.id,
             name: item.name,

@@ -34,4 +34,9 @@ contract ProjectManager is ERC721URIStorage, Ownable {
         projects[projectId].ipfsHash = newIpfsHash;
         emit ProjectUpdated(projectId, newIpfsHash);
     }
+
+    function getProjectIdCounter() public view returns (uint256) {
+        return projectIdCounter.current();
+    }
+
 }

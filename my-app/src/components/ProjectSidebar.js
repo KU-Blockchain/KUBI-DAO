@@ -47,7 +47,8 @@ const ProjectSidebar = ({ projects,selectedProject, onSelectProject, onCreatePro
       <Box flexGrow={1} overflowY="auto" pr={4}>
         <VStack spacing={4} align="start">
           {projects.map((project) => {
-            const isSelected = project.id === selectedProject.id;
+            const isSelected = selectedProject && project.id === selectedProject.id;
+
             return (
               <Button
                 key={project.id}
