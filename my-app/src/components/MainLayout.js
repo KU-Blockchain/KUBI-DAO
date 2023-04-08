@@ -22,23 +22,25 @@ const MainLayout = () => {
 
       for (let i = 1; i <= projectCount; i++) {
         const projectData = await contract.projects(i);
-        const projectId = projectData.id.toNumber(); // <-- get the project ID from the smart contract
+        const projectId = projectData.id.toNumber(); 
         const projectIpfsHash = projectData.ipfsHash;
-        const projectColumns = JSON.parse(await (await fetch(`https://ipfs.io/ipfs/${projectIpfsHash}`)).text());
+        const projectDataFromIPFS = JSON.parse(await (await fetch(`https://ipfs.io/ipfs/${projectIpfsHash}`)).text())
+        const projectName = projectDataFromIPFS.name;
+        const projectColumns = projectDataFromIPFS.columns;
         
         projectsData.push({
           id: projectId, 
-          name: `Project ${projectId}`,
+          name: projectName,
           columns: projectColumns,
         });
       }
 
       setProjects(projectsData);
+      setSelectedProject(projectsData[0]);
       
-      // Only select the first project if there is at least one project
-      if (projectsData.length > 0 && !selectedProject) {
-        handleSelectProject(projectsData[0].id);
-      }
+
+
+
     };
 
     loadInitialProject();
@@ -62,8 +64,14 @@ const MainLayout = () => {
       )
     );
 
+    const projectData = {
+      name: selectedProject.name,
+      columns: newColumns,
+    }
+    
+
     // Save project updates to IPFS and update the smart contract
-    const ipfsResult = await ipfs.add(JSON.stringify(newColumns));
+    const ipfsResult = await ipfs.add(JSON.stringify(projectData));
     const newIpfsHash = ipfsResult.path;
 
     const provider = new ethers.providers.JsonRpcProvider('https://rpc-mumbai.maticvigil.com/');
@@ -86,8 +94,12 @@ const MainLayout = () => {
       ],
     };
 
+    const projectData = {
+      name: newProject.name, // <-- Include project name in the data
+      columns: newProject.columns,
+    };
     // Save the new project to IPFS
-    const ipfsResult = await ipfs.add(JSON.stringify(newProject.columns));
+    const ipfsResult = await ipfs.add(JSON.stringify(projectData));
     const newIpfsHash = ipfsResult.path;
 
     // Create the project on the smart contract
