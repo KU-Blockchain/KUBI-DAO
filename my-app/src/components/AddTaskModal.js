@@ -8,22 +8,28 @@ import {
   ModalBody,
   ModalCloseButton,
   ModalContent,
-  ModalFooter,
   ModalHeader,
   ModalOverlay,
+  ModalFooter,
   VStack,
+  Select,
 } from '@chakra-ui/react';
 
 const AddTaskModal = ({ isOpen, onClose, onAddTask }) => {
   const [name, setName] = useState('');
   const [description, setDescription] = useState('');
-  const [kubixPayout, setKubixPayout] = useState('');
+  const [difficulty, setDifficulty] = useState('easy');
+  const [estHours, setEstHours] = useState(1);
+
+
+  
 
   const handleSubmit = () => {
-    onAddTask({ name, description, kubixPayout });
-    setName('');
+    onAddTask({ name, description, difficulty,estHours });
     setDescription('');
-    setKubixPayout('');
+    setName('');
+    setDifficulty('easy');
+    setEstHours(1);
     onClose();
   };
 
@@ -51,12 +57,25 @@ const AddTaskModal = ({ isOpen, onClose, onAddTask }) => {
                 onChange={(e) => setDescription(e.target.value)}
               />
             </FormControl>
-            <FormControl id="task-kubix-payout">
-              <FormLabel>Kubix Payout</FormLabel>
+            <FormControl id="task-difficulty">
+              <FormLabel>Difficulty</FormLabel>
+              <Select
+                value={difficulty}
+                onChange={(e) => setDifficulty(e.target.value)}
+              >
+                <option value="easy">Easy</option>
+                <option value="medium">Medium</option>
+                <option value="hard">Hard</option>
+                <option value="veryHard">Very Hard</option>
+              </Select>
+            </FormControl>
+            <FormControl id="task-estimated-hours">
+              <FormLabel>Estimated Hours</FormLabel>
               <Input
                 type="number"
-                value={kubixPayout}
-                onChange={(e) => setKubixPayout(e.target.value)}
+                min="1"
+                value={estHours}
+                onChange={(e) => setEstHours(Math.round(parseFloat(e.target.value)))}
               />
             </FormControl>
           </VStack>
@@ -75,3 +94,4 @@ const AddTaskModal = ({ isOpen, onClose, onAddTask }) => {
 };
 
 export default AddTaskModal;
+

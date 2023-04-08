@@ -21,26 +21,44 @@ import { useWeb3Context } from '../contexts/Web3Context';
 
 const TaskCardModal = ({ isOpen, onClose, task, columnId, onEditTask }) => {
   const [submission, setSubmission] = useState('');
-  const { moveTask} = useTaskBoard();
-  const { checkNFTOwnership } = useWeb3Context();
+  const { moveTask, deleteTask} = useTaskBoard();
+  const { hasNFT } = useWeb3Context();
 
-  const handleButtonClick = async () => {
+  const handleButtonClick =  () => {
     if (columnId === 'open') {
-      moveTask(task, columnId, 'inProgress', 0); // Move the task to the 'inProgress' column
-      onClose(); // Close the modal
+      
+      if (hasNFT) {
+        moveTask(task, columnId, 'inProgress', 0);
+        onClose();
+      } else {
+         alert('You must own an NFT to claim this task. Go to user to join ');
+      }
     }
     if (columnId === 'inProgress') {
-      moveTask(task, columnId, 'inReview', 0);
-      onClose();
+      
+      if (hasNFT) {
+        moveTask(task, columnId, 'inReview', 0);
+        onClose();
+      } else {
+         alert('You must own an NFT to submit. Go to user to join');
+      }
     }
     if (columnId === 'inReview') {
-      //const hasNFT = await checkNFTOwnership(); // Add this line
-      //if (hasNFT) {
+      
+      if (hasNFT) {
         moveTask(task, columnId, 'completed', 0);
         onClose();
-      //} else {
-      //  alert('You must own an NFT to complete the review');
-      //}
+      } else {
+         alert('You must own an NFT to complete the review. Go to user to join');
+      }
+    }
+    if (columnId === 'completed') {
+      if (hasNFT) {
+        deleteTask(task.id, columnId);
+      } else {
+        alert('You must own an NFT to delete task. Go to user to join');
+      }
+      
     }
   };
   const buttonText = () => {
@@ -61,7 +79,14 @@ const TaskCardModal = ({ isOpen, onClose, task, columnId, onEditTask }) => {
   const [isEditTaskModalOpen, setIsEditTaskModalOpen] = useState(false);
 
   const handleOpenEditTaskModal = () => {
-    setIsEditTaskModalOpen(true);
+    
+    
+    if (hasNFT) {
+      setIsEditTaskModalOpen(true);
+    } else {
+       alert('You must own an NFT to edit. Go to user to join');
+    }
+    
   };
 
   const handleCloseEditTaskModal = () => {
@@ -109,6 +134,7 @@ const TaskCardModal = ({ isOpen, onClose, task, columnId, onEditTask }) => {
           onClose={handleCloseEditTaskModal}
           onEditTask={onEditTask}
           task={task}
+          onDeleteTask={(taskId) => deleteTask(taskId, columnId)}
         />
       )}
     </>

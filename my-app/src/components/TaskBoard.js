@@ -5,7 +5,7 @@ import { HTML5Backend } from 'react-dnd-html5-backend';
 import { TaskBoardProvider, useTaskBoard } from '../contexts/TaskBoardContext';
 import TaskColumn from './TaskColumn';
 
-const TaskBoard = ({ columns, projectId, onUpdateColumns }) => {
+const TaskBoard = ({ columns}) => {
   const { taskColumns, setTaskColumns } = useTaskBoard();
   useEffect(() => {
     setTaskColumns(columns);

@@ -1,20 +1,32 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { AddIcon } from '@chakra-ui/icons';
-import { Box, Heading, IconButton, useDisclosure } from '@chakra-ui/react';
+import { Box, Heading, IconButton} from '@chakra-ui/react';
 import { useDrop } from 'react-dnd';
 import TaskCard from './TaskCard';
 import { useTaskBoard } from '../contexts/TaskBoardContext';
 import AddTaskModal from './AddTaskModal';
+import { useWeb3Context } from '../contexts/Web3Context';
 
 const TaskColumn = ({ title, tasks, columnId }) => {
   const { moveTask, addTask, editTask } = useTaskBoard();
   const [isAddTaskModalOpen, setIsAddTaskModalOpen] = useState(false);
+  const { hasNFT } = useWeb3Context();
+  const hasNFTRef = useRef(hasNFT);
 
+  useEffect(() => {
+    hasNFTRef.current = hasNFT;
+  }, [hasNFT]);
 
   
   const handleOpenAddTaskModal = () => {
     if (title === 'Open') {
-      setIsAddTaskModalOpen(true);
+      
+      if (hasNFT) {
+        setIsAddTaskModalOpen(true);
+      } else {
+         alert('You must own an NFT to add task. Go to user to join ');
+      }
+      
     }
     };
 
@@ -22,28 +34,48 @@ const TaskColumn = ({ title, tasks, columnId }) => {
       setIsAddTaskModalOpen(false);
     };
   
-    const handleAddTask = (newTask) => {
+    const handleAddTask = (updatedTask) => {
       if (title === 'Open') {
-        const updatedTask = { ...newTask, id: `task-${Date.now()}` };
+       
+        updatedTask = {
+          ...updatedTask,
+          id: `task-${Date.now()}`,
+          difficulty: updatedTask.difficulty, 
+          estHours: updatedTask.estHours, 
+        };
         addTask(updatedTask, columnId);
       }
     };
+    
 
     const handleEditTask = (updatedTask, taskIndex) => {
-      updatedTask = { ...updatedTask, id: `task-${Date.now()}` };
+      updatedTask = {
+        ...updatedTask,
+        id: `task-${Date.now()}`,
+        difficulty: updatedTask.difficulty, 
+        estHours: updatedTask.estHours, 
+      };
       editTask(updatedTask, columnId, taskIndex);
     };
   
     const [{ isOver }, drop] = useDrop(() => ({
       accept: 'task',
       drop: (item) => {
+        
+        if (!hasNFTRef.current) {
+          alert('You must own an NFT to move tasks. Go to user to join');
+          return;
+        }
+  
         if (item.columnId !== columnId) {
           const newIndex = tasks.length;
+  
           const draggedTask = {
             id: item.id,
             name: item.name,
             description: item.description,
-            kubixPayout: item.kubixPayout,
+            difficulty: item.difficulty,
+            estHours: item.estHours,
           };
           moveTask(draggedTask, item.columnId, columnId, newIndex);
         }
@@ -79,16 +111,19 @@ const TaskColumn = ({ title, tasks, columnId }) => {
         >
           
           {tasks.map((task, index) => (
+            
             <TaskCard
               key={task.id}
               id={task.id}
               name={task.name}
               description={task.description}
-              kubixPayout={task.kubixPayout}
+              difficulty={task.difficulty} 
+              estHours={task.estHours} 
               columnId={columnId}
-              onEditTask={(updatedTask) => handleEditTask(updatedTask, index)} // pass index value to handleEditTask
+              onEditTask={(updatedTask) => handleEditTask(updatedTask, index)}
             />
           ))}
+
         </Box>
         {title === 'Open' && (
           <AddTaskModal
