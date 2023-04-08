@@ -52,34 +52,44 @@ const MainLayout = () => {
   };
 
   const handleUpdateColumns = async (newColumns) => {
-    // Update state
-    setSelectedProject((prevSelectedProject) => ({
-      ...prevSelectedProject,
-      columns: newColumns,
-    }));
-
-    setProjects((prevProjects) =>
-      prevProjects.map((project) =>
-        project.id === selectedProject.id ? { ...project, columns: newColumns } : project
-      )
-    );
-
-    const projectData = {
-      name: selectedProject.name,
-      columns: newColumns,
-    }
-    
-
-    // Save project updates to IPFS and update the smart contract
-    const ipfsResult = await ipfs.add(JSON.stringify(projectData));
-    const newIpfsHash = ipfsResult.path;
-
+    // Fetch the latest version of the project data from IPFS and the smart contract
     const provider = new ethers.providers.JsonRpcProvider('https://rpc-mumbai.maticvigil.com/');
     const signer = new ethers.Wallet(process.env.NEXT_PUBLIC_PRIVATE_KEY, provider);
     const contract = new ethers.Contract("0xb8D2DCb0B048FeE36584896B4d06d780d5973f65", ProjectManagerArtifact.abi, signer);
-
+    const projectData = await contract.projects(selectedProject.id);
+    const projectIpfsHash = projectData.ipfsHash;
+    const latestProjectData = JSON.parse(await (await fetch(`https://ipfs.io/ipfs/${projectIpfsHash}`)).text());
+    console.log("checked for changes")
+    // Merge the latest version of the project data with the new columns
+    const mergedColumns = latestProjectData.columns.map((column) => {
+      const newColumn = newColumns.find((c) => c.id === column.id);
+      console.log("merged changes")
+      return newColumn ? { ...column, tasks: newColumn.tasks } : column;
+    });
+  
+    // Update state with the merged data
+    setSelectedProject((prevSelectedProject) => ({
+      ...prevSelectedProject,
+      columns: mergedColumns,
+    }));
+    setProjects((prevProjects) =>
+      prevProjects.map((project) =>
+        project.id === selectedProject.id ? { ...project, columns: mergedColumns } : project
+      )
+    );
+  
+    // Save the updated project data to IPFS and the smart contract
+    const projectDataToUpdate = {
+      name: selectedProject.name,
+      columns: mergedColumns,
+    };
+    const ipfsResult = await ipfs.add(JSON.stringify(projectDataToUpdate));
+    const newIpfsHash = ipfsResult.path;
     await contract.updateProject(selectedProject.id, newIpfsHash);
+    console.log("updated project on smart contract")
   };
+  
+  
 
   const handleCreateProject = async (projectName) => {
     const newProject = {
