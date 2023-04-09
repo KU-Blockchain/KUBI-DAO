@@ -3,8 +3,6 @@ import Web3 from "web3";
 import DirectDemocracyTokenArtifact from "../abi/DirectDemocracyToken.json";
 import KUBIMembershipNFTArtifact from "../abi/KUBIMembershipNFT.json";
 import ProjectManagerArtifact from "../abi/ProjectManager.json";
-import { ethers } from "ethers";
-import ipfs from "../db/ipfs";
 import { useDataBaseContext } from "@/contexts/DataBaseContext";
 
 import {
@@ -32,7 +30,7 @@ const User = () => {
   const [nftBalance, setNftBalance] = useState(0);
   const [deployedContract, setDeployedContract] = useState(null);
 
-  const { userDetails, setUserDetails, account, setAccount, fetchUserDetails } = useDataBaseContext();
+  const { userDetails, setUserDetails, account, setAccount, fetchUserDetails, addUserData } = useDataBaseContext();
 
 
 
@@ -144,34 +142,10 @@ const User = () => {
         isClosable: true
       });
     }
-    try {
-      const provider = new ethers.providers.JsonRpcProvider('https://rpc-mumbai.maticvigil.com/');
-      const signer = new ethers.Wallet(process.env.NEXT_PUBLIC_PRIVATE_KEY, provider);
-      const contract = new ethers.Contract(PMContract, ProjectManagerArtifact.abi, signer);
-    
-      // Fetch the accounts data IPFS hash from the smart contract
-      const accountsDataIpfsHash = await contract.accountsDataIpfsHash();
-      let accountsDataJson = {};
-    
-      // If the IPFS hash is not empty, fetch the JSON data
-      if (accountsDataIpfsHash !== '') {
-        accountsDataJson = await (await fetch(`https://ipfs.io/ipfs/${accountsDataIpfsHash}`)).json();
-      }
-    
-      // Add the new user data to the existing accounts data
-      accountsDataJson[account] = {
-        name,
-        username,
-        email
-      };
-    
-      // Save the updated accounts data to IPFS
-      const ipfsResult = await ipfs.add(JSON.stringify(accountsDataJson));
-      const newIpfsHash = ipfsResult.path;
-    
-      // Update the accounts data IPFS hash in the smart contract
-      await contract.updateAccountsData(newIpfsHash);
-    
+
+    //adds user data to ipfs and smart contract
+    try{
+      addUserData(name,username,email);
       toast({
         title: "Success",
         description: "Successfully added user information",
@@ -179,6 +153,7 @@ const User = () => {
         duration: 5000,
         isClosable: true
       });
+
     } catch (error) {
       console.error(error);
       toast({
@@ -189,8 +164,6 @@ const User = () => {
         isClosable: true
       });
     }
-    
-    
 
 
   };
