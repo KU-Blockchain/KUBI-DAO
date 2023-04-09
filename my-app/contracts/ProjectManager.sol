@@ -16,9 +16,11 @@ contract ProjectManager is ERC721URIStorage, Ownable {
     }
 
     mapping(uint256 => Project) public projects;
+    string public accountsDataIpfsHash;
 
     event ProjectCreated(uint256 indexed projectId, string ipfsHash);
     event ProjectUpdated(uint256 indexed projectId, string newIpfsHash);
+    event AccountsDataUpdated(string newIpfsHash);
 
     constructor() ERC721("ProjectManager", "PM") {}
 
@@ -35,8 +37,12 @@ contract ProjectManager is ERC721URIStorage, Ownable {
         emit ProjectUpdated(projectId, newIpfsHash);
     }
 
+    function updateAccountsData(string memory newIpfsHash) public onlyOwner {
+        accountsDataIpfsHash = newIpfsHash;
+        emit AccountsDataUpdated(newIpfsHash);
+    }
+
     function getProjectIdCounter() public view returns (uint256) {
         return projectIdCounter.current();
     }
-
 }

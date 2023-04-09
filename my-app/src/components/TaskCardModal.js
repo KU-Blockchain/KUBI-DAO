@@ -13,6 +13,7 @@ import {
   ModalOverlay,
   Text,
   Box,
+  VStack,
 } from '@chakra-ui/react';
 import { CheckIcon } from '@chakra-ui/icons';
 import EditTaskModal from './EditTaskModal';
@@ -37,7 +38,7 @@ const TaskCardModal = ({ isOpen, onClose, task, columnId, onEditTask }) => {
     if (columnId === 'inProgress') {
       
       if (hasNFT) {
-        moveTask(task, columnId, 'inReview', 0);
+        moveTask(task, columnId, 'inReview', 0, submission);
         onClose();
       } else {
          alert('You must own an NFT to submit. Go to user to join');
@@ -101,31 +102,52 @@ const TaskCardModal = ({ isOpen, onClose, task, columnId, onEditTask }) => {
           <ModalHeader>{task.name}</ModalHeader>
           <ModalCloseButton />
           <ModalBody>
-            
-            <Box>{task.description}</Box>
-            <Text fontWeight="bold">KUBIX Payout: {task.kubixPayout}</Text>
-            {columnId === 'inProgress' && (
-              <FormControl mt={4}>
-                <FormLabel>Submission:</FormLabel>
-                <Input
-                  placeholder="Type your submission here"
-                  value={submission}
-                  onChange={(e) => setSubmission(e.target.value)}
-                />
-              </FormControl>
-            )}
+            <VStack spacing={4} align="start">
+              <Box>
+                <Text fontWeight="bold" fontSize="lg">
+                  Description:
+                </Text>
+                <Text>{task.description}</Text>
+              </Box>
+              {columnId === 'inProgress' && (
+                <FormControl>
+                  <FormLabel fontWeight="bold" fontSize="lg">
+                    Submission:
+                  </FormLabel>
+                  <Input
+                    placeholder="Type your submission here"
+                    value={submission}
+                    onChange={(e) => setSubmission(e.target.value)}
+                  />
+                </FormControl>
+              )}
+              {(columnId === 'inReview' || columnId === 'completed') && (
+                <Box>
+                  <Text fontWeight="bold" fontSize="lg">
+                    Submission:
+                  </Text>
+                  <Text>{task.submission}</Text>
+                </Box>
+              )}
+            </VStack>
           </ModalBody>
-          <ModalFooter>
-            {columnId === 'open' && (
-              <Button variant="outline" onClick={handleOpenEditTaskModal}>
-                Edit
+          <ModalFooter borderTop="1px solid" borderColor="gray.200" py={2}>
+            <Box flexGrow={1}>
+              <Text fontWeight="bold" fontSize="m">
+                KUBIX: {task.kubixPayout}
+              </Text>
+            </Box>
+            <Box>
+              {columnId === 'open' && (
+                <Button variant="outline" onClick={handleOpenEditTaskModal} mr={2}>
+                  Edit
+                </Button>
+              )}
+              <Button onClick={handleButtonClick} colorScheme="teal">
+                {buttonText()}
               </Button>
-            )}
-            <Button onClick={handleButtonClick} colorScheme="teal" ml="auto">
-              {buttonText()}
-            </Button>
+            </Box>
           </ModalFooter>
-
         </ModalContent>
       </Modal>
       {columnId === 'open' && (
@@ -139,6 +161,8 @@ const TaskCardModal = ({ isOpen, onClose, task, columnId, onEditTask }) => {
       )}
     </>
   ) : null;
+  
+  
 };
 
 export default TaskCardModal;

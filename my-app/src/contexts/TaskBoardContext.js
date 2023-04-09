@@ -13,7 +13,7 @@ export const TaskBoardProvider = ({ children, initialColumns, onColumnChange, on
     setTaskColumns(initialColumns);
   }, [initialColumns]);
 
-  const moveTask = (draggedTask, sourceColumnId, destColumnId, newIndex) => {
+  const moveTask = (draggedTask, sourceColumnId, destColumnId, newIndex, submissionData) => {
     const newTaskColumns = [...taskColumns];
 
     const sourceColumn = newTaskColumns.find((column) => column.id === sourceColumnId);
@@ -28,6 +28,7 @@ export const TaskBoardProvider = ({ children, initialColumns, onColumnChange, on
       description: draggedTask.description,
       difficulty: draggedTask.difficulty,
       estHours: draggedTask.estHours,
+      submission: destColumnId === 'inReview' ? submissionData : draggedTask.submission,
     };
 
     destColumn.tasks.splice(newIndex, 0, updatedTask);
