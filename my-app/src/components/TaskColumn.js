@@ -118,7 +118,8 @@ const TaskColumn = ({ title, tasks, columnId }) => {
               name={task.name}
               description={task.description}
               difficulty={task.difficulty} 
-              estHours={task.estHours} 
+              estHours={task.estHours}
+              submission={task.submission} 
               columnId={columnId}
               onEditTask={(updatedTask) => handleEditTask(updatedTask, index)}
             />

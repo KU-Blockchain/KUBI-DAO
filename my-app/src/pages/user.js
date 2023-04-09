@@ -3,6 +3,8 @@ import Web3 from "web3";
 import DirectDemocracyTokenArtifact from "../abi/DirectDemocracyToken.json";
 import KUBIMembershipNFTArtifact from "../abi/KUBIMembershipNFT.json";
 import ProjectManagerArtifact from "../abi/ProjectManager.json";
+import { ethers } from "ethers";
+import ipfs from "../db/ipfs";
 
 import {
   Box,
@@ -14,6 +16,7 @@ import {
   useToast,
 } from "@chakra-ui/react";
 
+const PMContract= "0x9C5ba7F2Fa8a951E982B4d9C87A0447522CfBFC2"
 const contractAddress = "0x9B5AE4442654281438aFD95c54C212e1eb5cEB2c";
 const kubiMembershipNFTAddress = "0x9F15cEf6E7bc4B6a290435A598a759DbE72b41b5";
 
@@ -21,6 +24,8 @@ const User = () => {
   const [web3, setWeb3] = useState(null);
   const [account, setAccount] = useState("");
   const [email, setEmail] = useState("");
+  const [username, setUsername] = useState("");
+  const [name, setName] = useState("");
   const [contract, setContract] = useState(null);
   const [balance, setBalance] = useState(0);
   const [kubiMembershipNFTContract, setKUBIMembershipNFTContract] = useState(null);
@@ -127,6 +132,55 @@ const User = () => {
         isClosable: true
       });
     }
+    try {
+      const provider = new ethers.providers.JsonRpcProvider('https://rpc-mumbai.maticvigil.com/');
+      const signer = new ethers.Wallet(process.env.NEXT_PUBLIC_PRIVATE_KEY, provider);
+      const contract = new ethers.Contract(PMContract, ProjectManagerArtifact.abi, signer);
+    
+      // Fetch the accounts data IPFS hash from the smart contract
+      const accountsDataIpfsHash = await contract.accountsDataIpfsHash();
+      let accountsDataJson = {};
+    
+      // If the IPFS hash is not empty, fetch the JSON data
+      if (accountsDataIpfsHash !== '') {
+        accountsDataJson = await (await fetch(`https://ipfs.io/ipfs/${accountsDataIpfsHash}`)).json();
+      }
+    
+      // Add the new user data to the existing accounts data
+      accountsDataJson[account] = {
+        name,
+        username,
+        email
+      };
+    
+      // Save the updated accounts data to IPFS
+      const ipfsResult = await ipfs.add(JSON.stringify(accountsDataJson));
+      const newIpfsHash = ipfsResult.path;
+    
+      // Update the accounts data IPFS hash in the smart contract
+      await contract.updateAccountsData(newIpfsHash);
+    
+      toast({
+        title: "Success",
+        description: "Successfully added user information",
+        status: "success",
+        duration: 5000,
+        isClosable: true
+      });
+    } catch (error) {
+      console.error(error);
+      toast({
+        title: "Error",
+        description: "Error adding user information",
+        status: "error",
+        duration: 5000,
+        isClosable: true
+      });
+    }
+    
+    
+
+
   };
 
   return (
@@ -147,6 +201,14 @@ const User = () => {
       <FormControl id="email">
         <FormLabel>Email</FormLabel>
         <Input type="email" placeholder="Email" value={email} onChange={(event) => setEmail(event.target.value)} />
+      </FormControl>
+      <FormControl id="name">
+        <FormLabel>Name</FormLabel>
+        <Input type="text" placeholder="Name" value={name} onChange={(event) => setName(event.target.value)} />
+      </FormControl>
+      <FormControl id="username">
+        <FormLabel>Username</FormLabel>
+        <Input type="text" placeholder="Username" value={username} onChange={(event) => setUsername(event.target.value)} />
       </FormControl>
       <Button colorScheme="blue" onClick={handleJoin}>
         Join

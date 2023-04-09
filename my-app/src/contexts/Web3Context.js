@@ -10,7 +10,7 @@ export const useWeb3Context = () => {
 };
 
 const CONTRACT_ADDRESS = '0x9F15cEf6E7bc4B6a290435A598a759DbE72b41b5';
-const INFURA_PROJECT_ID = process.env.REACT_APP_INFURA_PROJECT_ID;
+const INFURA_PROJECT_ID = process.env.NEXT_PUBIC_INFURA_PROJECT_ID;
 
 export const Web3Provider = ({ children }) => {
   const [provider, setProvider] = useState(null);

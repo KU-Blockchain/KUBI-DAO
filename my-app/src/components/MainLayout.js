@@ -15,7 +15,7 @@ const MainLayout = () => {
     const loadInitialProject = async () => {
       const provider = new ethers.providers.JsonRpcProvider('https://rpc-mumbai.maticvigil.com/');
       const signer = new ethers.Wallet(process.env.NEXT_PUBLIC_PRIVATE_KEY, provider);
-      const contract = new ethers.Contract("0xb8D2DCb0B048FeE36584896B4d06d780d5973f65", ProjectManagerArtifact.abi, signer);
+      const contract = new ethers.Contract("0x9C5ba7F2Fa8a951E982B4d9C87A0447522CfBFC2", ProjectManagerArtifact.abi, signer);
 
       const projectCount = await contract.getProjectIdCounter();
       const projectsData = [];
@@ -55,7 +55,7 @@ const MainLayout = () => {
     // Fetch the latest version of the project data from IPFS and the smart contract
     const provider = new ethers.providers.JsonRpcProvider('https://rpc-mumbai.maticvigil.com/');
     const signer = new ethers.Wallet(process.env.NEXT_PUBLIC_PRIVATE_KEY, provider);
-    const contract = new ethers.Contract("0xb8D2DCb0B048FeE36584896B4d06d780d5973f65", ProjectManagerArtifact.abi, signer);
+    const contract = new ethers.Contract("0x9C5ba7F2Fa8a951E982B4d9C87A0447522CfBFC2", ProjectManagerArtifact.abi, signer);
     const projectData = await contract.projects(selectedProject.id);
     const projectIpfsHash = projectData.ipfsHash;
     const latestProjectData = JSON.parse(await (await fetch(`https://ipfs.io/ipfs/${projectIpfsHash}`)).text());
@@ -115,7 +115,7 @@ const MainLayout = () => {
     // Create the project on the smart contract
     const provider = new ethers.providers.JsonRpcProvider('https://rpc-mumbai.maticvigil.com/');
     const signer = new ethers.Wallet(process.env.NEXT_PUBLIC_PRIVATE_KEY, provider);
-    const contract = new ethers.Contract("0xb8D2DCb0B048FeE36584896B4d06d780d5973f65", ProjectManagerArtifact.abi, signer);
+    const contract = new ethers.Contract("0x9C5ba7F2Fa8a951E982B4d9C87A0447522CfBFC2", ProjectManagerArtifact.abi, signer);
 
     await contract.createProject(newIpfsHash);
 
