@@ -5,6 +5,7 @@ import KUBIMembershipNFTArtifact from "../abi/KUBIMembershipNFT.json";
 import ProjectManagerArtifact from "../abi/ProjectManager.json";
 import { ethers } from "ethers";
 import ipfs from "../db/ipfs";
+import { useDataBaseContext } from "@/contexts/DataBaseContext";
 
 import {
   Box,
@@ -22,7 +23,6 @@ const kubiMembershipNFTAddress = "0x9F15cEf6E7bc4B6a290435A598a759DbE72b41b5";
 
 const User = () => {
   const [web3, setWeb3] = useState(null);
-  const [account, setAccount] = useState("");
   const [email, setEmail] = useState("");
   const [username, setUsername] = useState("");
   const [name, setName] = useState("");
@@ -31,8 +31,20 @@ const User = () => {
   const [kubiMembershipNFTContract, setKUBIMembershipNFTContract] = useState(null);
   const [nftBalance, setNftBalance] = useState(0);
   const [deployedContract, setDeployedContract] = useState(null);
+
+  const { userDetails, setUserDetails, account, setAccount, fetchUserDetails } = useDataBaseContext();
+
+
+
   
   const toast = useToast();
+
+  
+
+  useEffect(() => {
+    fetchUserDetails();
+  }, [web3, account]);
+  
 
   const connectWallet = async () => {
     if (window.ethereum) {
@@ -184,7 +196,7 @@ const User = () => {
   };
 
   return (
-    <Box>
+    <Box paddingLeft={4}>
       {web3 && (
         <Text color="green.500" fontWeight="bold">
           Connected to blockchain network
@@ -193,31 +205,29 @@ const User = () => {
       <Text>Account: {account}</Text>
       <Text>KUBI Token Balance: {balance}</Text>
       <Text>Membership NFT Balance: {nftBalance}</Text>
-      {contract && (
-        <Text color="blue.500" fontWeight="bold">
-          Connected to DirectDemocracyToken Contract
-        </Text>
-      )}
+      <Text>Username: {userDetails && userDetails.username}</Text>
+    
       <FormControl id="email">
         <FormLabel>Email</FormLabel>
         <Input type="email" placeholder="Email" value={email} onChange={(event) => setEmail(event.target.value)} />
       </FormControl>
-      <FormControl id="name">
+      <FormControl id="name" mt={4}>
         <FormLabel>Name</FormLabel>
         <Input type="text" placeholder="Name" value={name} onChange={(event) => setName(event.target.value)} />
       </FormControl>
-      <FormControl id="username">
+      <FormControl id="username" mt={4}>
         <FormLabel>Username</FormLabel>
         <Input type="text" placeholder="Username" value={username} onChange={(event) => setUsername(event.target.value)} />
       </FormControl>
-      <Button colorScheme="blue" onClick={handleJoin}>
+      <Button colorScheme="blue" mt={4} onClick={handleJoin}>
         Join
       </Button>
-      <Button colorScheme="teal" onClick={deployContract}>
+      <Button colorScheme="teal" mt={4} onClick={deployContract}>
         Deploy Project Manager Contract
       </Button>
-      {deployedContract && <Text>Contract address: {deployedContract.options.address}</Text>}
-    </Box>
+      {deployedContract && <Text mt={4}>Contract address: {deployedContract.options.address}</Text>}
+    </Box> 
+    
   );
 };
 

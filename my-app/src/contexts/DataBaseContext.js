@@ -13,12 +13,16 @@ export const DataBaseProvider = ({ children }) => {
 
     const [projects, setProjects] = useState([]);
     const [selectedProject, setSelectedProject] = useState(null);
+    const [userDetails, setUserDetails] = useState(null);
+    const [account, setAccount] = useState("");
+
+    const PMContract= "0x9C5ba7F2Fa8a951E982B4d9C87A0447522CfBFC2"
 
     useEffect(() => {
         const loadInitialProject = async () => {
         const provider = new ethers.providers.JsonRpcProvider('https://rpc-mumbai.maticvigil.com/');
         const signer = new ethers.Wallet(process.env.NEXT_PUBLIC_PRIVATE_KEY, provider);
-        const contract = new ethers.Contract("0x9C5ba7F2Fa8a951E982B4d9C87A0447522CfBFC2", ProjectManagerArtifact.abi, signer);
+        const contract = new ethers.Contract(PMContract, ProjectManagerArtifact.abi, signer);
 
         const projectCount = await contract.getProjectIdCounter();
         const projectsData = [];
@@ -51,7 +55,7 @@ export const DataBaseProvider = ({ children }) => {
         // Fetch the latest version of the project data from IPFS and the smart contract
         const provider = new ethers.providers.JsonRpcProvider('https://rpc-mumbai.maticvigil.com/');
         const signer = new ethers.Wallet(process.env.NEXT_PUBLIC_PRIVATE_KEY, provider);
-        const contract = new ethers.Contract("0x9C5ba7F2Fa8a951E982B4d9C87A0447522CfBFC2", ProjectManagerArtifact.abi, signer);
+        const contract = new ethers.Contract(PMContract, ProjectManagerArtifact.abi, signer);
         const projectData = await contract.projects(selectedProject.id);
         const projectIpfsHash = projectData.ipfsHash;
         const latestProjectData = JSON.parse(await (await fetch(`https://ipfs.io/ipfs/${projectIpfsHash}`)).text());
@@ -109,13 +113,35 @@ export const DataBaseProvider = ({ children }) => {
         // Create the project on the smart contract
         const provider = new ethers.providers.JsonRpcProvider('https://rpc-mumbai.maticvigil.com/');
         const signer = new ethers.Wallet(process.env.NEXT_PUBLIC_PRIVATE_KEY, provider);
-        const contract = new ethers.Contract("0x9C5ba7F2Fa8a951E982B4d9C87A0447522CfBFC2", ProjectManagerArtifact.abi, signer);
+        const contract = new ethers.Contract(PMContract, ProjectManagerArtifact.abi, signer);
 
         await contract.createProject(newIpfsHash);
 
         setProjects([...projects, newProject]);
         handleSelectProject(newProject.id);
     };
+
+    const fetchUserDetails = async () => {
+        if (!web3 || !account) return;
+        try {
+          const provider = new ethers.providers.JsonRpcProvider('https://rpc-mumbai.maticvigil.com/');
+          const signer = new ethers.Wallet(process.env.NEXT_PUBLIC_PRIVATE_KEY, provider);
+          const contract = new ethers.Contract(PMContract, ProjectManagerArtifact.abi, signer);
+      
+          // Fetch the accounts data IPFS hash from the smart contract
+          const accountsDataIpfsHash = await contract.accountsDataIpfsHash();
+      
+          // If the IPFS hash is not empty, fetch the JSON data
+          if (accountsDataIpfsHash !== '') {
+            const accountsDataJson = await (await fetch(`https://ipfs.io/ipfs/${accountsDataIpfsHash}`)).json();
+            if (accountsDataJson[account]) {
+              setUserDetails(accountsDataJson[account]);
+            }
+          }
+        } catch (error) {
+          console.error("Error fetching user details:", error);
+        }
+      };
 
     return (
         <DataBaseContext.Provider
@@ -126,6 +152,11 @@ export const DataBaseProvider = ({ children }) => {
             setSelectedProject,
             handleUpdateColumns,
             handleCreateProject,
+            userDetails,
+            setUserDetails,
+            account,
+            setAccount,
+            fetchUserDetails,
         }}
         >
         {children}
