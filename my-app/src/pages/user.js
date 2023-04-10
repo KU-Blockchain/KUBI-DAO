@@ -115,6 +115,7 @@ const User = () => {
   };
   useEffect(() => { fetchNFTBalance() }, [kubiMembershipNFTContract, account]);
 
+  //mint nft 
 
 
   const mintMembershipNFT = async () => {
