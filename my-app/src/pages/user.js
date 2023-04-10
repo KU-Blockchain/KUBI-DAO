@@ -3,6 +3,7 @@ import Web3 from "web3";
 import DirectDemocracyTokenArtifact from "../abi/DirectDemocracyToken.json";
 import KUBIMembershipNFTArtifact from "../abi/KUBIMembershipNFT.json";
 import ProjectManagerArtifact from "../abi/ProjectManager.json";
+import ExecNFTArtifiact from "../abi/KUBIExecutiveNFT.json";
 import { useDataBaseContext } from "@/contexts/DataBaseContext";
 
 import {
@@ -18,6 +19,7 @@ import {
 const PMContract= "0x9C5ba7F2Fa8a951E982B4d9C87A0447522CfBFC2"
 const contractAddress = "0x9B5AE4442654281438aFD95c54C212e1eb5cEB2c";
 const kubiMembershipNFTAddress = "0x9F15cEf6E7bc4B6a290435A598a759DbE72b41b5";
+const KUBIExecutiveNFTAddress = "0x1F3Ae002f2058470FC5C72C70809F31Db3d93fBb";
 
 const User = () => {
   const [web3, setWeb3] = useState(null);
@@ -28,7 +30,8 @@ const User = () => {
   const [balance, setBalance] = useState(0);
   const [kubiMembershipNFTContract, setKUBIMembershipNFTContract] = useState(null);
   const [nftBalance, setNftBalance] = useState(0);
-  const [deployedContract, setDeployedContract] = useState(null);
+  const [deployedPMContract, setDeployedPMContract] = useState(null);
+  const [deployedKUBIXContract, setDeployedKUBIXContract] = useState(null);
 
   const { userDetails, setUserDetails, account, setAccount, fetchUserDetails, addUserData } = useDataBaseContext();
 
@@ -64,7 +67,7 @@ const User = () => {
 
   useEffect(() => { connectWallet() }, []);
 
-  const deployContract = async () => {
+  const deployPMContract = async () => {
     if (!web3 || !account) return;
   
     const projectManagerContract = new web3.eth.Contract(ProjectManagerArtifact.abi);
@@ -75,14 +78,31 @@ const User = () => {
   
     try {
       const instance = await projectManagerContract.deploy(deployOptions).send({ from: account });
-      setDeployedContract(instance);
+      setDeployedPMContract(instance);
       console.log("Contract deployed at address:", instance.options.address);
     } catch (error) {
       console.error("Error deploying contract:", error);
     }
   };
   
-
+  const deployKUBIXContract = async () => {
+    if (!web3 || !account) return;
+  
+    const KUBIXContract = new web3.eth.Contract(ExecNFTArtifiact.abi);
+    const deployOptions = {
+      data: ExecNFTArtifiact.bytecode,
+      arguments: ["https://ipfs.io/ipfs/QmXrAL39tPc8wWhvuDNNp9rbaWwHPnHhZC28npMGVJvm3N"
+    ],
+    };
+  
+    try {
+      const instance = await KUBIXContract.deploy(deployOptions).send({ from: account });
+      setDeployedKUBIXContract(instance);
+      console.log("Contract deployed at address:", instance.options.address);
+    } catch (error) {
+      console.error("Error deploying contract:", error);
+    }
+  };
 
 
   const fetchBalance = async () => {
@@ -95,6 +115,8 @@ const User = () => {
   };
   useEffect(() => { fetchNFTBalance() }, [kubiMembershipNFTContract, account]);
 
+
+
   const mintMembershipNFT = async () => {
     if (!kubiMembershipNFTContract) return;
     try {
@@ -105,6 +127,8 @@ const User = () => {
       toast({ title: "Error", description: "Error minting Membership NFT", status: "error", duration: 5000, isClosable: true });
     }
   };
+
+
 
   const handleJoin = async () => {
     if (!email.endsWith("@ku.edu")) {
@@ -195,10 +219,14 @@ const User = () => {
       <Button colorScheme="blue" mt={4} onClick={handleJoin}>
         Join
       </Button>
-      <Button colorScheme="teal" mt={4} onClick={deployContract}>
+      <Button colorScheme="teal" mt={4} onClick={deployPMContract}>
         Deploy Project Manager Contract
       </Button>
-      {deployedContract && <Text mt={4}>Contract address: {deployedContract.options.address}</Text>}
+      {deployedPMContract && <Text mt={4}>Contract address: {deployedPMContract.options.address}</Text>}
+      <Button colorScheme="teal" mt={4} onClick={deployKUBIXContract}>
+        Deploy Executive NFT Contract
+      </Button>
+      {deployedKUBIXContract && <Text mt={4}>Contract address: {deployedKUBIXContract.options.address}</Text>}
     </Box> 
     
   );

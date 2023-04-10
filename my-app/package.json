@@ -15,6 +15,7 @@
     "@chakra-ui/react": "^2.5.4",
     "@emotion/react": "^11.10.6",
     "@emotion/styled": "^11.10.6",
+    "@mui/material": "^5.11.16",
     "@openzeppelin/contracts": "^4.8.2",
     "@walletconnect/web3-provider": "^1.8.0",
     "dotenv": "^16.0.3",
