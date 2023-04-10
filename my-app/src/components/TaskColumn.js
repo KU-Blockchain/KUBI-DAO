@@ -10,10 +10,9 @@ import { useWeb3Context } from '../contexts/Web3Context';
 const TaskColumn = ({ title, tasks, columnId }) => {
   const { moveTask, addTask, editTask } = useTaskBoard();
   const [isAddTaskModalOpen, setIsAddTaskModalOpen] = useState(false);
-  const { hasExecNFT,hasMemberNFT } = useWeb3Context();
+  const { hasExecNFT,hasMemberNFT,account } = useWeb3Context();
   const hasMemberNFTRef = useRef(hasMemberNFT);
   const hasExecNFTRef = useRef(hasExecNFT);
-  console.log('TaskColumn hasMemberNFT:', hasMemberNFT, 'hasExecNFT:', hasExecNFT);
 
 
   useEffect(() => {
@@ -43,16 +42,17 @@ const TaskColumn = ({ title, tasks, columnId }) => {
   
     const handleAddTask = (updatedTask) => {
       if (title === 'Open') {
-       
         updatedTask = {
           ...updatedTask,
           id: `task-${Date.now()}`,
-          difficulty: updatedTask.difficulty, 
-          estHours: updatedTask.estHours, 
+          difficulty: updatedTask.difficulty,
+          estHours: updatedTask.estHours,
+          claimedBy: "", 
         };
         addTask(updatedTask, columnId);
       }
     };
+    
     
 
     const handleEditTask = (updatedTask, taskIndex) => {
@@ -69,6 +69,7 @@ const TaskColumn = ({ title, tasks, columnId }) => {
       accept: 'task',
       drop: (item) => {
         
+        
         if (!hasMemberNFTRef.current && title != 'Completed') {
           alert('You must own an NFT to move tasks. Go to user to join');
           return;
@@ -77,18 +78,22 @@ const TaskColumn = ({ title, tasks, columnId }) => {
           alert('You must be an Executive to review tasks.');
           return;
         }
+        
   
         if (item.columnId !== columnId) {
           const newIndex = tasks.length;
-  
+          
+          const claimedByValue = title === 'In Progress' ? account : item.claimedBy;
           const draggedTask = {
+            ...item,
             id: item.id,
             name: item.name,
             description: item.description,
             difficulty: item.difficulty,
             estHours: item.estHours,
+            claimedBy: claimedByValue,
           };
-          moveTask(draggedTask, item.columnId, columnId, newIndex);
+          moveTask(draggedTask, item.columnId, columnId, newIndex, item.submission, claimedByValue);
         }
       },
       collect: (monitor) => ({
@@ -131,6 +136,7 @@ const TaskColumn = ({ title, tasks, columnId }) => {
               difficulty={task.difficulty} 
               estHours={task.estHours}
               submission={task.submission} 
+              claimedBy={task.claimedBy}
               columnId={columnId}
               onEditTask={(updatedTask) => handleEditTask(updatedTask, index)}
             />

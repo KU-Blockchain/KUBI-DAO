@@ -23,7 +23,7 @@ import { useWeb3Context } from '../contexts/Web3Context';
 const TaskCardModal = ({ isOpen, onClose, task, columnId, onEditTask }) => {
   const [submission, setSubmission] = useState('');
   const { moveTask, deleteTask} = useTaskBoard();
-  const { hasExecNFT,hasMemberNFT } = useWeb3Context();
+  const { hasExecNFT,hasMemberNFT, account } = useWeb3Context();
 
 
 
@@ -31,8 +31,7 @@ const TaskCardModal = ({ isOpen, onClose, task, columnId, onEditTask }) => {
     if (columnId === 'open') {
       
       if (hasMemberNFT) {
-        moveTask(task, columnId, 'inProgress', 0);
-        onClose();
+        moveTask(task, columnId, 'inProgress', 0, " ", account);
       } else {
          alert('You must own an NFT to claim this task. Go to user to join ');
       }
@@ -94,6 +93,7 @@ const TaskCardModal = ({ isOpen, onClose, task, columnId, onEditTask }) => {
   const handleCloseEditTaskModal = () => {
     setIsEditTaskModalOpen(false);
   };
+  console.log(task.claimedBy)
 
   return task ? (
     <>
@@ -110,6 +110,14 @@ const TaskCardModal = ({ isOpen, onClose, task, columnId, onEditTask }) => {
                 </Text>
                 <Text>{task.description}</Text>
               </Box>
+              {task.claimedBy && (
+                <Box>
+                  <Text fontWeight="bold" fontSize="lg">
+                    Claimed By:
+                  </Text>
+                  <Text>{task.claimedBy}</Text>
+                </Box>
+              )}
               {columnId === 'inProgress' && (
                 <FormControl>
                   <FormLabel fontWeight="bold" fontSize="lg">

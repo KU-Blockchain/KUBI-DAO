@@ -4,6 +4,7 @@ import ProjectSidebar from './ProjectSidebar';
 import TaskBoard from './TaskBoard';
 import { TaskBoardProvider } from '../contexts/TaskBoardContext';
 import { useDataBaseContext, DataBaseProvider } from '../contexts/DataBaseContext';
+import { useWeb3Context, Web3Provider } from '../contexts/Web3Context';
 
 
 const MainLayout = () => {
@@ -16,6 +17,7 @@ const MainLayout = () => {
     handleCreateProject,
   } = useDataBaseContext();
 
+  const {account}= useWeb3Context()
   
 
   const handleSelectProject = (projectId) => {
@@ -46,6 +48,7 @@ const MainLayout = () => {
             initialColumns={selectedProject.columns}
             onColumnChange={(newColumns) => handleUpdateColumns(newColumns)}
             onUpdateColumns={(newColumns) => handleUpdateColumns(newColumns)}
+            account={account}
           >
             <TaskBoard />
           </TaskBoardProvider>

@@ -3,6 +3,7 @@ import { ChakraProvider, extendTheme, Flex, Box } from "@chakra-ui/react";
 import NavBar from "../components/NavBar";
 import { Web3Provider } from "@/contexts/Web3Context";
 import { DataBaseProvider } from "@/contexts/DataBaseContext";
+import { TaskBoardProvider } from "@/contexts/TaskBoardContext";
 
 const theme = extendTheme({
   config: {

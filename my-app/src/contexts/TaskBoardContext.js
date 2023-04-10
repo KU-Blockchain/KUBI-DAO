@@ -1,4 +1,6 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
+import { useWeb3Context } from './Web3Context';
+
 
 const TaskBoardContext = createContext();
 
@@ -6,14 +8,14 @@ export const useTaskBoard = () => {
   return useContext(TaskBoardContext);
 };
 
-export const TaskBoardProvider = ({ children, initialColumns, onColumnChange, onUpdateColumns }) => {
+export const TaskBoardProvider = ({ children, initialColumns, onColumnChange, onUpdateColumns, account }) => {
   const [taskColumns, setTaskColumns] = useState(initialColumns);
 
   useEffect(() => {
     setTaskColumns(initialColumns);
   }, [initialColumns]);
 
-  const moveTask = (draggedTask, sourceColumnId, destColumnId, newIndex, submissionData) => {
+  const moveTask = (draggedTask, sourceColumnId, destColumnId, newIndex, submissionData, claimedBy) => {
     const newTaskColumns = [...taskColumns];
 
     const sourceColumn = newTaskColumns.find((column) => column.id === sourceColumnId);
@@ -29,6 +31,7 @@ export const TaskBoardProvider = ({ children, initialColumns, onColumnChange, on
       difficulty: draggedTask.difficulty,
       estHours: draggedTask.estHours,
       submission: destColumnId === 'inReview' ? submissionData : draggedTask.submission,
+      claimedBy: destColumnId === 'inProgress' ? claimedBy : (destColumnId === 'open' ? '' : draggedTask.claimedBy),
     };
 
     destColumn.tasks.splice(newIndex, 0, updatedTask);
