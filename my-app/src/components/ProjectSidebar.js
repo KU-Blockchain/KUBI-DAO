@@ -14,16 +14,16 @@ import { useWeb3Context } from '../contexts/Web3Context';
 const ProjectSidebar = ({ projects,selectedProject, onSelectProject, onCreateProject }) => {
   const [newProjectName, setNewProjectName] = useState('');
   const [showInput, setShowInput] = useState(false);
-  const { hasNFT} = useWeb3Context();
+  const { hasExecNFT} = useWeb3Context();
   
   const handleCreateProject = () => {
     
-      if (hasNFT) {
+      if (hasExecNFT) {
         onCreateProject(newProjectName);
         setNewProjectName('');
         setShowInput(false);
       } else {
-         alert('You must own an NFT to create project. Go to user to join ');
+         alert('You must be an executive to create project');
          setNewProjectName('');
          setShowInput(false);
       }
