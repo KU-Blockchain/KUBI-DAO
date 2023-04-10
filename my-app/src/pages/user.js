@@ -3,8 +3,7 @@ import Web3 from "web3";
 import DirectDemocracyTokenArtifact from "../abi/DirectDemocracyToken.json";
 import KUBIMembershipNFTArtifact from "../abi/KUBIMembershipNFT.json";
 import ProjectManagerArtifact from "../abi/ProjectManager.json";
-import { ethers } from "ethers";
-import ipfs from "../db/ipfs";
+import ExecNFTArtifiact from "../abi/KUBIExecutiveNFT.json";
 import { useDataBaseContext } from "@/contexts/DataBaseContext";
 
 import {
@@ -20,6 +19,7 @@ import {
 const PMContract= "0x9C5ba7F2Fa8a951E982B4d9C87A0447522CfBFC2"
 const contractAddress = "0x9B5AE4442654281438aFD95c54C212e1eb5cEB2c";
 const kubiMembershipNFTAddress = "0x9F15cEf6E7bc4B6a290435A598a759DbE72b41b5";
+const KUBIExecutiveNFTAddress = "0x1F3Ae002f2058470FC5C72C70809F31Db3d93fBb";
 
 const User = () => {
   const [web3, setWeb3] = useState(null);
@@ -30,9 +30,12 @@ const User = () => {
   const [balance, setBalance] = useState(0);
   const [kubiMembershipNFTContract, setKUBIMembershipNFTContract] = useState(null);
   const [nftBalance, setNftBalance] = useState(0);
-  const [deployedContract, setDeployedContract] = useState(null);
+  const [deployedPMContract, setDeployedPMContract] = useState(null);
+  const [deployedKUBIXContract, setDeployedKUBIXContract] = useState(null);
+  const [execNftContract, setExecNftContract] = useState(null);
+  const [execNftBalance, setExecNftBalance] = useState(0);
 
-  const { userDetails, setUserDetails, account, setAccount, fetchUserDetails } = useDataBaseContext();
+  const { userDetails, setUserDetails, account, setAccount, fetchUserDetails, addUserData } = useDataBaseContext();
 
 
 
@@ -66,7 +69,7 @@ const User = () => {
 
   useEffect(() => { connectWallet() }, []);
 
-  const deployContract = async () => {
+  const deployPMContract = async () => {
     if (!web3 || !account) return;
   
     const projectManagerContract = new web3.eth.Contract(ProjectManagerArtifact.abi);
@@ -77,14 +80,31 @@ const User = () => {
   
     try {
       const instance = await projectManagerContract.deploy(deployOptions).send({ from: account });
-      setDeployedContract(instance);
+      setDeployedPMContract(instance);
       console.log("Contract deployed at address:", instance.options.address);
     } catch (error) {
       console.error("Error deploying contract:", error);
     }
   };
   
-
+  const deployKUBIXContract = async () => {
+    if (!web3 || !account) return;
+  
+    const KUBIXContract = new web3.eth.Contract(ExecNFTArtifiact.abi);
+    const deployOptions = {
+      data: ExecNFTArtifiact.bytecode,
+      arguments: ["https://ipfs.io/ipfs/QmXrAL39tPc8wWhvuDNNp9rbaWwHPnHhZC28npMGVJvm3N"
+    ],
+    };
+  
+    try {
+      const instance = await KUBIXContract.deploy(deployOptions).send({ from: account });
+      setDeployedKUBIXContract(instance);
+      console.log("Contract deployed at address:", instance.options.address);
+    } catch (error) {
+      console.error("Error deploying contract:", error);
+    }
+  };
 
 
   const fetchBalance = async () => {
@@ -97,6 +117,7 @@ const User = () => {
   };
   useEffect(() => { fetchNFTBalance() }, [kubiMembershipNFTContract, account]);
 
+
   const mintMembershipNFT = async () => {
     if (!kubiMembershipNFTContract) return;
     try {
@@ -107,6 +128,33 @@ const User = () => {
       toast({ title: "Error", description: "Error minting Membership NFT", status: "error", duration: 5000, isClosable: true });
     }
   };
+
+  useEffect(() => {
+    if (web3) {
+      setExecNftContract(new web3.eth.Contract(ExecNFTArtifiact.abi, KUBIExecutiveNFTAddress));
+    }
+  }, [web3]);
+
+  const fetchExecNFTBalance = async () => {
+    if (execNftContract && account) {
+      setExecNftBalance(await execNftContract.methods.balanceOf(account).call());
+    }
+  };
+
+  useEffect(() => { fetchExecNFTBalance() }, [execNftContract, account]);
+
+  const mintExecutiveNFT = async () => {
+    if (!execNftContract) return;
+    try {
+      await execNftContract.methods.mint(account).send({ from: account });
+      toast({ title: "Success", description: "Successfully minted Executive NFT", status: "success", duration: 5000, isClosable: true });
+    } catch (error) {
+      console.error(error);
+      toast({ title: "Error", description: "Error minting Executive NFT", status: "error", duration: 5000, isClosable: true });
+    }
+  };
+
+
 
   const handleJoin = async () => {
     if (!email.endsWith("@ku.edu")) {
@@ -144,34 +192,10 @@ const User = () => {
         isClosable: true
       });
     }
-    try {
-      const provider = new ethers.providers.JsonRpcProvider('https://rpc-mumbai.maticvigil.com/');
-      const signer = new ethers.Wallet(process.env.NEXT_PUBLIC_PRIVATE_KEY, provider);
-      const contract = new ethers.Contract(PMContract, ProjectManagerArtifact.abi, signer);
-    
-      // Fetch the accounts data IPFS hash from the smart contract
-      const accountsDataIpfsHash = await contract.accountsDataIpfsHash();
-      let accountsDataJson = {};
-    
-      // If the IPFS hash is not empty, fetch the JSON data
-      if (accountsDataIpfsHash !== '') {
-        accountsDataJson = await (await fetch(`https://ipfs.io/ipfs/${accountsDataIpfsHash}`)).json();
-      }
-    
-      // Add the new user data to the existing accounts data
-      accountsDataJson[account] = {
-        name,
-        username,
-        email
-      };
-    
-      // Save the updated accounts data to IPFS
-      const ipfsResult = await ipfs.add(JSON.stringify(accountsDataJson));
-      const newIpfsHash = ipfsResult.path;
-    
-      // Update the accounts data IPFS hash in the smart contract
-      await contract.updateAccountsData(newIpfsHash);
-    
+
+    //adds user data to ipfs and smart contract
+    try{
+      addUserData(name,username,email);
       toast({
         title: "Success",
         description: "Successfully added user information",
@@ -179,6 +203,7 @@ const User = () => {
         duration: 5000,
         isClosable: true
       });
+
     } catch (error) {
       console.error(error);
       toast({
@@ -189,8 +214,6 @@ const User = () => {
         isClosable: true
       });
     }
-    
-    
 
 
   };
@@ -205,6 +228,7 @@ const User = () => {
       <Text>Account: {account}</Text>
       <Text>KUBI Token Balance: {balance}</Text>
       <Text>Membership NFT Balance: {nftBalance}</Text>
+      <Text>Executive NFT Balance: {execNftBalance}</Text>
       <Text>Username: {userDetails && userDetails.username}</Text>
     
       <FormControl id="email">
@@ -222,10 +246,17 @@ const User = () => {
       <Button colorScheme="blue" mt={4} onClick={handleJoin}>
         Join
       </Button>
-      <Button colorScheme="teal" mt={4} onClick={deployContract}>
+      <Button colorScheme="teal" mt={4} onClick={deployPMContract}>
         Deploy Project Manager Contract
       </Button>
-      {deployedContract && <Text mt={4}>Contract address: {deployedContract.options.address}</Text>}
+      {deployedPMContract && <Text mt={4}>Contract address: {deployedPMContract.options.address}</Text>}
+      <Button colorScheme="teal" mt={4} onClick={deployKUBIXContract}>
+        Deploy Executive NFT Contract
+      </Button>
+      {deployedKUBIXContract && <Text mt={4}>Contract address: {deployedKUBIXContract.options.address}</Text>}
+      <Button colorScheme="purple" mt={4} onClick={mintExecutiveNFT}>
+        Mint Executive NFT
+      </Button>
     </Box> 
     
   );

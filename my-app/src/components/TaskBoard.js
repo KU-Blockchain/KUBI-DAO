@@ -26,10 +26,11 @@ const TaskBoard = ({ columns}) => {
           <Box
             key={column.id}
             flex={{ base: '1 1 100%', md: '1 1 24%' }}
-            mx={2}
+            mx={0}
             my={{ base: 4, md: 0 }}
+            p={4}
           >
-            <TaskColumn
+            <TaskColumn 
               title={column.title}
               tasks={column.tasks}
               columnId={column.id}

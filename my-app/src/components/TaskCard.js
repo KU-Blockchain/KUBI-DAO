@@ -3,7 +3,7 @@ import { Box, useDisclosure } from '@chakra-ui/react';
 import { useDrag } from 'react-dnd';
 import TaskCardModal from './TaskCardModal';
 
-const TaskCard = ({ id, name, description, difficulty, estHours, index, columnId, submission, onEditTask, moveTask }) => {
+const TaskCard = ({ id, name, description, difficulty, estHours, index, columnId, submission,claimedBy, onEditTask, moveTask, }) => {
   const calculateKubixPayout = (difficulty, estimatedHours) => {
     
     const difficulties = {
@@ -22,7 +22,7 @@ const TaskCard = ({ id, name, description, difficulty, estHours, index, columnId
 
   const [{ isDragging }, drag] = useDrag(() => ({
     type: 'task',
-    item: { id, index, columnId, name, description,difficulty, estHours},
+    item: { id, index, columnId, name, description,difficulty, estHours, claimedBy},
     collect: (monitor) => ({
       isDragging: monitor.isDragging(),
     }),
@@ -47,14 +47,14 @@ const TaskCard = ({ id, name, description, difficulty, estHours, index, columnId
         bg='white'
         borderRadius='md'
         boxShadow='sm'
-        p={4}
+        p={2}
         mb={4}
         cursor="grab"
         style={cardStyle}
         onClick={onOpen}
       >
         <Box fontWeight="bold">{name}</Box>
-        <Box>{truncateDescription(description, 37)}</Box>
+        <Box fontSize="sm">{truncateDescription(description, 37)}</Box>
         {kubixPayout && (
           <Box mt={2} fontWeight="bold">KUBIX Payout: {kubixPayout}</Box>
         )}
@@ -62,7 +62,7 @@ const TaskCard = ({ id, name, description, difficulty, estHours, index, columnId
       <TaskCardModal
         isOpen={isOpen}
         onClose={onClose}
-        task={{ id, name, description, difficulty, estHours,kubixPayout, submission}}
+        task={{ id, name, description, difficulty, estHours,kubixPayout, submission, claimedBy}}
         columnId={columnId}
         onEditTask={onEditTask}
         moveTask={moveTask}

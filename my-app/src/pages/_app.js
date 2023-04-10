@@ -1,10 +1,9 @@
 import * as React from "react";
-import { ChakraProvider, extendTheme } from "@chakra-ui/react";
-import NavBar from '../components/NavBar';
+import { ChakraProvider, extendTheme, Flex, Box } from "@chakra-ui/react";
+import NavBar from "../components/NavBar";
 import { Web3Provider } from "@/contexts/Web3Context";
-import {DataBaseProvider} from "@/contexts/DataBaseContext";
-
-
+import { DataBaseProvider } from "@/contexts/DataBaseContext";
+import { TaskBoardProvider } from "@/contexts/TaskBoardContext";
 
 const theme = extendTheme({
   config: {
@@ -16,12 +15,18 @@ const theme = extendTheme({
 function MyApp({ Component, pageProps }) {
   return (
     <DataBaseProvider>
-    <Web3Provider>
-    <ChakraProvider theme={theme}>
-      <NavBar />
-      <Component {...pageProps} />
-    </ChakraProvider>
-    </Web3Provider>
+      <Web3Provider>
+        <ChakraProvider theme={theme}>
+          <Flex direction="column" minH="100vh">
+            <Box as="header">
+              <NavBar />
+            </Box>
+            <Flex as="main" direction="column" flex="1" overflow="hidden">
+              <Component {...pageProps} />
+            </Flex>
+          </Flex>
+        </ChakraProvider>
+      </Web3Provider>
     </DataBaseProvider>
   );
 }

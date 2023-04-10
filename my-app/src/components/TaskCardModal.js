@@ -23,21 +23,22 @@ import { useWeb3Context } from '../contexts/Web3Context';
 const TaskCardModal = ({ isOpen, onClose, task, columnId, onEditTask }) => {
   const [submission, setSubmission] = useState('');
   const { moveTask, deleteTask} = useTaskBoard();
-  const { hasNFT } = useWeb3Context();
+  const { hasExecNFT,hasMemberNFT, account } = useWeb3Context();
+
+
 
   const handleButtonClick =  () => {
     if (columnId === 'open') {
       
-      if (hasNFT) {
-        moveTask(task, columnId, 'inProgress', 0);
-        onClose();
+      if (hasMemberNFT) {
+        moveTask(task, columnId, 'inProgress', 0, " ", account);
       } else {
          alert('You must own an NFT to claim this task. Go to user to join ');
       }
     }
     if (columnId === 'inProgress') {
       
-      if (hasNFT) {
+      if (hasMemberNFT) {
         moveTask(task, columnId, 'inReview', 0, submission);
         onClose();
       } else {
@@ -46,18 +47,18 @@ const TaskCardModal = ({ isOpen, onClose, task, columnId, onEditTask }) => {
     }
     if (columnId === 'inReview') {
       
-      if (hasNFT) {
+      if (hasExecNFT) {
         moveTask(task, columnId, 'completed', 0);
         onClose();
       } else {
-         alert('You must own an NFT to complete the review. Go to user to join');
+         alert('You must be an executive to complete the review');
       }
     }
     if (columnId === 'completed') {
-      if (hasNFT) {
+      if (hasExecNFT) {
         deleteTask(task.id, columnId);
       } else {
-        alert('You must own an NFT to delete task. Go to user to join');
+        alert('You must be an executive to delete task');
       }
       
     }
@@ -81,11 +82,10 @@ const TaskCardModal = ({ isOpen, onClose, task, columnId, onEditTask }) => {
 
   const handleOpenEditTaskModal = () => {
     
-    
-    if (hasNFT) {
+    if (hasExecNFT) {
       setIsEditTaskModalOpen(true);
     } else {
-       alert('You must own an NFT to edit. Go to user to join');
+       alert('You must be an executive to edit.');
     }
     
   };
@@ -93,6 +93,7 @@ const TaskCardModal = ({ isOpen, onClose, task, columnId, onEditTask }) => {
   const handleCloseEditTaskModal = () => {
     setIsEditTaskModalOpen(false);
   };
+  console.log(task.claimedBy)
 
   return task ? (
     <>
@@ -109,6 +110,14 @@ const TaskCardModal = ({ isOpen, onClose, task, columnId, onEditTask }) => {
                 </Text>
                 <Text>{task.description}</Text>
               </Box>
+              {task.claimedBy && (
+                <Box>
+                  <Text fontWeight="bold" fontSize="lg">
+                    Claimed By:
+                  </Text>
+                  <Text>{task.claimedBy}</Text>
+                </Box>
+              )}
               {columnId === 'inProgress' && (
                 <FormControl>
                   <FormLabel fontWeight="bold" fontSize="lg">
