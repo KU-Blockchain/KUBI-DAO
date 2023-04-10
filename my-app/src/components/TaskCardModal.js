@@ -23,12 +23,14 @@ import { useWeb3Context } from '../contexts/Web3Context';
 const TaskCardModal = ({ isOpen, onClose, task, columnId, onEditTask }) => {
   const [submission, setSubmission] = useState('');
   const { moveTask, deleteTask} = useTaskBoard();
-  const { hasNFT } = useWeb3Context();
+  const { hasExecNFT,hasMemberNFT } = useWeb3Context();
+
+
 
   const handleButtonClick =  () => {
     if (columnId === 'open') {
       
-      if (hasNFT) {
+      if (hasMemberNFT) {
         moveTask(task, columnId, 'inProgress', 0);
         onClose();
       } else {
@@ -37,7 +39,7 @@ const TaskCardModal = ({ isOpen, onClose, task, columnId, onEditTask }) => {
     }
     if (columnId === 'inProgress') {
       
-      if (hasNFT) {
+      if (hasMemberNFT) {
         moveTask(task, columnId, 'inReview', 0, submission);
         onClose();
       } else {
@@ -46,18 +48,18 @@ const TaskCardModal = ({ isOpen, onClose, task, columnId, onEditTask }) => {
     }
     if (columnId === 'inReview') {
       
-      if (hasNFT) {
+      if (hasExecNFT) {
         moveTask(task, columnId, 'completed', 0);
         onClose();
       } else {
-         alert('You must own an NFT to complete the review. Go to user to join');
+         alert('You must be an executive to complete the review');
       }
     }
     if (columnId === 'completed') {
-      if (hasNFT) {
+      if (hasExecNFT) {
         deleteTask(task.id, columnId);
       } else {
-        alert('You must own an NFT to delete task. Go to user to join');
+        alert('You must be an executive to delete task');
       }
       
     }
@@ -81,11 +83,10 @@ const TaskCardModal = ({ isOpen, onClose, task, columnId, onEditTask }) => {
 
   const handleOpenEditTaskModal = () => {
     
-    
-    if (hasNFT) {
+    if (hasExecNFT) {
       setIsEditTaskModalOpen(true);
     } else {
-       alert('You must own an NFT to edit. Go to user to join');
+       alert('You must be an executive to edit.');
     }
     
   };

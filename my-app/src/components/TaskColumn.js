@@ -28,10 +28,10 @@ const TaskColumn = ({ title, tasks, columnId }) => {
   const handleOpenAddTaskModal = () => {
     if (title === 'Open') {
       
-      if (hasMemberNFT) {
+      if (hasExecNFT) {
         setIsAddTaskModalOpen(true);
       } else {
-         alert('You must own an NFT to add task. Go to user to join ');
+         alert('You must be an executive to add task');
       }
       
     }
