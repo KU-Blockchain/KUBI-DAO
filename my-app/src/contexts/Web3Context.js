@@ -1,6 +1,7 @@
 import { createContext, useContext, useState, useEffect } from 'react';
 import { ethers } from 'ethers';
 import KUBIMembershipNFTArtifact from "../abi/KUBIMembershipNFT.json";
+import ExecNFTArtifact from "../abi/KUBIExecutiveNFT.json";
 
 
 const Web3Context = createContext();
@@ -77,7 +78,7 @@ export const Web3Provider = ({ children }) => {
           const balance = await contract.balanceOf(account);
 
           // Check if NFT balance is 1, meaning the user owns the NFT
-          setHasNFT(balance.toNumber() === 1);
+          setMemberNFT(balance.toNumber() === 1);
         } catch (error) {
           console.error(error);
           setMemberNFT(false);
@@ -118,7 +119,7 @@ export const Web3Provider = ({ children }) => {
     account,
     signer,
     hasMemberNFT,
-    hasExectNFT,
+    hasExecNFT,
   };
 
   return <Web3Context.Provider value={value}>{children}</Web3Context.Provider>;

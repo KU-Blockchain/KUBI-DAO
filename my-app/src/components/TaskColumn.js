@@ -10,18 +10,25 @@ import { useWeb3Context } from '../contexts/Web3Context';
 const TaskColumn = ({ title, tasks, columnId }) => {
   const { moveTask, addTask, editTask } = useTaskBoard();
   const [isAddTaskModalOpen, setIsAddTaskModalOpen] = useState(false);
-  const { hasNFT } = useWeb3Context();
-  const hasNFTRef = useRef(hasNFT);
+  const { hasExecNFT,hasMemberNFT } = useWeb3Context();
+  const hasMemberNFTRef = useRef(hasMemberNFT);
+  const hasExecNFTRef = useRef(hasExecNFT);
+  console.log('TaskColumn hasMemberNFT:', hasMemberNFT, 'hasExecNFT:', hasExecNFT);
+
 
   useEffect(() => {
-    hasNFTRef.current = hasNFT;
-  }, [hasNFT]);
+    hasMemberNFTRef.current = hasMemberNFT;
+  }, [hasMemberNFT]);
+
+  useEffect(() => {
+    hasExecNFTRef.current = hasExecNFT;
+  }, [hasExecNFT]);
 
   
   const handleOpenAddTaskModal = () => {
     if (title === 'Open') {
       
-      if (hasNFT) {
+      if (hasMemberNFT) {
         setIsAddTaskModalOpen(true);
       } else {
          alert('You must own an NFT to add task. Go to user to join ');
@@ -62,8 +69,12 @@ const TaskColumn = ({ title, tasks, columnId }) => {
       accept: 'task',
       drop: (item) => {
         
-        if (!hasNFTRef.current) {
+        if (!hasMemberNFTRef.current && title != 'Completed') {
           alert('You must own an NFT to move tasks. Go to user to join');
+          return;
+        }
+        else if (!hasExecNFTRef.current && title === 'Completed') {
+          alert('You must be an Executive to review tasks.');
           return;
         }
   
