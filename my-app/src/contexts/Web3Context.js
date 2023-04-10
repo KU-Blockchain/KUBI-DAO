@@ -9,14 +9,16 @@ export const useWeb3Context = () => {
   return useContext(Web3Context);
 };
 
-const CONTRACT_ADDRESS = '0x9F15cEf6E7bc4B6a290435A598a759DbE72b41b5';
+const membershipNFTAdress = '0x9F15cEf6E7bc4B6a290435A598a759DbE72b41b5';
+const execNFTAdress = '0x1F3Ae002f2058470FC5C72C70809F31Db3d93fBb';
 const INFURA_PROJECT_ID = process.env.NEXT_PUBIC_INFURA_PROJECT_ID;
 
 export const Web3Provider = ({ children }) => {
   const [provider, setProvider] = useState(null);
   const [account, setAccount] = useState(null);
   const [signer, setSigner] = useState(null);
-  const [hasNFT, setHasNFT] = useState(false);
+  const [hasMemberNFT, setMemberNFT] = useState(false);
+  const [hasExecNFT, setExecNFT] = useState(false);
 
 
     const initProvider = async () => {
@@ -67,10 +69,10 @@ export const Web3Provider = ({ children }) => {
       }, [provider]);
 
   useEffect(() => {
-    const fetchNFTOwnership = async () => {
+    const fetchMemberNFTOwnership = async () => {
       if (provider && account && signer) {
         try {
-          const contract = new ethers.Contract(CONTRACT_ADDRESS, KUBIMembershipNFTArtifact.abi, signer);
+          const contract = new ethers.Contract(membershipNFTAdress, KUBIMembershipNFTArtifact.abi, signer);
 
           const balance = await contract.balanceOf(account);
 
@@ -78,21 +80,45 @@ export const Web3Provider = ({ children }) => {
           setHasNFT(balance.toNumber() === 1);
         } catch (error) {
           console.error(error);
-          setHasNFT(false);
+          setMemberNFT(false);
         }
       } else {
-        setHasNFT(false);
+        setMemberNFT(false);
       }
     };
 
-    fetchNFTOwnership();
+    fetchMemberNFTOwnership();
+  }, [provider, account, signer]);
+
+  //checks exec NFT ownership 
+  useEffect(() => {
+    const fetchExecNFTOwnership = async () => {
+      if (provider && account && signer) {
+        try {
+          const contract = new ethers.Contract(execNFTAdress, ExecNFTArtifact.abi, signer);
+
+          const balance = await contract.balanceOf(account);
+
+          // Check if NFT balance is 1, meaning the user owns the executive NFT
+          setExecNFT(balance.toNumber() === 1);
+        } catch (error) {
+          console.error(error);
+          setExecNFT(false);
+        }
+      } else {
+        setExecNFT(false);
+      }
+    };
+
+    fetchExecNFTOwnership();
   }, [provider, account, signer]);
 
   const value = {
     provider,
     account,
     signer,
-    hasNFT,
+    hasMemberNFT,
+    hasExectNFT,
   };
 
   return <Web3Context.Provider value={value}>{children}</Web3Context.Provider>;

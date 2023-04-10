@@ -32,6 +32,8 @@ const User = () => {
   const [nftBalance, setNftBalance] = useState(0);
   const [deployedPMContract, setDeployedPMContract] = useState(null);
   const [deployedKUBIXContract, setDeployedKUBIXContract] = useState(null);
+  const [execNftContract, setExecNftContract] = useState(null);
+  const [execNftBalance, setExecNftBalance] = useState(0);
 
   const { userDetails, setUserDetails, account, setAccount, fetchUserDetails, addUserData } = useDataBaseContext();
 
@@ -115,8 +117,6 @@ const User = () => {
   };
   useEffect(() => { fetchNFTBalance() }, [kubiMembershipNFTContract, account]);
 
-  //mint nft 
-
 
   const mintMembershipNFT = async () => {
     if (!kubiMembershipNFTContract) return;
@@ -126,6 +126,31 @@ const User = () => {
     } catch (error) {
       console.error(error);
       toast({ title: "Error", description: "Error minting Membership NFT", status: "error", duration: 5000, isClosable: true });
+    }
+  };
+
+  useEffect(() => {
+    if (web3) {
+      setExecNftContract(new web3.eth.Contract(ExecNFTArtifiact.abi, KUBIExecutiveNFTAddress));
+    }
+  }, [web3]);
+
+  const fetchExecNFTBalance = async () => {
+    if (execNftContract && account) {
+      setExecNftBalance(await execNftContract.methods.balanceOf(account).call());
+    }
+  };
+
+  useEffect(() => { fetchExecNFTBalance() }, [execNftContract, account]);
+
+  const mintExecutiveNFT = async () => {
+    if (!execNftContract) return;
+    try {
+      await execNftContract.methods.mint(account).send({ from: account });
+      toast({ title: "Success", description: "Successfully minted Executive NFT", status: "success", duration: 5000, isClosable: true });
+    } catch (error) {
+      console.error(error);
+      toast({ title: "Error", description: "Error minting Executive NFT", status: "error", duration: 5000, isClosable: true });
     }
   };
 
@@ -203,6 +228,7 @@ const User = () => {
       <Text>Account: {account}</Text>
       <Text>KUBI Token Balance: {balance}</Text>
       <Text>Membership NFT Balance: {nftBalance}</Text>
+      <Text>Executive NFT Balance: {execNftBalance}</Text>
       <Text>Username: {userDetails && userDetails.username}</Text>
     
       <FormControl id="email">
@@ -228,6 +254,9 @@ const User = () => {
         Deploy Executive NFT Contract
       </Button>
       {deployedKUBIXContract && <Text mt={4}>Contract address: {deployedKUBIXContract.options.address}</Text>}
+      <Button colorScheme="purple" mt={4} onClick={mintExecutiveNFT}>
+        Mint Executive NFT
+      </Button>
     </Box> 
     
   );

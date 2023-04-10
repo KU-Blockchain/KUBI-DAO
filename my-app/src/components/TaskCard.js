@@ -47,14 +47,14 @@ const TaskCard = ({ id, name, description, difficulty, estHours, index, columnId
         bg='white'
         borderRadius='md'
         boxShadow='sm'
-        p={4}
+        p={2}
         mb={4}
         cursor="grab"
         style={cardStyle}
         onClick={onOpen}
       >
         <Box fontWeight="bold">{name}</Box>
-        <Box>{truncateDescription(description, 37)}</Box>
+        <Box fontSize="sm">{truncateDescription(description, 37)}</Box>
         {kubixPayout && (
           <Box mt={2} fontWeight="bold">KUBIX Payout: {kubixPayout}</Box>
         )}
