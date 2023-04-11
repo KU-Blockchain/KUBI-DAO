@@ -123,7 +123,6 @@ export const DataBaseProvider = ({ children }) => {
         await contract.createProject(newIpfsHash);
 
         setProjects([...projects, newProject]);
-        handleSelectProject(newProject.id);
     };
 
     //fetch user details from ipfs and smart contract
@@ -181,6 +180,33 @@ export const DataBaseProvider = ({ children }) => {
 
         
       };
+      const getUsernameByAddress = async (walletAddress) => {
+        try {
+          const provider = new ethers.providers.JsonRpcProvider('https://rpc-mumbai.maticvigil.com/');
+          const signer = new ethers.Wallet(process.env.NEXT_PUBLIC_PRIVATE_KEY, provider);
+          const contract = new ethers.Contract(PMContract, ProjectManagerArtifact.abi, signer);
+      
+          // Fetch the accounts data IPFS hash from the smart contract
+          const accountsDataIpfsHash = await contract.accountsDataIpfsHash();
+          let accountsDataJson = {};
+      
+          // If the IPFS hash is not empty, fetch the JSON data
+          if (accountsDataIpfsHash !== '') {
+            accountsDataJson = await (await fetch(`https://ipfs.io/ipfs/${accountsDataIpfsHash}`)).json();
+          }
+      
+          // Check if the wallet address exists in the accounts data JSON and return the associated username
+          if (accountsDataJson[walletAddress]) {
+            return accountsDataJson[walletAddress].username;
+          } else {
+            return null;
+          }
+        } catch (error) {
+          console.error("Error fetching username by address:", error);
+          return null;
+        }
+      };
+      
     
     return (
         <DataBaseContext.Provider
@@ -197,6 +223,7 @@ export const DataBaseProvider = ({ children }) => {
             setAccount,
             fetchUserDetails,
             addUserData,
+            getUsernameByAddress,
         }}
         >
         {children}
