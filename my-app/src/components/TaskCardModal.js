@@ -27,6 +27,7 @@ const TaskCardModal = ({ isOpen, onClose, task, columnId, onEditTask }) => {
   const [submission, setSubmission] = useState('');
   const { moveTask, deleteTask} = useTaskBoard();
   const { hasExecNFT,hasMemberNFT, account, mintKUBIX} = useWeb3Context();
+
   const { getUsernameByAddress } = useDataBaseContext();
   const [claimerUsername, setClaimerUsername] = useState('');
 
@@ -41,6 +42,7 @@ const TaskCardModal = ({ isOpen, onClose, task, columnId, onEditTask }) => {
     };
     fetchClaimerUsername();
   }, [task, getUsernameByAddress]);
+
 
 
 

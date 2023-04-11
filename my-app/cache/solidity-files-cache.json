@@ -662,44 +662,6 @@
         "KUBIMembershipNFT"
       ]
     },
-    "/Users/hudsonheadley/Desktop/Code/DAO2/my-app/contracts/KUBIExecutiveNFT.sol": {
-      "lastModificationDate": 1680914428969,
-      "contentHash": "2132e6e4625c4d9407865cf05aff2b65",
-      "sourceName": "contracts/KUBIExecutiveNFT.sol",
-      "solcConfig": {
-        "version": "0.8.18",
-        "settings": {
-          "optimizer": {
-            "enabled": false,
-            "runs": 200
-          },
-          "outputSelection": {
-            "*": {
-              "*": [
-                "abi",
-                "evm.bytecode",
-                "evm.deployedBytecode",
-                "evm.methodIdentifiers",
-                "metadata"
-              ],
-              "": [
-                "ast"
-              ]
-            }
-          }
-        }
-      },
-      "imports": [
-        "@openzeppelin/contracts/token/ERC721/extensions/ERC721Enumerable.sol",
-        "@openzeppelin/contracts/access/Ownable.sol"
-      ],
-      "versionPragmas": [
-        "^0.8.0"
-      ],
-      "artifacts": [
-        "KUBIExecutiveNFT"
-      ]
-    },
     "/Users/hudsonheadley/Desktop/Code/DAO2/my-app/node_modules/@openzeppelin/contracts/token/ERC721/extensions/ERC721Enumerable.sol": {
       "lastModificationDate": 1680912698343,
       "contentHash": "212e86880d210b6cac8c3eb0cd6b1fad",
@@ -775,8 +737,84 @@
         "IERC721Enumerable"
       ]
     },
+    "/Users/hudsonheadley/Desktop/Code/DAO2/my-app/contracts/KUBIGovToken.sol": {
+      "lastModificationDate": 1680914448093,
+      "contentHash": "01a1f91751dfb138fb329f3945238536",
+      "sourceName": "contracts/KUBIGovToken.sol",
+      "solcConfig": {
+        "version": "0.8.18",
+        "settings": {
+          "optimizer": {
+            "enabled": false,
+            "runs": 200
+          },
+          "outputSelection": {
+            "*": {
+              "*": [
+                "abi",
+                "evm.bytecode",
+                "evm.deployedBytecode",
+                "evm.methodIdentifiers",
+                "metadata"
+              ],
+              "": [
+                "ast"
+              ]
+            }
+          }
+        }
+      },
+      "imports": [
+        "@openzeppelin/contracts/token/ERC721/extensions/ERC721URIStorage.sol",
+        "@openzeppelin/contracts/access/Ownable.sol"
+      ],
+      "versionPragmas": [
+        "^0.8.0"
+      ],
+      "artifacts": [
+        "KUBIExecutiveNFT"
+      ]
+    },
+    "/Users/hudsonheadley/Desktop/Code/DAO2/my-app/contracts/KUBIExecutiveNFT.sol": {
+      "lastModificationDate": 1680914428969,
+      "contentHash": "2132e6e4625c4d9407865cf05aff2b65",
+      "sourceName": "contracts/KUBIExecutiveNFT.sol",
+      "solcConfig": {
+        "version": "0.8.18",
+        "settings": {
+          "optimizer": {
+            "enabled": false,
+            "runs": 200
+          },
+          "outputSelection": {
+            "*": {
+              "*": [
+                "abi",
+                "evm.bytecode",
+                "evm.deployedBytecode",
+                "evm.methodIdentifiers",
+                "metadata"
+              ],
+              "": [
+                "ast"
+              ]
+            }
+          }
+        }
+      },
+      "imports": [
+        "@openzeppelin/contracts/token/ERC721/extensions/ERC721Enumerable.sol",
+        "@openzeppelin/contracts/access/Ownable.sol"
+      ],
+      "versionPragmas": [
+        "^0.8.0"
+      ],
+      "artifacts": [
+        "KUBIExecutiveNFT"
+      ]
+    },
     "/Users/hudsonheadley/Desktop/Code/DAO2/my-app/contracts/ProjectManager.sol": {
-      "lastModificationDate": 1681055320789,
+      "lastModificationDate": 1681061152411,
       "contentHash": "6443509335c993bd5dc446032e1553ac",
       "sourceName": "contracts/ProjectManager.sol",
       "solcConfig": {
@@ -815,10 +853,10 @@
         "ProjectManager"
       ]
     },
-    "/Users/hudsonheadley/Desktop/Code/DAO2/my-app/contracts/KUBIGovToken.sol": {
-      "lastModificationDate": 1680914448093,
-      "contentHash": "01a1f91751dfb138fb329f3945238536",
-      "sourceName": "contracts/KUBIGovToken.sol",
+    "/Users/hudsonheadley/Desktop/Code/DAO2/my-app/contracts/KUBIXtoken.sol": {
+      "lastModificationDate": 1681241094480,
+      "contentHash": "8db9ad33403b10f4b03ed46b332dd27e",
+      "sourceName": "contracts/KUBIXtoken.sol",
       "solcConfig": {
         "version": "0.8.18",
         "settings": {
@@ -843,14 +881,14 @@
         }
       },
       "imports": [
-        "@openzeppelin/contracts/token/ERC721/extensions/ERC721URIStorage.sol",
+        "@openzeppelin/contracts/token/ERC20/ERC20.sol",
         "@openzeppelin/contracts/access/Ownable.sol"
       ],
       "versionPragmas": [
         "^0.8.0"
       ],
       "artifacts": [
-        "KUBIExecutiveNFT"
+        "KUBIX"
       ]
     }
   }

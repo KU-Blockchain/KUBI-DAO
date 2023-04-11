@@ -1,4 +1,5 @@
 {
+
     "_format": "hh-sol-artifact-1",
     "contractName": "KUBIX",
     "sourceName": "contracts/KUBIXtoken.sol",
@@ -354,3 +355,4 @@
     "linkReferences": {},
     "deployedLinkReferences": {}
   }
+}

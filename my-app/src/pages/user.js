@@ -284,6 +284,7 @@ const User = () => {
         </Heading>
         {web3 && (
           <Text color="green.500" fontWeight="bold">
+
             Wallet Connected
           </Text>
         )}
@@ -295,6 +296,7 @@ const User = () => {
         <Text>Membership NFT Balance: {nftBalance}</Text>
         <Text>Executive NFT Balance: {execNftBalance}</Text>
         
+
       </Flex>
       <Box
         flexDirection="column"
@@ -339,9 +341,11 @@ const User = () => {
         maxWidth="600px"
         bg="white"
       >
+
         <Heading as="h2" size="lg" mb={6}>
             Developer Menu
         </Heading>
+
         <Button colorScheme="orange" mt={4} onClick={() => setShowDeployMenu(!showDeployMenu)}>
           Deploy Menu
         </Button>
