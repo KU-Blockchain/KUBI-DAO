@@ -40,4 +40,7 @@ contract KUBIX is ERC20, Ownable {
     ) internal override {
         revert("KUBIX: transfers are disabled");
     }
+
+
 }
+
