@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   Button,
   FormControl,
@@ -14,16 +14,33 @@ import {
   Text,
   Box,
   VStack,
+  Flex,
+  Spacer,
 } from '@chakra-ui/react';
 import { CheckIcon } from '@chakra-ui/icons';
 import EditTaskModal from './EditTaskModal';
 import { useTaskBoard } from '../contexts/TaskBoardContext';
 import { useWeb3Context } from '../contexts/Web3Context';
+import { useDataBaseContext } from '@/contexts/DataBaseContext';
 
 const TaskCardModal = ({ isOpen, onClose, task, columnId, onEditTask }) => {
   const [submission, setSubmission] = useState('');
   const { moveTask, deleteTask} = useTaskBoard();
-  const { hasExecNFT,hasMemberNFT, account } = useWeb3Context();
+  const { hasExecNFT,hasMemberNFT, account, mintKUBIX} = useWeb3Context();
+  const { getUsernameByAddress } = useDataBaseContext();
+  const [claimerUsername, setClaimerUsername] = useState('');
+
+  useEffect(() => {
+    const fetchClaimerUsername = async () => {
+      if (task && task.claimedBy) {
+        const username = await getUsernameByAddress(task.claimedBy);
+        setClaimerUsername(username);
+      } else {
+        setClaimerUsername('');
+      }
+    };
+    fetchClaimerUsername();
+  }, [task, getUsernameByAddress]);
 
 
 
@@ -50,6 +67,7 @@ const TaskCardModal = ({ isOpen, onClose, task, columnId, onEditTask }) => {
       if (hasExecNFT) {
         moveTask(task, columnId, 'completed', 0);
         onClose();
+        mintKUBIX(task.claimedBy, task.kubixPayout)
       } else {
          alert('You must be an executive to complete the review');
       }
@@ -95,13 +113,22 @@ const TaskCardModal = ({ isOpen, onClose, task, columnId, onEditTask }) => {
   };
   
 
-  return task ? (
+  return  task ? (
     <>
       <Modal isOpen={isOpen} onClose={onClose} size="2xl">
-        <ModalOverlay />
-        <ModalContent>
-          <ModalHeader>{task.name}</ModalHeader>
-          <ModalCloseButton />
+      <ModalOverlay />
+      <ModalContent>
+        <Flex alignItems="center" justifyContent="space-between">
+          <Box as="h2" fontWeight="bold" ml="4" mt="2" fontSize="2xl">
+            {task.name}
+          </Box >
+          {task.claimedBy && (
+            <Text fontSize="sm" mr={12}>
+              Claimed By: {claimerUsername}
+            </Text>
+          )}
+        </Flex>
+        <ModalCloseButton />
           <ModalBody>
             <VStack spacing={4} align="start">
               <Box>
@@ -110,14 +137,6 @@ const TaskCardModal = ({ isOpen, onClose, task, columnId, onEditTask }) => {
                 </Text>
                 <Text>{task.description}</Text>
               </Box>
-              {task.claimedBy && (
-                <Box>
-                  <Text fontWeight="bold" fontSize="lg">
-                    Claimed By:
-                  </Text>
-                  <Text>{task.claimedBy}</Text>
-                </Box>
-              )}
               {columnId === 'inProgress' && (
                 <FormControl>
                   <FormLabel fontWeight="bold" fontSize="lg">
