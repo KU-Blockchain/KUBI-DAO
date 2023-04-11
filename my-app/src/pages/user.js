@@ -16,6 +16,8 @@ import {
   Input,
   Text,
   useToast,
+  Flex,
+  Heading,
 } from "@chakra-ui/react";
 
 const PMContract= "0x9C5ba7F2Fa8a951E982B4d9C87A0447522CfBFC2"
@@ -40,6 +42,7 @@ const User = () => {
   const [deployedKUBIXContract, setDeployedKUBIXContract] = useState(null);
   const [execNftContract, setExecNftContract] = useState(null);
   const [execNftBalance, setExecNftBalance] = useState(0);
+  const [showDeployMenu, setShowDeployMenu] = useState(false);
 
   const { userDetails, setUserDetails, account, setAccount, fetchUserDetails, addUserData } = useDataBaseContext();
 
@@ -254,7 +257,22 @@ const User = () => {
   };
 
   return (
-    <Box paddingLeft={4}>
+    <Flex
+      flexDirection="column"
+      alignItems="center"
+      justifyContent="center"
+      borderRadius="lg"
+      boxShadow="lg"
+      p={6}
+      mt={6}
+      w="100%"
+      maxWidth="600px"
+      mx="auto"
+      bg="white"
+    >
+      <Heading as="h2" size="lg" mb={6}>
+        KUBI User Dashboard
+      </Heading>
       {web3 && (
         <Text color="green.500" fontWeight="bold">
           Connected to blockchain network
@@ -266,39 +284,60 @@ const User = () => {
       <Text>Membership NFT Balance: {nftBalance}</Text>
       <Text>Executive NFT Balance: {execNftBalance}</Text>
       <Text>Username: {userDetails && userDetails.username}</Text>
-    
-      <FormControl id="email">
-        <FormLabel>Email</FormLabel>
-        <Input type="email" placeholder="Email" value={email} onChange={(event) => setEmail(event.target.value)} />
-      </FormControl>
-      <FormControl id="name" mt={4}>
-        <FormLabel>Name</FormLabel>
-        <Input type="text" placeholder="Name" value={name} onChange={(event) => setName(event.target.value)} />
-      </FormControl>
-      <FormControl id="username" mt={4}>
-        <FormLabel>Username</FormLabel>
-        <Input type="text" placeholder="Username" value={username} onChange={(event) => setUsername(event.target.value)} />
-      </FormControl>
-      <Button colorScheme="blue" mt={4} onClick={handleJoin}>
-        Join
+
+      <Box
+        flexDirection="column"
+        alignItems="center"
+        justifyContent="center"
+        borderRadius="lg"
+        boxShadow="lg"
+        p={6}
+        mt={6}
+        w="100%"
+        maxWidth="600px"
+        mx="auto"
+        bg="gray.50"
+      >
+        <FormControl id="email">
+          <FormLabel>Email</FormLabel>
+          <Input type="email" placeholder="Email" value={email} onChange={(event) => setEmail(event.target.value)} />
+        </FormControl>
+        <FormControl id="name" mt={4}>
+          <FormLabel>Name</FormLabel>
+          <Input type="text" placeholder="Name" value={name} onChange={(event) => setName(event.target.value)} />
+        </FormControl>
+        <FormControl id="username" mt={4}>
+          <FormLabel>Username</FormLabel>
+          <Input type="text" placeholder="Username" value={username} onChange={(event) => setUsername(event.target.value)} />
+        </FormControl>
+        <Button colorScheme="blue" mt={4} onClick={handleJoin}>
+          Join
+        </Button>
+      </Box>
+
+      <Button colorScheme="orange" mt={4} onClick={() => setShowDeployMenu(!showDeployMenu)}>
+        Deploy Menu
       </Button>
-      <Button colorScheme="teal" mt={4} onClick={deployPMContract}>
-        Deploy Project Manager Contract
-      </Button>
-      {deployedPMContract && <Text mt={4}>Contract address: {deployedPMContract.options.address}</Text>}
-      <Button colorScheme="teal" mt={4} onClick={deployKUBIContract}>
-        Deploy Executive NFT Contract
-      </Button>
-      <Button colorScheme="teal" mt={4} onClick={deployKUBIXContract}>
-        Deploy KUBIX token Contract
-      </Button>
-      {deployedKUBIXContract && <Text mt={4}>Contract address: {deployedKUBIXContract.options.address}</Text>}
-      <Button colorScheme="purple" mt={4} onClick={mintExecutiveNFT}>
-        Mint Executive NFT
-      </Button>
-      
-    </Box> 
-    
+
+      {showDeployMenu && (
+        <>
+          <Button colorScheme="teal" mt={4} onClick={deployPMContract}>
+            Deploy Project Manager Contract
+          </Button>
+          {deployedPMContract && <Text mt={4}>Contract address: {deployedPMContract.options.address}</Text>}
+          <Button colorScheme="teal" mt={4} onClick={deployKUBIContract}>
+            Deploy Executive NFT Contract
+          </Button>
+          <Button colorScheme="teal" mt={4} onClick={deployKUBIXContract}>
+            Deploy KUBIX token Contract
+          </Button>
+          {deployedKUBIXContract && <Text mt={4}>Contract address: {deployedKUBIXContract.options.address}</Text>}
+          <Button colorScheme="purple" mt={4} onClick={mintExecutiveNFT}>
+            Mint Executive NFT
+          </Button>
+        </>
+      )}
+    </Flex>
   );
 };
 
