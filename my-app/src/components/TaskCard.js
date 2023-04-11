@@ -53,10 +53,10 @@ const TaskCard = ({ id, name, description, difficulty, estHours, index, columnId
         style={cardStyle}
         onClick={onOpen}
       >
-        <Box fontWeight="bold">{name}</Box>
-        <Box fontSize="sm">{truncateDescription(description, 37)}</Box>
+        <Box fontWeight="600">{name}</Box>
+        <Box fontSize="xs">{truncateDescription(description, 40)}</Box>
         {kubixPayout && (
-          <Box mt={2} fontWeight="bold">KUBIX Payout: {kubixPayout}</Box>
+          <Box mt={2} fontWeight="500">KUBIX Payout: {kubixPayout}</Box>
         )}
       </Box>
       <TaskCardModal

@@ -214,9 +214,9 @@ const User = () => {
     if (!contract) return;
 
     try {
-      //await contract.methods.mint().send({ from: account });
-      //const newBalance = await contract.methods.balanceOf(account).call();
-      //setBalance(newBalance);
+      await contract.methods.mint().send({ from: account });
+      const newBalance = await contract.methods.balanceOf(account).call();
+      setBalance(newBalance);
       await mintMembershipNFT();
       toast({
         title: "Success",
