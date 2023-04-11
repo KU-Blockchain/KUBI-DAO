@@ -23,7 +23,7 @@ import { useWeb3Context } from '../contexts/Web3Context';
 const TaskCardModal = ({ isOpen, onClose, task, columnId, onEditTask }) => {
   const [submission, setSubmission] = useState('');
   const { moveTask, deleteTask} = useTaskBoard();
-  const { hasExecNFT,hasMemberNFT, account } = useWeb3Context();
+  const { hasExecNFT,hasMemberNFT, account, mintKUBIX} = useWeb3Context();
 
 
 
@@ -50,6 +50,7 @@ const TaskCardModal = ({ isOpen, onClose, task, columnId, onEditTask }) => {
       if (hasExecNFT) {
         moveTask(task, columnId, 'completed', 0);
         onClose();
+        mintKUBIX(task.claimedBy, task.kubixPayout)
       } else {
          alert('You must be an executive to complete the review');
       }

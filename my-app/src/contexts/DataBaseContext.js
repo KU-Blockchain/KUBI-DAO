@@ -123,7 +123,6 @@ export const DataBaseProvider = ({ children }) => {
         await contract.createProject(newIpfsHash);
 
         setProjects([...projects, newProject]);
-        handleSelectProject(newProject.id);
     };
 
     //fetch user details from ipfs and smart contract
