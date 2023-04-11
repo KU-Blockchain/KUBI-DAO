@@ -22,7 +22,7 @@ const Navbar = () => {
         <Link as={NextLink} href="/tasks" color="white" fontWeight="extrabold">
           Tasks
         </Link>
-        <Link as={NextLink} href="/leaderboard" color="white" fontWeight="extrabold">
+        <Link as={NextLink} href="/Leaderboard" color="white" fontWeight="extrabold">
           Leaderboard
         </Link>
         <Link as={NextLink} href="/voting" color="white" fontWeight="extrabold">
