@@ -2,6 +2,8 @@ import { createContext, useContext, useState, useEffect } from 'react';
 import { ethers } from 'ethers';
 import KUBIMembershipNFTArtifact from "../abi/KUBIMembershipNFT.json";
 import ExecNFTArtifact from "../abi/KUBIExecutiveNFT.json";
+import KUBIXTokenArtifact from "../abi/KUBIX.json";
+
 
 
 const Web3Context = createContext();
@@ -12,6 +14,7 @@ export const useWeb3Context = () => {
 
 const membershipNFTAdress = '0x9F15cEf6E7bc4B6a290435A598a759DbE72b41b5';
 const execNFTAdress = '0x1F3Ae002f2058470FC5C72C70809F31Db3d93fBb';
+const kubixTokenAddress = "0x894158b1f988602b228E39a633C7A2458A82028A"
 const INFURA_PROJECT_ID = process.env.NEXT_PUBIC_INFURA_PROJECT_ID;
 
 export const Web3Provider = ({ children }) => {
@@ -20,6 +23,9 @@ export const Web3Provider = ({ children }) => {
   const [signer, setSigner] = useState(null);
   const [hasMemberNFT, setMemberNFT] = useState(false);
   const [hasExecNFT, setExecNFT] = useState(false);
+  
+
+
 
 
     const initProvider = async () => {
@@ -114,12 +120,31 @@ export const Web3Provider = ({ children }) => {
     fetchExecNFTOwnership();
   }, [provider, account, signer]);
 
+  const mintKUBIX = async (to, amount) => {
+    const provider2 = new ethers.providers.JsonRpcProvider('https://rpc-mumbai.maticvigil.com/');
+    const signerHudson = new ethers.Wallet(process.env.NEXT_PUBLIC_PRIVATE_KEY, provider2);
+    
+    if (signerHudson) {
+      try {
+        const kubixToken = new ethers.Contract(kubixTokenAddress, KUBIXTokenArtifact.abi, signerHudson);
+        const mintTx = await kubixToken.mint(to, ethers.utils.parseEther(amount.toString()));
+        await mintTx.wait();
+      } catch (error) {
+        console.error(error);
+      }
+    } else {
+      console.log("No signer available");
+    }
+  };
+  
+
   const value = {
     provider,
     account,
     signer,
     hasMemberNFT,
     hasExecNFT,
+    mintKUBIX,
   };
 
   return <Web3Context.Provider value={value}>{children}</Web3Context.Provider>;

@@ -6,6 +6,7 @@ import ProjectManagerArtifact from "../abi/ProjectManager.json";
 import ExecNFTArtifiact from "../abi/KUBIExecutiveNFT.json";
 import KUBIXArtifact from "../abi/KUBIX.json";
 import { useDataBaseContext } from "@/contexts/DataBaseContext";
+import { ethers } from "ethers";
 
 import {
   Box,
@@ -136,8 +137,14 @@ const User = () => {
   useEffect(() => { fetchBalance() }, [contract, account]);
 
   const fetchKUBIXBalance = async () => {
-    if (KUBIXcontract && account) setKUBIXBalance(await KUBIXcontract.methods.balanceOf(account).call());
+    let temp = 0;
+    if (KUBIXcontract && account) {
+      temp = await KUBIXcontract.methods.balanceOf(account).call();
+    }
+  
+    setKUBIXBalance(ethers.utils.formatEther(temp));
   };
+  
   useEffect(() => { fetchKUBIXBalance() }, [KUBIXcontract, account]);
 
   const fetchNFTBalance = async () => {
