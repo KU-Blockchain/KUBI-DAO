@@ -93,7 +93,7 @@ const TaskCardModal = ({ isOpen, onClose, task, columnId, onEditTask }) => {
   const handleCloseEditTaskModal = () => {
     setIsEditTaskModalOpen(false);
   };
-  console.log(task.claimedBy)
+  
 
   return task ? (
     <>
