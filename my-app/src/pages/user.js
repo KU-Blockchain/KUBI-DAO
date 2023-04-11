@@ -258,33 +258,42 @@ const User = () => {
 
   return (
     <Flex
-      flexDirection="column"
-      alignItems="center"
+      flexDirection="row"
+      alignItems="flex-start"
       justifyContent="center"
-      borderRadius="lg"
-      boxShadow="lg"
       p={6}
       mt={6}
       w="100%"
-      maxWidth="600px"
+      maxWidth="1200px"
       mx="auto"
       bg="white"
     >
-      <Heading as="h2" size="lg" mb={6}>
-        KUBI User Dashboard
-      </Heading>
-      {web3 && (
-        <Text color="green.500" fontWeight="bold">
-          Connected to blockchain network
-        </Text>
-      )}
-      <Text>Account: {account}</Text>
-      <Text>KUBI Token Balance: {balance}</Text>
-      <Text>KUBIX Token Balance: {KUBIXbalance}</Text>
-      <Text>Membership NFT Balance: {nftBalance}</Text>
-      <Text>Executive NFT Balance: {execNftBalance}</Text>
-      <Text>Username: {userDetails && userDetails.username}</Text>
-
+      <Flex
+        flexDirection="column"
+        alignItems="center"
+        justifyContent="center"
+        borderRadius="lg"
+        boxShadow="lg"
+        p={6}
+        w="100%"
+        maxWidth="600px"
+        bg="white"
+      >
+        <Heading as="h2" size="lg" mb={6}>
+          KUBI User Dashboard
+        </Heading>
+        {web3 && (
+          <Text color="green.500" fontWeight="bold">
+            Connected to blockchain network
+          </Text>
+        )}
+        <Text>Account: {account}</Text>
+        <Text>KUBI Token Balance: {balance}</Text>
+        <Text>KUBIX Token Balance: {KUBIXbalance}</Text>
+        <Text>Membership NFT Balance: {nftBalance}</Text>
+        <Text>Executive NFT Balance: {execNftBalance}</Text>
+        <Text>Username: {userDetails && userDetails.username}</Text>
+      </Flex>
       <Box
         flexDirection="column"
         alignItems="center"
@@ -292,15 +301,17 @@ const User = () => {
         borderRadius="lg"
         boxShadow="lg"
         p={6}
-        mt={6}
+        ml={4}
         w="100%"
         maxWidth="600px"
-        mx="auto"
         bg="gray.50"
       >
+        <Heading as="h2" size="lg" mb={6}>
+          Join KUBI DAO
+        </Heading>
         <FormControl id="email">
           <FormLabel>Email</FormLabel>
-          <Input type="email" placeholder="Email" value={email} onChange={(event) => setEmail(event.target.value)} />
+          <Input type="email" placeholder="KU Email required" value={email} onChange={(event) => setEmail(event.target.value)} />
         </FormControl>
         <FormControl id="name" mt={4}>
           <FormLabel>Name</FormLabel>
@@ -314,29 +325,40 @@ const User = () => {
           Join
         </Button>
       </Box>
-
-      <Button colorScheme="orange" mt={4} onClick={() => setShowDeployMenu(!showDeployMenu)}>
-        Deploy Menu
-      </Button>
-
-      {showDeployMenu && (
-        <>
-          <Button colorScheme="teal" mt={4} onClick={deployPMContract}>
-            Deploy Project Manager Contract
-          </Button>
-          {deployedPMContract && <Text mt={4}>Contract address: {deployedPMContract.options.address}</Text>}
-          <Button colorScheme="teal" mt={4} onClick={deployKUBIContract}>
-            Deploy Executive NFT Contract
-          </Button>
-          <Button colorScheme="teal" mt={4} onClick={deployKUBIXContract}>
-            Deploy KUBIX token Contract
-          </Button>
-          {deployedKUBIXContract && <Text mt={4}>Contract address: {deployedKUBIXContract.options.address}</Text>}
-          <Button colorScheme="purple" mt={4} onClick={mintExecutiveNFT}>
-            Mint Executive NFT
-          </Button>
-        </>
-      )}
+      <Flex
+        flexDirection="column"
+        alignItems="center"
+        justifyContent="center"
+        borderRadius="lg"
+        boxShadow="lg"
+        p={6}
+        ml={4}
+        w="100%"
+        maxWidth="600px"
+        bg="white"
+      >
+        <Button colorScheme="orange" mt={4} onClick={() => setShowDeployMenu(!showDeployMenu)}>
+          Deploy Menu
+        </Button>
+        {showDeployMenu && (
+          <>
+            <Button colorScheme="teal" mt={4} onClick={deployPMContract}>
+              Deploy Project Manager Contract
+            </Button>
+            {deployedPMContract && <Text mt={4}>Contract address: {deployedPMContract.options.address}</Text>}
+            <Button colorScheme="teal" mt={4} onClick={deployKUBIContract}>
+              Deploy Executive NFT Contract
+              </Button>
+            <Button colorScheme="teal" mt={4} onClick={deployKUBIXContract}>
+              Deploy KUBIX token Contract
+            </Button>
+            {deployedKUBIXContract && <Text mt={4}>Contract address: {deployedKUBIXContract.options.address}</Text>}
+            <Button colorScheme="purple" mt={4} onClick={mintExecutiveNFT}>
+              Mint Executive NFT
+            </Button>
+          </>
+        )}
+      </Flex>
     </Flex>
   );
 };
