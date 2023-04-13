@@ -57,9 +57,10 @@ const TaskCardModal = ({ isOpen, onClose, task, columnId, onEditTask }) => {
     if (columnId === 'inReview') {
       if (hasExecNFT) {
         try {
-          await moveTask(task, columnId, 'completed', 0);
-          mintKUBIX(task.claimedBy, task.kubixPayout, true);
           onClose();
+          await moveTask(task, columnId, 'completed', 0)
+          setTimeout(async() => {await mintKUBIX(task.claimedBy, task.kubixPayout, true)}, 1000);
+          
         } catch (error) {
           console.error("Error moving task:", error);
         }
