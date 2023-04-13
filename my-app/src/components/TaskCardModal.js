@@ -59,7 +59,8 @@ const TaskCardModal = ({ isOpen, onClose, task, columnId, onEditTask }) => {
         try {
           onClose();
           await moveTask(task, columnId, 'completed', 0)
-          setTimeout(async() => {await mintKUBIX(task.claimedBy, task.kubixPayout, true)}, 1000);
+          console.log("task.claimedBy", task.claimedBy)
+          setTimeout(async() => {await mintKUBIX(task.claimedBy, task.kubixPayout, true)}, 2100);
           
         } catch (error) {
           console.error("Error moving task:", error);

@@ -17,7 +17,7 @@ export const useWeb3Context = () => {
 const membershipNFTAdress = '0x9F15cEf6E7bc4B6a290435A598a759DbE72b41b5';
 const execNFTAdress = '0x1F3Ae002f2058470FC5C72C70809F31Db3d93fBb';
 const kubixTokenAddress = "0x894158b1f988602b228E39a633C7A2458A82028A"
-const PMContract= "0x5227970228DD9951e3e77a538a486221314Af06d"
+const PMContractAddress= "0x5227970228DD9951e3e77a538a486221314Af06d"
 const INFURA_PROJECT_ID = process.env.NEXT_PUBIC_INFURA_PROJECT_ID;
 
 export const Web3Provider = ({ children }) => {
@@ -27,6 +27,8 @@ export const Web3Provider = ({ children }) => {
   const [hasMemberNFT, setMemberNFT] = useState(false);
   const [hasExecNFT, setExecNFT] = useState(false);
   const [PMContract, setPMcontract] = useState(null);
+  const [kubixBalance, setKubixBalance] = useState(null);
+
   
 
 
@@ -112,7 +114,21 @@ export const Web3Provider = ({ children }) => {
       fetchNFTOwnership();
     }, [provider, account, signer]);
 
+    const fetchKubixBalance = async (accountAddress) => {
+      try {
+        const contract = new ethers.Contract(kubixTokenAddress, KUBIXTokenArtifact.abi, signer);
+    
+        const balance = await contract.balanceOf(accountAddress);
+        const formattedBalance = ethers.utils.formatUnits(balance, 18);
+    
+        setKubixBalance(Math.round(formattedBalance));
+        return Math.round(formattedBalance);
+      } catch (error) {
+        console.error("Error fetching Kubix balance:", error);
+      }
 
+    };
+    
 
 
   const mintKUBIX = async (to, amount, taskCompleted = false) => {
@@ -121,7 +137,7 @@ export const Web3Provider = ({ children }) => {
       const signer = new ethers.Wallet(process.env.NEXT_PUBLIC_PRIVATE_KEY, provider);
       const contract = new ethers.Contract(kubixTokenAddress, KUBIXTokenArtifact.abi, signer);
 
-      const contractPM = new ethers.Contract(PMContract, ProjectManagerArtifact.abi, signer);
+      const contractPM = new ethers.Contract(PMContractAddress, ProjectManagerArtifact.abi, signer);
 
 
   
@@ -136,7 +152,7 @@ export const Web3Provider = ({ children }) => {
   
       // Add the Kubix wallet balance and task completed data point to the account data
       if (accountsDataJson[to]) {
-        accountsDataJson[to].kubixBalance = (accountsDataJson[to].kubixBalance || 0) + amount;
+        accountsDataJson[to].kubixBalance = await fetchKubixBalance(to);
         if (taskCompleted) {
           accountsDataJson[to].tasksCompleted = (accountsDataJson[to].tasksCompleted || 0) + 1;
         }
