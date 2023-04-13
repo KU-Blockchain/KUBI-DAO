@@ -1,4 +1,6 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
+import {  useDataBaseContext} from './DataBaseContext';
+
 
 
 
@@ -10,12 +12,13 @@ export const useTaskBoard = () => {
 
 export const TaskBoardProvider = ({ children, initialColumns, onColumnChange, onUpdateColumns, account }) => {
   const [taskColumns, setTaskColumns] = useState(initialColumns);
+  const { getUsernameByAddress } = useDataBaseContext();
 
   useEffect(() => {
     setTaskColumns(initialColumns);
   }, [initialColumns]);
 
-  const moveTask = (draggedTask, sourceColumnId, destColumnId, newIndex, submissionData, claimedBy) => {
+  const moveTask = async(draggedTask, sourceColumnId, destColumnId, newIndex, submissionData, claimedBy) => {
     const newTaskColumns = [...taskColumns];
 
     const sourceColumn = newTaskColumns.find((column) => column.id === sourceColumnId);
@@ -23,6 +26,7 @@ export const TaskBoardProvider = ({ children, initialColumns, onColumnChange, on
 
     const sourceTaskIndex = sourceColumn.tasks.findIndex((task) => task.id === draggedTask.id);
     sourceColumn.tasks.splice(sourceTaskIndex, 1);
+
 
     const updatedTask = {
       ...draggedTask,
@@ -32,16 +36,20 @@ export const TaskBoardProvider = ({ children, initialColumns, onColumnChange, on
       estHours: draggedTask.estHours,
       submission: destColumnId === 'inReview' ? submissionData : draggedTask.submission,
       claimedBy: destColumnId === 'inProgress' ? claimedBy : (destColumnId === 'open' ? '' : draggedTask.claimedBy),
+      claimerUsername: destColumnId === 'inProgress' ? await getUsernameByAddress(claimedBy) : (destColumnId === 'open' ? '' : draggedTask.claimerUsername),
     };
+
+    console.log('test')
 
     destColumn.tasks.splice(newIndex, 0, updatedTask);
 
     setTaskColumns(newTaskColumns);
 
     // Call the onColumnChange prop when the columns are updated
-    if (onColumnChange) {
-      onColumnChange(newTaskColumns);
+    if (onUpdateColumns) {
+      onUpdateColumns(newTaskColumns);
     }
+    return true;
   };
 
   const addTask = async (newTask, destColumnId) => {

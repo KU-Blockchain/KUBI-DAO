@@ -29,24 +29,14 @@ const TaskCardModal = ({ isOpen, onClose, task, columnId, onEditTask }) => {
   const { hasExecNFT,hasMemberNFT, account, mintKUBIX} = useWeb3Context();
 
   const { getUsernameByAddress } = useDataBaseContext();
-  const [claimerUsername, setClaimerUsername] = useState('');
-
-  useEffect(() => {
-    const fetchClaimerUsername = async () => {
-      if (task && task.claimedBy) {
-        const username = await getUsernameByAddress(task.claimedBy);
-        setClaimerUsername(username);
-      } else {
-        setClaimerUsername('');
-      }
-    };
-    fetchClaimerUsername();
-  }, [task, getUsernameByAddress]);
+  
 
 
 
 
-  const handleButtonClick =  () => {
+
+
+  const handleButtonClick =  async() => {
     if (columnId === 'open') {
       
       if (hasMemberNFT) {
@@ -65,15 +55,21 @@ const TaskCardModal = ({ isOpen, onClose, task, columnId, onEditTask }) => {
       }
     }
     if (columnId === 'inReview') {
-      
       if (hasExecNFT) {
-        moveTask(task, columnId, 'completed', 0);
-        onClose();
-        mintKUBIX(task.claimedBy, task.kubixPayout)
+        try {
+          onClose();
+          await moveTask(task, columnId, 'completed', 0)
+          console.log("task.claimedBy", task.claimedBy)
+          setTimeout(async() => {await mintKUBIX(task.claimedBy, task.kubixPayout, true)}, 2100);
+          
+        } catch (error) {
+          console.error("Error moving task:", error);
+        }
       } else {
-         alert('You must be an executive to complete the review');
+        alert('You must be an executive to complete the review');
       }
     }
+    
     if (columnId === 'completed') {
       if (hasExecNFT) {
         deleteTask(task.id, columnId);
@@ -126,7 +122,7 @@ const TaskCardModal = ({ isOpen, onClose, task, columnId, onEditTask }) => {
           </Box >
           {task.claimedBy && (
             <Text fontSize="sm" mr={12}>
-              Claimed By: {claimerUsername}
+              Claimed By: {task.claimerUsername}
             </Text>
           )}
         </Flex>

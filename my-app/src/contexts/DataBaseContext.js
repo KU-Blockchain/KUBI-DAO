@@ -1,7 +1,8 @@
-import { ethers } from 'ethers';
+import { providers, JsonRpcBatchProvider, ethers } from 'ethers';
 import ipfs from '../db/ipfs';
 import ProjectManagerArtifact from '../abi/ProjectManager.json';
 import { createContext, useContext, useState, useEffect } from 'react';
+
 
 const DataBaseContext = createContext();
 
@@ -10,66 +11,81 @@ export const useDataBaseContext = () => {
 };
 
 export const DataBaseProvider = ({ children }) => {
+  const [projects, setProjects] = useState([]);
+  const [selectedProject, setSelectedProject] = useState(null);
+  const [userDetails, setUserDetails] = useState(null);
+  const [account, setAccount] = useState('');
+  const [updateInProgress, setUpdateInProgress] = useState(false);
 
-    
+  const PMContract = '0x5227970228DD9951e3e77a538a486221314Af06d';
 
-    const [projects, setProjects] = useState([]);
-    const [selectedProject, setSelectedProject] = useState(null);
-    const [userDetails, setUserDetails] = useState(null);
-    const [account, setAccount] = useState("");
+  // Create provider, signer, and contract instances only once
+  const provider = new providers.JsonRpcProvider(
+    'https://rpc-mumbai.maticvigil.com/'
+  );
+  const signer = new ethers.Wallet(process.env.NEXT_PUBLIC_PRIVATE_KEY, provider);
+  const contract = new ethers.Contract(PMContract, ProjectManagerArtifact.abi, signer);
 
-    const PMContract= "0x9C5ba7F2Fa8a951E982B4d9C87A0447522CfBFC2"
+  useEffect(() => {
+    const loadInitialProject = async () => {
+      const projectCount = await contract.getProjectIdCounter();
+      const projectIds = Array.from({ length: projectCount }, (_, i) => i + 1);
 
-    //used for loading project data from ipfs and smart contract
-    useEffect(() => {
-        const loadInitialProject = async () => {
-        const provider = new ethers.providers.JsonRpcProvider('https://rpc-mumbai.maticvigil.com/');
-        const signer = new ethers.Wallet(process.env.NEXT_PUBLIC_PRIVATE_KEY, provider);
-        const contract = new ethers.Contract(PMContract, ProjectManagerArtifact.abi, signer);
+      // Use batch requests to fetch project data
+      
+      const batchRequests = projectIds.map((id) => contract.projects(id));
 
-        const projectCount = await contract.getProjectIdCounter();
-        const projectsData = [];
+      const projectResults = await Promise.all(batchRequests);
 
-        for (let i = 1; i <= projectCount; i++) {
-            const projectData = await contract.projects(i);
-            const projectId = projectData.id.toNumber(); 
-            const projectIpfsHash = projectData.ipfsHash;
-            const projectDataFromIPFS = JSON.parse(await (await fetch(`https://ipfs.io/ipfs/${projectIpfsHash}`)).text())
-            const projectName = projectDataFromIPFS.name;
-            const projectColumns = projectDataFromIPFS.columns;
-            
-            projectsData.push({
-            id: projectId, 
+      
+
+      const projectsData = await Promise.all(
+        projectResults.map(async (projectData, i) => {
+          const projectId = i + 1;
+          const projectIpfsHash = projectData.ipfsHash;
+          const projectDataFromIPFS = JSON.parse(
+            await (await fetch(`https://ipfs.io/ipfs/${projectIpfsHash}`)).text()
+          );
+          const projectName = projectDataFromIPFS.name;
+          const projectColumns = projectDataFromIPFS.columns;
+
+          return {
+            id: projectId,
             name: projectName,
             columns: projectColumns,
-            });
-        }
+          };
+        })
+      );
 
-        setProjects(projectsData);
-        setSelectedProject(projectsData[0]);
+      setProjects(projectsData);
+      setSelectedProject(projectsData[0]);
+    };
 
+    loadInitialProject();
+  }, []);
 
-        };
-
-        loadInitialProject();
-    }, []);
-
-    //handle updating the project data in the smart contract and ipfs when collumn changes
-    const handleUpdateColumns = async (newColumns) => {
-        // Fetch the latest version of the project data from IPFS and the smart contract
-        const provider = new ethers.providers.JsonRpcProvider('https://rpc-mumbai.maticvigil.com/');
-        const signer = new ethers.Wallet(process.env.NEXT_PUBLIC_PRIVATE_KEY, provider);
-        const contract = new ethers.Contract(PMContract, ProjectManagerArtifact.abi, signer);
-        const projectData = await contract.projects(selectedProject.id);
-        const projectIpfsHash = projectData.ipfsHash;
-        const latestProjectData = JSON.parse(await (await fetch(`https://ipfs.io/ipfs/${projectIpfsHash}`)).text());
+  //handle updating the project data in the smart contract and ipfs when collumn changes
+  const handleUpdateColumns = async (newColumns) => {
+    if (updateInProgress) {
+      return;
+    }
+    setUpdateInProgress(true);
+    // Fetch the latest version of the project data from IPFS and the smart contract
+    const provider = new providers.JsonRpcProvider('https://rpc-mumbai.maticvigil.com/');
+    const signer = new ethers.Wallet(process.env.NEXT_PUBLIC_PRIVATE_KEY, provider);
+    const contract = new ethers.Contract(PMContract, ProjectManagerArtifact.abi, signer);
+    const projectData = await contract.projects(selectedProject.id);
+    const projectIpfsHash = projectData.ipfsHash;
+    const latestProjectData = JSON.parse(await (await fetch(`https://ipfs.io/ipfs/${projectIpfsHash}`)).text());
         console.log("checked for changes")
         // Merge the latest version of the project data with the new columns
+        console.log('Latest project data:', latestProjectData.columns);
         const mergedColumns = latestProjectData.columns.map((column) => {
-        const newColumn = newColumns.find((c) => c.id === column.id);
-        console.log("merged changes")
-        return newColumn ? { ...column, tasks: newColumn.tasks } : column;
+          console.log('handleUpdateColumns called:', newColumns);
+          const newColumn = newColumns.find((c) => c.id === column.id);
+          return newColumn ? { ...column, tasks: newColumn.tasks } : column;
         });
+        console.log('Merged columns:', mergedColumns);
     
         // Update state with the merged data
         setSelectedProject((prevSelectedProject) => ({
@@ -91,8 +107,10 @@ export const DataBaseProvider = ({ children }) => {
         const newIpfsHash = ipfsResult.path;
         await contract.updateProject(selectedProject.id, newIpfsHash);
         console.log("updated project on smart contract")
-    };
 
+        setUpdateInProgress(false);
+    };
+    
     //handle creating a new project and uploading to ipfs and smart contract
     const handleCreateProject = async (projectName) => {
         const newProject = {
@@ -108,7 +126,7 @@ export const DataBaseProvider = ({ children }) => {
         };
 
         const projectData = {
-        name: newProject.name, // <-- Include project name in the data
+        name: newProject.name, 
         columns: newProject.columns,
         };
         // Save the new project to IPFS
@@ -129,9 +147,7 @@ export const DataBaseProvider = ({ children }) => {
     const fetchUserDetails = async () => {
         if (!web3 || !account) return;
         try {
-          const provider = new ethers.providers.JsonRpcProvider('https://rpc-mumbai.maticvigil.com/');
-          const signer = new ethers.Wallet(process.env.NEXT_PUBLIC_PRIVATE_KEY, provider);
-          const contract = new ethers.Contract(PMContract, ProjectManagerArtifact.abi, signer);
+
       
           // Fetch the accounts data IPFS hash from the smart contract
           const accountsDataIpfsHash = await contract.accountsDataIpfsHash();
@@ -150,9 +166,7 @@ export const DataBaseProvider = ({ children }) => {
 
       const addUserData = async (name, username,email) => {
         
-          const provider = new ethers.providers.JsonRpcProvider('https://rpc-mumbai.maticvigil.com/');
-          const signer = new ethers.Wallet(process.env.NEXT_PUBLIC_PRIVATE_KEY, provider);
-          const contract = new ethers.Contract(PMContract, ProjectManagerArtifact.abi, signer);
+
         
           // Fetch the accounts data IPFS hash from the smart contract
           const accountsDataIpfsHash = await contract.accountsDataIpfsHash();
@@ -167,7 +181,7 @@ export const DataBaseProvider = ({ children }) => {
           accountsDataJson[account] = {
             name,
             username,
-            email
+            email,
           };
         
           // Save the updated accounts data to IPFS
@@ -182,9 +196,7 @@ export const DataBaseProvider = ({ children }) => {
       };
       const getUsernameByAddress = async (walletAddress) => {
         try {
-          const provider = new ethers.providers.JsonRpcProvider('https://rpc-mumbai.maticvigil.com/');
-          const signer = new ethers.Wallet(process.env.NEXT_PUBLIC_PRIVATE_KEY, provider);
-          const contract = new ethers.Contract(PMContract, ProjectManagerArtifact.abi, signer);
+
       
           // Fetch the accounts data IPFS hash from the smart contract
           const accountsDataIpfsHash = await contract.accountsDataIpfsHash();
@@ -207,6 +219,26 @@ export const DataBaseProvider = ({ children }) => {
         }
       };
       
+      const clearData = async () => {
+        // Upload an empty JSON object to IPFS
+        const ipfsResult = await ipfs.add(JSON.stringify({}));
+        const newIpfsHash = ipfsResult.path;
+      
+        // Loop through all projects and update their project data IPFS hash in the smart contract
+        for (const project of projects) {
+          await contract.updateProject(project.id, newIpfsHash);
+        }
+      
+        // Update the account data IPFS hash in the smart contract
+        await contract.updateAccountsData(newIpfsHash);
+      
+        // Clear the local state
+        setProjects([]);
+        setSelectedProject(null);
+        setUserDetails(null);
+      };
+      
+      
     
     return (
         <DataBaseContext.Provider
@@ -224,6 +256,7 @@ export const DataBaseProvider = ({ children }) => {
             fetchUserDetails,
             addUserData,
             getUsernameByAddress,
+            clearData,
         }}
         >
         {children}
