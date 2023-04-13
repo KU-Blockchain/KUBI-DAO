@@ -22,7 +22,7 @@ const TaskCard = ({ id, name, description, difficulty, estHours, index, columnId
 
   const [{ isDragging }, drag] = useDrag(() => ({
     type: 'task',
-    item: { id, index, columnId, name, description,difficulty, estHours, claimedBy},
+    item: { id, index, columnId, name, description,difficulty, estHours, claimedBy, claimerUsername},
     collect: (monitor) => ({
       isDragging: monitor.isDragging(),
     }),

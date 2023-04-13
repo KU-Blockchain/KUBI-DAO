@@ -85,9 +85,9 @@ const TaskColumn = ({ title, tasks, columnId }) => {
   
         if (item.columnId !== columnId) {
           const newIndex = tasks.length;
-          
+          console.log(item.claimerUsername)
           const claimedByValue = title === 'In Progress' ? account : item.claimedBy;
-          const claimerUserValue = title === 'In Progress' ?  await getUsernameByAddress(account) : item.claimerUserValue;
+          const claimerUserValue = title === 'In Progress' ?  await getUsernameByAddress(account) : item.claimerUsername;
           console.log("claimerUserValue: ", claimerUserValue)
           const draggedTask = {
             ...item,
