@@ -26,6 +26,7 @@ export const Web3Provider = ({ children }) => {
   const [signer, setSigner] = useState(null);
   const [hasMemberNFT, setMemberNFT] = useState(false);
   const [hasExecNFT, setExecNFT] = useState(false);
+  const [PMContract, setPMcontract] = useState(null);
   
 
 
@@ -121,8 +122,6 @@ export const Web3Provider = ({ children }) => {
       const contract = new ethers.Contract(kubixTokenAddress, KUBIXTokenArtifact.abi, signer);
 
       const contractPM = new ethers.Contract(PMContract, ProjectManagerArtifact.abi, signer);
-
-      
 
 
   
