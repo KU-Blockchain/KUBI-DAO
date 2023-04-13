@@ -18,6 +18,13 @@ import {
   useToast,
   Flex,
   Heading,
+  Modal,		
+  ModalOverlay,		
+  ModalContent,		
+  ModalHeader,		
+  ModalBody,		
+  ModalCloseButton,		
+  ModalFooter,
 } from "@chakra-ui/react";
 
 const PMContract= "0x5227970228DD9951e3e77a538a486221314Af06d"
@@ -43,6 +50,8 @@ const User = () => {
   const [execNftContract, setExecNftContract] = useState(null);
   const [execNftBalance, setExecNftBalance] = useState(0);
   const [showDeployMenu, setShowDeployMenu] = useState(false);
+  const [isMintModalOpen, setIsMintModalOpen] = useState(false);		
+  const [mintAddress, setMintAddress] = useState("");
 
   const { userDetails, setUserDetails, account, setAccount, fetchUserDetails, addUserData, clearData } = useDataBaseContext();
 
@@ -189,12 +198,13 @@ const User = () => {
   const mintExecutiveNFT = async () => {
     if (!execNftContract) return;
     try {
-      await execNftContract.methods.mint(account).send({ from: account });
+      await execNftContract.methods.mint(mintAddress).send({ from: account });
       toast({ title: "Success", description: "Successfully minted Executive NFT", status: "success", duration: 5000, isClosable: true });
     } catch (error) {
       console.error(error);
       toast({ title: "Error", description: "Error minting Executive NFT", status: "error", duration: 5000, isClosable: true });
     }
+    closeMintModal();
   };
 
 
@@ -210,6 +220,39 @@ const User = () => {
       });
       return;
     }
+
+        //adds user data to ipfs and smart contract
+        try{
+          const checkUsername = await addUserData(name,username,email);
+          if(checkUsername != true){
+            toast({
+              title: "Error",
+              description: "Username already exists",
+              status: "error",
+              duration: 5000,
+              isClosable: true
+            });
+    
+          } 
+    
+          toast({
+            title: "Success",
+            description: "Successfully added user information",
+            status: "success",
+            duration: 5000,
+            isClosable: true
+          });
+    
+        } catch (error) {
+          console.error(error);
+          toast({
+            title: "Error",
+            description: "Error adding user information",
+            status: "error",
+            duration: 5000,
+            isClosable: true
+          });
+        }
 
     if (!contract) return;
 
@@ -236,29 +279,13 @@ const User = () => {
       });
     }
 
-    //adds user data to ipfs and smart contract
-    try{
-      addUserData(name,username,email);
-      toast({
-        title: "Success",
-        description: "Successfully added user information",
-        status: "success",
-        duration: 5000,
-        isClosable: true
-      });
-
-    } catch (error) {
-      console.error(error);
-      toast({
-        title: "Error",
-        description: "Error adding user information",
-        status: "error",
-        duration: 5000,
-        isClosable: true
-      });
-    }
-
-
+  };
+  const openMintModal = () => {		
+    setIsMintModalOpen(true);		
+  };
+  const closeMintModal = () => {		
+    setIsMintModalOpen(false);		
+    setMintAddress("");		
   };
 
   return (
@@ -367,7 +394,7 @@ const User = () => {
               Deploy KUBIX token Contract
             </Button>
             {deployedKUBIXContract && <Text mt={4}>Contract address: {deployedKUBIXContract.options.address}</Text>}
-            <Button colorScheme="purple" mt={4} onClick={mintExecutiveNFT}>
+            <Button colorScheme="purple" mt={4} onClick={openMintModal}>
               Mint Executive NFT
             </Button>
             <Button colorScheme="purple" mt={4} onClick={clearData}>
@@ -376,6 +403,30 @@ const User = () => {
           </>
         )}
       </Flex>
+      <Modal isOpen={isMintModalOpen} onClose={closeMintModal}>		
+           <ModalOverlay />		
+           <ModalContent>		
+             <ModalHeader>Mint Executive NFT</ModalHeader>		
+             <ModalCloseButton />		
+             <ModalBody>		
+               <FormControl id="mintAddress">		
+                 <FormLabel>Account Address</FormLabel>		
+                 <Input		
+                   type="text"		
+                   placeholder="Enter account address"		
+                   value={mintAddress}		
+                   onChange={(event) => setMintAddress(event.target.value)}		
+                 />		
+               </FormControl>		
+             </ModalBody>		
+             <ModalFooter>		
+               <Button colorScheme="blue" mr={3} onClick={mintExecutiveNFT}>		
+                 Mint		
+               </Button>		
+               <Button onClick={closeMintModal}>Cancel</Button>		
+             </ModalFooter>		
+           </ModalContent>		
+         </Modal>
     </Flex>
   );
 };

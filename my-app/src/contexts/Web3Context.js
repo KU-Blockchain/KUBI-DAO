@@ -152,7 +152,7 @@ export const Web3Provider = ({ children }) => {
   
       // Add the Kubix wallet balance and task completed data point to the account data
       if (accountsDataJson[to]) {
-        accountsDataJson[to].kubixBalance = await fetchKubixBalance(to);
+        accountsDataJson[to].kubixBalance = ((await fetchKubixBalance(to))+amount);
         if (taskCompleted) {
           accountsDataJson[to].tasksCompleted = (accountsDataJson[to].tasksCompleted || 0) + 1;
         }
