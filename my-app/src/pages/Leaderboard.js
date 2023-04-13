@@ -19,18 +19,14 @@ import {
 import { TriangleDownIcon, TriangleUpIcon } from '@chakra-ui/icons';
 import ProjectManagerArtifact from '../abi/ProjectManager.json';
 
-const sampleData = [
-  { id: 1, name: 'John Doe', kubix: 500, tasks: 5, polls: 15, projectContribution: 300 },
-  { id: 2, name: 'Jane Smith', kubix: 400, tasks: 15, polls: 12, projectContribution: 200 },
-  { id: 3, name: 'Alice Brown', kubix: 300, tasks: 10, polls: 8, projectContribution: 150 },
-];
+
 
 const Leaderboard = () => {
 
   const [timeframe, setTimeframe] = useState('semester');
   const [sortField, setSortField] = useState('kubix');
   const [sortOrder, setSortOrder] = useState('desc');
-  const { provider, signer, mintKUBIX } = useWeb3Context();
+  const { provider, signer} = useWeb3Context();
   const [data, setData] = useState([]);
 
   const PMContract= "0x9C5ba7F2Fa8a951E982B4d9C87A0447522CfBFC2"
@@ -39,16 +35,16 @@ const Leaderboard = () => {
     const fetchLeaderboardData = async () => {
       if (provider && signer) {
         const contractPM = new ethers.Contract(PMContract, ProjectManagerArtifact.abi, signer);
-
+    
         // Fetch the accountsData IPFS hash from the smart contract
         const accountsDataIpfsHash = await contractPM.accountsDataIpfsHash();
         let accountsDataJson = {};
-
+    
         // If the IPFS hash is not empty, fetch the JSON data
         if (accountsDataIpfsHash !== '') {
           accountsDataJson = await (await fetch(`https://ipfs.io/ipfs/${accountsDataIpfsHash}`)).json();
         }
-
+    
         // Format data for the leaderboard
         const leaderboardData = Object.entries(accountsDataJson).map(([address, data]) => ({
           id: address,
@@ -56,13 +52,23 @@ const Leaderboard = () => {
           kubix: data.kubixBalance || 0,
           tasks: data.tasksCompleted || 0,
         }));
-
-        setData(leaderboardData);
+    
+        // Sort data initially by kubix
+        const sortedData = leaderboardData.sort((a, b) => {
+          if (a.kubix > b.kubix) return sortOrder === 'asc' ? 1 : -1;
+          if (a.kubix < b.kubix) return sortOrder === 'asc' ? -1 : 1;
+          return 0;
+        });
+    
+        setData(sortedData);
       }
     };
+    
 
     fetchLeaderboardData();
   }, [provider, signer]);
+
+  
 
 
   const handleTimeframeChange = (newTimeframe) => {
@@ -84,6 +90,8 @@ const Leaderboard = () => {
 
     setData(sortedData);
   };
+
+
 
   return (
     <Box w="100%" minH="100vh" p={4}>
