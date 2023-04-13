@@ -52,6 +52,7 @@ const User = () => {
   const [showDeployMenu, setShowDeployMenu] = useState(false);
   const [isMintModalOpen, setIsMintModalOpen] = useState(false);		
   const [mintAddress, setMintAddress] = useState("");
+  const [showMintMenu, setShowMintMenu] = useState(false);
 
   const { userDetails, setUserDetails, account, setAccount, fetchUserDetails, addUserData, clearData } = useDataBaseContext();
 
@@ -394,11 +395,19 @@ const User = () => {
               Deploy KUBIX token Contract
             </Button>
             {deployedKUBIXContract && <Text mt={4}>Contract address: {deployedKUBIXContract.options.address}</Text>}
-            <Button colorScheme="purple" mt={4} onClick={openMintModal}>
-              Mint Executive NFT
-            </Button>
             <Button colorScheme="purple" mt={4} onClick={clearData}>
               Clear all Data
+            </Button>
+          </>
+          
+        )}
+        <Button colorScheme="blue" mt={4} onClick={() => setShowMintMenu(!showMintMenu)}>
+          Mint Menu
+        </Button>
+        {showMintMenu && (
+          <>
+            <Button colorScheme="purple" mt={4} onClick={openMintModal}>
+              Mint Executive NFT
             </Button>
           </>
         )}
