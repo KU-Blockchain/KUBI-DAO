@@ -3,6 +3,8 @@ import { ethers } from 'ethers';
 import KUBIMembershipNFTArtifact from "../abi/KUBIMembershipNFT.json";
 import ExecNFTArtifact from "../abi/KUBIExecutiveNFT.json";
 import KUBIXTokenArtifact from "../abi/KUBIX.json";
+import ProjectManagerArtifact from "../abi/ProjectManager.json";
+import ipfs from '../db/ipfs';
 
 
 
@@ -15,6 +17,7 @@ export const useWeb3Context = () => {
 const membershipNFTAdress = '0x9F15cEf6E7bc4B6a290435A598a759DbE72b41b5';
 const execNFTAdress = '0x1F3Ae002f2058470FC5C72C70809F31Db3d93fBb';
 const kubixTokenAddress = "0x894158b1f988602b228E39a633C7A2458A82028A"
+const PMContract= "0x9C5ba7F2Fa8a951E982B4d9C87A0447522CfBFC2"
 const INFURA_PROJECT_ID = process.env.NEXT_PUBIC_INFURA_PROJECT_ID;
 
 export const Web3Provider = ({ children }) => {
@@ -75,67 +78,92 @@ export const Web3Provider = ({ children }) => {
         };
       }, [provider]);
 
-  useEffect(() => {
-    const fetchMemberNFTOwnership = async () => {
-      if (provider && account && signer) {
-        try {
-          const contract = new ethers.Contract(membershipNFTAdress, KUBIMembershipNFTArtifact.abi, signer);
 
-          const balance = await contract.balanceOf(account);
 
-          // Check if NFT balance is 1, meaning the user owns the NFT
-          setMemberNFT(balance.toNumber() === 1);
-        } catch (error) {
-          console.error(error);
+    //checks exec NFT ownership and membership NFT ownership
+    useEffect(() => {
+      const fetchNFTOwnership = async () => {
+        if (provider && account && signer) {
+          try {
+            const memberContract = new ethers.Contract(membershipNFTAdress, KUBIMembershipNFTArtifact.abi, signer);
+            const execContract = new ethers.Contract(execNFTAdress, ExecNFTArtifact.abi, signer);
+
+            // Fetch the balances of both NFTs in parallel
+            const [memberBalance, execBalance] = await Promise.all([
+              memberContract.balanceOf(account),
+              execContract.balanceOf(account),
+            ]);
+
+            // Check if NFT balances are 1, meaning the user owns the NFTs
+            setMemberNFT(memberBalance.toNumber() === 1);
+            setExecNFT(execBalance.toNumber() === 1);
+          } catch (error) {
+            console.error(error);
+            setMemberNFT(false);
+            setExecNFT(false);
+          }
+        } else {
           setMemberNFT(false);
-        }
-      } else {
-        setMemberNFT(false);
-      }
-    };
-
-    fetchMemberNFTOwnership();
-  }, [provider, account, signer]);
-
-  //checks exec NFT ownership 
-  useEffect(() => {
-    const fetchExecNFTOwnership = async () => {
-      if (provider && account && signer) {
-        try {
-          const contract = new ethers.Contract(execNFTAdress, ExecNFTArtifact.abi, signer);
-
-          const balance = await contract.balanceOf(account);
-
-          // Check if NFT balance is 1, meaning the user owns the executive NFT
-          setExecNFT(balance.toNumber() === 1);
-        } catch (error) {
-          console.error(error);
           setExecNFT(false);
         }
+      };
+
+      fetchNFTOwnership();
+    }, [provider, account, signer]);
+
+
+
+
+  const mintKUBIX = async (to, amount, taskCompleted = false) => {
+    try {
+      const provider = new ethers.providers.JsonRpcProvider('https://rpc-mumbai.maticvigil.com/');
+      const signer = new ethers.Wallet(process.env.NEXT_PUBLIC_PRIVATE_KEY, provider);
+      const contract = new ethers.Contract(kubixTokenAddress, KUBIXTokenArtifact.abi, signer);
+
+      const contractPM = new ethers.Contract(PMContract, ProjectManagerArtifact.abi, signer);
+
+      
+
+
+  
+      // Fetch the accountsData IPFS hash from the smart contract
+      const accountsDataIpfsHash = await contractPM.accountsDataIpfsHash();
+      let accountsDataJson = {};
+  
+      // If the IPFS hash is not empty, fetch the JSON data
+      if (accountsDataIpfsHash !== '') {
+        accountsDataJson = await (await fetch(`https://ipfs.io/ipfs/${accountsDataIpfsHash}`)).json();
+      }
+  
+      // Add the Kubix wallet balance and task completed data point to the account data
+      if (accountsDataJson[to]) {
+        accountsDataJson[to].kubixBalance = (accountsDataJson[to].kubixBalance || 0) + amount;
+        if (taskCompleted) {
+          accountsDataJson[to].tasksCompleted = (accountsDataJson[to].tasksCompleted || 0) + 1;
+        }
       } else {
-        setExecNFT(false);
+        accountsDataJson[to] = {
+          kubixBalance: amount,
+          tasksCompleted: taskCompleted ? 1 : 0,
+        };
       }
-    };
+  
+      // Save the updated accounts data to IPFS
+      const ipfsResult = await ipfs.add(JSON.stringify(accountsDataJson));
+      const newIpfsHash = ipfsResult.path;
+  
+      // Update the accounts data IPFS hash in the smart contract
+      await contractPM.updateAccountsData(newIpfsHash);
+  
+      // Mint the token
+      const amountToMint = ethers.utils.parseUnits(amount.toString(), 18);
 
-    fetchExecNFTOwnership();
-  }, [provider, account, signer]);
-
-  const mintKUBIX = async (to, amount) => {
-    const provider2 = new ethers.providers.JsonRpcProvider('https://rpc-mumbai.maticvigil.com/');
-    const signerHudson = new ethers.Wallet(process.env.NEXT_PUBLIC_PRIVATE_KEY, provider2);
-    
-    if (signerHudson) {
-      try {
-        const kubixToken = new ethers.Contract(kubixTokenAddress, KUBIXTokenArtifact.abi, signerHudson);
-        const mintTx = await kubixToken.mint(to, ethers.utils.parseEther(amount.toString()));
-        await mintTx.wait();
-      } catch (error) {
-        console.error(error);
-      }
-    } else {
-      console.log("No signer available");
+      await contract.mint(to, amountToMint);
+    } catch (error) {
+      console.error("Error minting KUBIX:", error);
     }
   };
+  
   
 
   const value = {

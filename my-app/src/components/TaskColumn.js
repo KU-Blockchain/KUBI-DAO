@@ -6,11 +6,13 @@ import TaskCard from './TaskCard';
 import { useTaskBoard } from '../contexts/TaskBoardContext';
 import AddTaskModal from './AddTaskModal';
 import { useWeb3Context } from '../contexts/Web3Context';
+import { useDataBaseContext } from '../contexts/DataBaseContext';
 
 const TaskColumn = ({ title, tasks, columnId }) => {
   const { moveTask, addTask, editTask } = useTaskBoard();
   const [isAddTaskModalOpen, setIsAddTaskModalOpen] = useState(false);
   const { hasExecNFT,hasMemberNFT,account } = useWeb3Context();
+  const { getUsernameByAddress } = useDataBaseContext();
   const hasMemberNFTRef = useRef(hasMemberNFT);
   const hasExecNFTRef = useRef(hasExecNFT);
 
@@ -47,7 +49,8 @@ const TaskColumn = ({ title, tasks, columnId }) => {
           id: `task-${Date.now()}`,
           difficulty: updatedTask.difficulty,
           estHours: updatedTask.estHours,
-          claimedBy: "", 
+          claimedBy: "",
+          claimerUsername: "", 
         };
         addTask(updatedTask, columnId);
       }
@@ -67,7 +70,7 @@ const TaskColumn = ({ title, tasks, columnId }) => {
   
     const [{ isOver }, drop] = useDrop(() => ({
       accept: 'task',
-      drop: (item) => {
+      drop: async(item) => {
         
         
         if (!hasMemberNFTRef.current && title != 'Completed') {
@@ -84,6 +87,8 @@ const TaskColumn = ({ title, tasks, columnId }) => {
           const newIndex = tasks.length;
           
           const claimedByValue = title === 'In Progress' ? account : item.claimedBy;
+          const claimerUserValue = title === 'In Progress' ?  await getUsernameByAddress(account) : item.claimerUserValue;
+          console.log("claimerUserValue: ", claimerUserValue)
           const draggedTask = {
             ...item,
             id: item.id,
@@ -92,6 +97,7 @@ const TaskColumn = ({ title, tasks, columnId }) => {
             difficulty: item.difficulty,
             estHours: item.estHours,
             claimedBy: claimedByValue,
+            claimerUsername: claimerUserValue,
           };
           moveTask(draggedTask, item.columnId, columnId, newIndex, item.submission, claimedByValue);
         }
@@ -137,6 +143,7 @@ const TaskColumn = ({ title, tasks, columnId }) => {
               estHours={task.estHours}
               submission={task.submission} 
               claimedBy={task.claimedBy}
+              claimerUsername={task.claimerUsername}
               columnId={columnId}
               onEditTask={(updatedTask) => handleEditTask(updatedTask, index)}
             />

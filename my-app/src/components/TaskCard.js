@@ -3,7 +3,7 @@ import { Box, useDisclosure } from '@chakra-ui/react';
 import { useDrag } from 'react-dnd';
 import TaskCardModal from './TaskCardModal';
 
-const TaskCard = ({ id, name, description, difficulty, estHours, index, columnId, submission,claimedBy, onEditTask, moveTask, }) => {
+const TaskCard = ({ id, name, description, difficulty, estHours, index, columnId, submission,claimedBy,claimerUsername, onEditTask, moveTask, }) => {
   const calculateKubixPayout = (difficulty, estimatedHours) => {
     
     const difficulties = {
@@ -62,7 +62,7 @@ const TaskCard = ({ id, name, description, difficulty, estHours, index, columnId
       <TaskCardModal
         isOpen={isOpen}
         onClose={onClose}
-        task={{ id, name, description, difficulty, estHours,kubixPayout, submission, claimedBy}}
+        task={{ id, name, description, difficulty, estHours,kubixPayout, submission, claimedBy,claimerUsername}}
         columnId={columnId}
         onEditTask={onEditTask}
         moveTask={moveTask}
