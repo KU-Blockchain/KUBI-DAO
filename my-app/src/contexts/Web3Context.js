@@ -28,7 +28,7 @@ export const Web3Provider = ({ children }) => {
   const [hasExecNFT, setExecNFT] = useState(false);
   const [PMContract, setPMcontract] = useState(null);
   const [kubixBalance, setKubixBalance] = useState(null);
-  const [KUBIXcontract, setKUBIXcontract] = useState(null);
+
   
 
 
@@ -45,14 +45,11 @@ export const Web3Provider = ({ children }) => {
         setSigner(signer);
         const accounts = await signer.getAddress();
         setAccount(accounts);
-        fetchKubixBalance(accounts[0])
 
       } else {
         alert('Reload the page with MetaMask');
 
       }
-      const KUBIXcontract = new ethers.Contract(kubixTokenAddress, KUBIXTokenArtifact.abi, signer);
-      setKUBIXcontract(KUBIXcontract);
     };
 
     useEffect(() => {
@@ -138,7 +135,7 @@ export const Web3Provider = ({ children }) => {
     try {
       const provider = new ethers.providers.JsonRpcProvider('https://rpc-mumbai.maticvigil.com/');
       const signer = new ethers.Wallet(process.env.NEXT_PUBLIC_PRIVATE_KEY, provider);
-      
+      const contract = new ethers.Contract(kubixTokenAddress, KUBIXTokenArtifact.abi, signer);
 
       const contractPM = new ethers.Contract(PMContractAddress, ProjectManagerArtifact.abi, signer);
 
@@ -155,7 +152,7 @@ export const Web3Provider = ({ children }) => {
   
       // Add the Kubix wallet balance and task completed data point to the account data
       if (accountsDataJson[to]) {
-        accountsDataJson[to].kubixBalance = ((await (fetchKubixBalance(to)+amount)));
+        accountsDataJson[to].kubixBalance = ((await fetchKubixBalance(to))+amount);
         if (taskCompleted) {
           accountsDataJson[to].tasksCompleted = (accountsDataJson[to].tasksCompleted || 0) + 1;
         }
@@ -176,24 +173,12 @@ export const Web3Provider = ({ children }) => {
       // Mint the token
       const amountToMint = ethers.utils.parseUnits(amount.toString(), 18);
 
-      
       await contract.mint(to, amountToMint);
     } catch (error) {
       console.error("Error minting KUBIX:", error);
     }
-
-    updateKubixBalance();
   };
   
-  const updateKubixBalance = async () => {
-    if (account && signer) {
-      const newBalance = await fetchKubixBalance(account);
-      setKubixBalance(newBalance);
-    }
-  };
-  useEffect(() => {
-    updateKubixBalance();
-  }, [account, signer]);
   
 
   const value = {
@@ -203,8 +188,6 @@ export const Web3Provider = ({ children }) => {
     hasMemberNFT,
     hasExecNFT,
     mintKUBIX,
-    kubixBalance,
-    KUBIXcontract,
   };
 
   return <Web3Context.Provider value={value}>{children}</Web3Context.Provider>;

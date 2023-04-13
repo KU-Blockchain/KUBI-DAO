@@ -6,7 +6,6 @@ import ProjectManagerArtifact from "../abi/ProjectManager.json";
 import ExecNFTArtifiact from "../abi/KUBIExecutiveNFT.json";
 import KUBIXArtifact from "../abi/KUBIX.json";
 import { useDataBaseContext } from "@/contexts/DataBaseContext";
-import { useWeb3Context } from "@/contexts/Web3Context";
 import { ethers } from "ethers";
 
 import {
@@ -28,9 +27,11 @@ import {
   ModalFooter,
 } from "@chakra-ui/react";
 
+const PMContract= "0x5227970228DD9951e3e77a538a486221314Af06d"
 const contractAddress = "0x9B5AE4442654281438aFD95c54C212e1eb5cEB2c";
 const kubiMembershipNFTAddress = "0x9F15cEf6E7bc4B6a290435A598a759DbE72b41b5";
 const KUBIExecutiveNFTAddress = "0x1F3Ae002f2058470FC5C72C70809F31Db3d93fBb";
+const KUBIXcontractAddress ="0x894158b1f988602b228E39a633C7A2458A82028A"
 
 const User = () => {
   const [web3, setWeb3] = useState(null);
@@ -38,7 +39,9 @@ const User = () => {
   const [username, setUsername] = useState("");
   const [name, setName] = useState("");
   const [contract, setContract] = useState(null);
+  const [KUBIXcontract, setKUBIXContract] = useState(null);
   const [balance, setBalance] = useState(0);
+  const [KUBIXbalance, setKUBIXBalance] = useState(0);
   const [kubiMembershipNFTContract, setKUBIMembershipNFTContract] = useState(null);
   const [nftBalance, setNftBalance] = useState(0);
   const [deployedPMContract, setDeployedPMContract] = useState(null);
@@ -52,7 +55,7 @@ const User = () => {
 
 
   const { userDetails, setUserDetails, account, setAccount, fetchUserDetails, addUserData, clearData } = useDataBaseContext();
-  const { kubixBalance, KUBIXcontract } = useWeb3Context();
+
 
 
   
@@ -74,6 +77,7 @@ const User = () => {
         const accounts = await web3.eth.getAccounts();
         setAccount(accounts[0]);
         setContract(new web3.eth.Contract(DirectDemocracyTokenArtifact.abi, contractAddress));
+        setKUBIXContract(new web3.eth.Contract(KUBIXArtifact.abi, KUBIXcontractAddress));
         setKUBIMembershipNFTContract(new web3.eth.Contract(KUBIMembershipNFTArtifact.abi, kubiMembershipNFTAddress));
       } catch (error) {
         console.error(error);
@@ -125,14 +129,14 @@ const User = () => {
   const deployKUBIXContract = async () => {
     if (!web3 || !account) return;
   
-    
+    const KUBIXContract = new web3.eth.Contract(KUBIXArtifact.abi);
     const deployOptions = {
       data: KUBIXArtifact.bytecode,
       arguments: [],
     };
   
     try {
-      const instance = await KUBIXcontract.deploy(deployOptions).send({ from: account });
+      const instance = await KUBIXContract.deploy(deployOptions).send({ from: account });
       setDeployedKUBIXContract(instance);
       console.log("Contract deployed at address:", instance.options.address);
     } catch (error) {
@@ -145,7 +149,16 @@ const User = () => {
   };
   useEffect(() => { fetchBalance() }, [contract, account]);
 
-
+  const fetchKUBIXBalance = async () => {
+    let temp = 0;
+    if (KUBIXcontract && account) {
+      temp = await KUBIXcontract.methods.balanceOf(account).call();
+    }
+  
+    setKUBIXBalance(ethers.utils.formatEther(temp));
+  };
+  
+  useEffect(() => { fetchKUBIXBalance() }, [KUBIXcontract, account]);
 
   const fetchNFTBalance = async () => {
     if (kubiMembershipNFTContract && account) setNftBalance(await kubiMembershipNFTContract.methods.balanceOf(account).call());
@@ -277,6 +290,8 @@ const User = () => {
     }
 
 
+
+
   };
 
   return (
@@ -315,7 +330,7 @@ const User = () => {
         <Text mt= {4}>Account:</Text>
         <Text>{account}</Text>
         <Text mt={4}>KUBI Token Balance: {balance}</Text>
-        <Text>KUBIX Token Balance: {kubixBalance}</Text>
+        <Text>KUBIX Token Balance: {KUBIXbalance}</Text>
         <Text>Membership NFT Balance: {nftBalance}</Text>
         <Text>Executive NFT Balance: {execNftBalance}</Text>
         
