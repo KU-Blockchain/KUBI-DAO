@@ -211,6 +211,39 @@ const User = () => {
       return;
     }
 
+        //adds user data to ipfs and smart contract
+        try{
+          const checkUsername = await addUserData(name,username,email);
+          if(checkUsername != true){
+            toast({
+              title: "Error",
+              description: "Username already exists",
+              status: "error",
+              duration: 5000,
+              isClosable: true
+            });
+    
+          } 
+    
+          toast({
+            title: "Success",
+            description: "Successfully added user information",
+            status: "success",
+            duration: 5000,
+            isClosable: true
+          });
+    
+        } catch (error) {
+          console.error(error);
+          toast({
+            title: "Error",
+            description: "Error adding user information",
+            status: "error",
+            duration: 5000,
+            isClosable: true
+          });
+        }
+
     if (!contract) return;
 
     try {
@@ -236,27 +269,7 @@ const User = () => {
       });
     }
 
-    //adds user data to ipfs and smart contract
-    try{
-      addUserData(name,username,email);
-      toast({
-        title: "Success",
-        description: "Successfully added user information",
-        status: "success",
-        duration: 5000,
-        isClosable: true
-      });
 
-    } catch (error) {
-      console.error(error);
-      toast({
-        title: "Error",
-        description: "Error adding user information",
-        status: "error",
-        duration: 5000,
-        isClosable: true
-      });
-    }
 
 
   };
