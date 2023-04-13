@@ -126,7 +126,7 @@ export const DataBaseProvider = ({ children }) => {
         };
 
         const projectData = {
-        name: newProject.name, // <-- Include project name in the data
+        name: newProject.name, 
         columns: newProject.columns,
         };
         // Save the new project to IPFS
