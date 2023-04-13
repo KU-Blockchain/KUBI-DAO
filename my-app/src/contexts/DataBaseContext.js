@@ -17,7 +17,7 @@ export const DataBaseProvider = ({ children }) => {
   const [account, setAccount] = useState('');
   const [updateInProgress, setUpdateInProgress] = useState(false);
 
-  const PMContract = '0x9C5ba7F2Fa8a951E982B4d9C87A0447522CfBFC2';
+  const PMContract = '0x5227970228DD9951e3e77a538a486221314Af06d';
 
   // Create provider, signer, and contract instances only once
   const provider = new providers.JsonRpcProvider(
@@ -219,6 +219,26 @@ export const DataBaseProvider = ({ children }) => {
         }
       };
       
+      const clearData = async () => {
+        // Upload an empty JSON object to IPFS
+        const ipfsResult = await ipfs.add(JSON.stringify({}));
+        const newIpfsHash = ipfsResult.path;
+      
+        // Loop through all projects and update their project data IPFS hash in the smart contract
+        for (const project of projects) {
+          await contract.updateProject(project.id, newIpfsHash);
+        }
+      
+        // Update the account data IPFS hash in the smart contract
+        await contract.updateAccountsData(newIpfsHash);
+      
+        // Clear the local state
+        setProjects([]);
+        setSelectedProject(null);
+        setUserDetails(null);
+      };
+      
+      
     
     return (
         <DataBaseContext.Provider
@@ -236,6 +256,7 @@ export const DataBaseProvider = ({ children }) => {
             fetchUserDetails,
             addUserData,
             getUsernameByAddress,
+            clearData,
         }}
         >
         {children}

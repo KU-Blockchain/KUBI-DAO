@@ -20,7 +20,7 @@ import {
   Heading,
 } from "@chakra-ui/react";
 
-const PMContract= "0x9C5ba7F2Fa8a951E982B4d9C87A0447522CfBFC2"
+const PMContract= "0x5227970228DD9951e3e77a538a486221314Af06d"
 const contractAddress = "0x9B5AE4442654281438aFD95c54C212e1eb5cEB2c";
 const kubiMembershipNFTAddress = "0x9F15cEf6E7bc4B6a290435A598a759DbE72b41b5";
 const KUBIExecutiveNFTAddress = "0x1F3Ae002f2058470FC5C72C70809F31Db3d93fBb";
@@ -44,7 +44,7 @@ const User = () => {
   const [execNftBalance, setExecNftBalance] = useState(0);
   const [showDeployMenu, setShowDeployMenu] = useState(false);
 
-  const { userDetails, setUserDetails, account, setAccount, fetchUserDetails, addUserData } = useDataBaseContext();
+  const { userDetails, setUserDetails, account, setAccount, fetchUserDetails, addUserData, clearData } = useDataBaseContext();
 
 
 
@@ -369,6 +369,9 @@ const User = () => {
             {deployedKUBIXContract && <Text mt={4}>Contract address: {deployedKUBIXContract.options.address}</Text>}
             <Button colorScheme="purple" mt={4} onClick={mintExecutiveNFT}>
               Mint Executive NFT
+            </Button>
+            <Button colorScheme="purple" mt={4} onClick={clearData}>
+              Clear all Data
             </Button>
           </>
         )}

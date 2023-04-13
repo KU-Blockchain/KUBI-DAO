@@ -29,7 +29,7 @@ const Leaderboard = () => {
   const { provider, signer} = useWeb3Context();
   const [data, setData] = useState([]);
 
-  const PMContract= "0x9C5ba7F2Fa8a951E982B4d9C87A0447522CfBFC2"
+  const PMContract= "0x5227970228DD9951e3e77a538a486221314Af06d"
 
   useEffect(() => {
     const fetchLeaderboardData = async () => {
