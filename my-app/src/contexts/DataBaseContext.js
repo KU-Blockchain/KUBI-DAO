@@ -242,6 +242,21 @@ export const DataBaseProvider = ({ children }) => {
         setUserDetails(null);
       };
       
+      const pushProjectHashes = async (projectHashes, accountsDataHash) => {
+        try {
+          // Update each project hash in the smart contract
+          for (let i = 0; i < projectHashes.length; i++) {
+            const projectId = i + 1;
+            await contract.updateProject(projectId, projectHashes[i]);
+          }
+          // Update the accounts data hash in the smart contract
+          await contract.updateAccountsData(accountsDataHash);
+      
+          console.log("Project hashes and accounts data hash pushed successfully.");
+        } catch (error) {
+          console.error("Error pushing project hashes and accounts data hash:", error);
+        }
+      };
       
     
     return (
@@ -261,6 +276,7 @@ export const DataBaseProvider = ({ children }) => {
             addUserData,
             getUsernameByAddress,
             clearData,
+            pushProjectHashes,
         }}
         >
         {children}

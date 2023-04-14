@@ -21,6 +21,8 @@ contract ProjectManager is ERC721URIStorage, Ownable {
     event ProjectCreated(uint256 indexed projectId, string ipfsHash);
     event ProjectUpdated(uint256 indexed projectId, string newIpfsHash);
     event AccountsDataUpdated(string newIpfsHash);
+    event ProjectDeleted(uint256 indexed projectId);
+
 
     constructor() ERC721("ProjectManager", "PM") {}
 
@@ -45,4 +47,12 @@ contract ProjectManager is ERC721URIStorage, Ownable {
     function getProjectIdCounter() public view returns (uint256) {
         return projectIdCounter.current();
     }
+
+    function deleteProject(uint256 projectId) public onlyOwner {
+        require(bytes(projects[projectId].ipfsHash).length > 0, "Project not found");
+        delete projects[projectId];
+        projectIdCounter.decrement();
+        emit ProjectDeleted(projectId);
+    }
+
 }
