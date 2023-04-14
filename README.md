@@ -1,8 +1,8 @@
-#KU Blockchain Institute DAO README
+# KU Blockchain Institute DAO README
 
 The KU Blockchain Institute DAO is a decentralized autonomous organization focused on providing a platform for its members to contribute and participate in various tasks and events. This README outlines the key features of the DAO, the hybrid tokenomics model, and instructions on how to join.
 
-##Key Features
+## Key Features
 
 1. **Task Manager:** The task manager allows members to claim and complete tasks while storing the data on IPFS. Upon completion of tasks, members are automatically rewarded with KUBIX participation tokens.
 2. **NFT Gating:** NFTs are used to manage membership and grant privileges such as claiming tasks, creating tasks, and reviewing completed tasks. There are two types of NFTs: Membership NFTs and Executive NFTs.
@@ -10,7 +10,7 @@ Leaderboard: A leaderboard displays user rankings based on their total KUBIX tok
 3. **User Page:** The user page allows people with a valid KU email address to join the DAO and displays user information, including KUBIX balance and tasks completed.
 KUBI Direct Democracy Coin: The DAO includes a voting mechanism using the KUBI Direct Democracy Coin, but the voting features have not been set up yet.
 
-##Hybrid Tokenomics Model
+## Hybrid Tokenomics Model
 
 The hybrid tokenomics model combines token burning, exponential burn over time, incentive, and privilege systems. Members who participate in events and complete tasks can earn KUBIX tokens, which can be used to unlock merchandise, discounts, and other benefits.
 
@@ -19,10 +19,10 @@ The KUBIX distribution is based on a formula that takes into account the task's 
 
 **BaseKUBIX + (DifficultyMultiplier * EstimatedHours) = TotalKUBIX (rounded to whole number)**
 
-###Merchandise and Tiers
+### Merchandise and Tiers
 Members can unlock merchandise at different KUBIX levels without spending their KUBIX tokens. When a member unlocks merchandise, they receive an NFT certificate for the merchandise and an NFT to indicate their tier achievement for that year.
 
-##Joining the KU Blockchain Institute DAO
+## Joining the KU Blockchain Institute DAO
 
 1. Open the KU Blockchain Institute DAO site in a browser that supports MetaMask: https://kublockchaindao.on.fleek.co/tasks/
 2. Ensure you are signed in to MetaMask.
