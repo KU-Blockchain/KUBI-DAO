@@ -81,7 +81,10 @@ const TaskColumn = ({ title, tasks, columnId }) => {
           alert('You must be an Executive to review tasks.');
           return;
         }
-        
+        if (item.columnId === 'completed') {
+          alert('You cannot move tasks from the Completed column.');
+          return;
+        }
   
         if (item.columnId !== columnId) {
           const newIndex = tasks.length;
