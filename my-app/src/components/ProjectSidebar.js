@@ -10,11 +10,18 @@ import {
   Flex,
 } from '@chakra-ui/react';
 import { useWeb3Context } from '../contexts/Web3Context';
+import { useDataBaseContext } from '@/contexts/DataBaseContext';
+import { DndProvider } from 'react-dnd';
+import { HTML5Backend } from 'react-dnd-html5-backend';
+import DraggableProject from './DraggableProject';
+import TrashBin from './TrashBin';
+
 
 const ProjectSidebar = ({ projects,selectedProject, onSelectProject, onCreateProject }) => {
   const [newProjectName, setNewProjectName] = useState('');
   const [showInput, setShowInput] = useState(false);
   const { hasExecNFT} = useWeb3Context();
+  const { handleDeleteProject } = useDataBaseContext();
   
   const handleCreateProject = () => {
     
@@ -29,8 +36,18 @@ const ProjectSidebar = ({ projects,selectedProject, onSelectProject, onCreatePro
       }
 
   };
+  const onDeleteProject = (projectId) => {
+    if(hasExecNFT){
+      handleDeleteProject(projectId);
+    }
+    else{
+      alert('You must be an executive to delete project');
+    }
+
+  }
 
   return (
+    <DndProvider backend={HTML5Backend}>
     <Box
       bg="gray.200"
       w="300px"
@@ -45,24 +62,27 @@ const ProjectSidebar = ({ projects,selectedProject, onSelectProject, onCreatePro
         Projects
         </Heading>
       <Box flexGrow={1} overflowY="auto" pr={4}>
+      
         <VStack spacing={4} align="start">
           {projects.map((project) => {
             const isSelected = selectedProject && project.id === selectedProject.id;
 
             return (
-              <Button
+              <DraggableProject
                 key={project.id}
-                onClick={() => onSelectProject(project.id)}
-                width="100%"
-                bg={isSelected ? "gray.300" : undefined}
-              >
-                {project.name}
-              </Button>
+                project={project}
+                isSelected={isSelected}
+                onSelectProject={onSelectProject}
+                onDeleteProject={onDeleteProject}
+              />
             );
           })}
         </VStack>
+
       </Box>
+      
       <Spacer />
+      <TrashBin onDeleteProject={onDeleteProject} />
       <Flex direction="column" mt={4}>
         {showInput && (
           <FormControl>
@@ -83,6 +103,7 @@ const ProjectSidebar = ({ projects,selectedProject, onSelectProject, onCreatePro
         </Button>
       </Flex>
     </Box>
+    </DndProvider>
   );
 };
 
