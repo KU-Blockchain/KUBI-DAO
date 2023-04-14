@@ -27,7 +27,7 @@ import {
   ModalFooter,
 } from "@chakra-ui/react";
 
-const PMContract= "0x5227970228DD9951e3e77a538a486221314Af06d"
+const PMContract= "0x6a55a93CA73DFC950430aAeDdB902377fE51a8FA"
 const contractAddress = "0x9B5AE4442654281438aFD95c54C212e1eb5cEB2c";
 const kubiMembershipNFTAddress = "0x9F15cEf6E7bc4B6a290435A598a759DbE72b41b5";
 const KUBIExecutiveNFTAddress = "0x1F3Ae002f2058470FC5C72C70809F31Db3d93fBb";
@@ -52,8 +52,13 @@ const User = () => {
   const [showDeployMenu, setShowDeployMenu] = useState(false);
   const [isMintModalOpen, setIsMintModalOpen] = useState(false);		
   const [mintAddress, setMintAddress] = useState("");
+  const [showMintMenu, setShowMintMenu] = useState(false);
+  const [showDataMenu, setShowDataMenu] = useState(false);
+  const [projectHashesInput, setProjectHashesInput] = useState([]);
+  const [dataHashInput, setDataHashInput] = useState("");
 
-  const { userDetails, setUserDetails, account, setAccount, fetchUserDetails, addUserData, clearData } = useDataBaseContext();
+
+  const { userDetails, setUserDetails, account, setAccount, fetchUserDetails, addUserData, clearData, pushProjectHashes } = useDataBaseContext();
 
 
 
@@ -287,6 +292,15 @@ const User = () => {
     setIsMintModalOpen(false);		
     setMintAddress("");		
   };
+  const handleAddHashes = async () => {
+    if (projectHashesInput.length === 0 || dataHashInput === "") {
+      // Show error message if the inputs are not valid
+      return;
+    }
+  
+    await pushProjectHashes(projectHashesInput, dataHashInput);
+  };
+  
 
   return (
     <Flex
@@ -394,13 +408,56 @@ const User = () => {
               Deploy KUBIX token Contract
             </Button>
             {deployedKUBIXContract && <Text mt={4}>Contract address: {deployedKUBIXContract.options.address}</Text>}
+
+          </>
+          
+        )}
+        <Button colorScheme="blue" mt={4} onClick={() => setShowMintMenu(!showMintMenu)}>
+          Mint Menu
+        </Button>
+        {showMintMenu && (
+          <>
             <Button colorScheme="purple" mt={4} onClick={openMintModal}>
               Mint Executive NFT
             </Button>
-            <Button colorScheme="purple" mt={4} onClick={clearData}>
+          </>
+        )}
+        <Button colorScheme="red" mt={4} onClick={() => setShowDataMenu(!showDataMenu)}>
+          Data Menu
+        </Button>
+        {showDataMenu && (
+          <>
+            <Button colorScheme="yellow" mt={4} onClick={clearData}>
               Clear all Data
             </Button>
+            <Button colorScheme="teal" mt={4} onClick={handleAddHashes}>
+              Push Project Hashes
+            </Button>
+            
+            <FormControl id="projectHashes" mt={4}>
+              <FormLabel>Project Hashes (comma-separated)</FormLabel>
+              <Input
+                type="text"
+                placeholder="Enter Project Hashes"
+                onChange={(event) =>
+                  setProjectHashesInput(event.target.value.split(","))
+                }
+              />
+            </FormControl>
+
+            
+            <FormControl id="dataHash" mt={4}>
+              <FormLabel>Data Hash</FormLabel>
+              <Input
+                type="text"
+                placeholder="Enter Data Hash"
+                value={dataHashInput}
+                onChange={(event) => setDataHashInput(event.target.value)}
+              />
+            </FormControl>
+
           </>
+          
         )}
       </Flex>
       <Modal isOpen={isMintModalOpen} onClose={closeMintModal}>		

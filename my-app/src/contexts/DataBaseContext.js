@@ -17,7 +17,7 @@ export const DataBaseProvider = ({ children }) => {
   const [account, setAccount] = useState('');
   const [updateInProgress, setUpdateInProgress] = useState(false);
 
-  const PMContract = '0x5227970228DD9951e3e77a538a486221314Af06d';
+  const PMContract = '0x6a55a93CA73DFC950430aAeDdB902377fE51a8FA';
 
   // Create provider, signer, and contract instances only once
   const provider = new providers.JsonRpcProvider(
@@ -242,6 +242,61 @@ export const DataBaseProvider = ({ children }) => {
         setUserDetails(null);
       };
       
+      const pushProjectHashes = async (projectHashes, accountsDataHash) => {
+        try {
+          if (projectHashes instanceof Array) {
+            for (let i = 0; i < projectHashes.length; i++) {
+              await contract.createProject(projectHashes[i]);
+            }
+
+          }
+          else{
+            console.log("projectHashes", projectHashes)
+            await contract.createProject(projectHashes);
+            console.log("check")
+
+          }
+          // Update each project hash in the smart contract
+
+          // Update the accounts data hash in the smart contract
+          await contract.updateAccountsData(accountsDataHash);
+      
+          console.log("Project hashes and accounts data hash pushed successfully.");
+        } catch (error) {
+          console.error("Error pushing project hashes and accounts data hash:", error);
+        }
+      };
+
+      const handleDeleteProject = async (projectId) => {
+        // Delete the project from the smart contract
+        await contract.deleteProject(projectId);
+    
+        // Remove the project from the local state
+        setProjects((prevProjects) => prevProjects.filter((project) => project.id !== projectId));
+        if (selectedProject.id === projectId) {
+            setSelectedProject(projects.length > 0 ? projects[0] : null);
+        }
+
+        await updateProjectIds();
+      };
+
+      const updateProjectIds = async () => {
+        const newProjects = projects.map((project, index) => ({
+            ...project,
+            id: index + 1,
+        }));
+    
+        // Update the project IDs on the smart contract
+        for (const project of newProjects) {
+            if (project.id !== projects.find((p) => p.id === project.id).id) {
+                await contract.updateProject(project.id, project.ipfsHash);
+            }
+        }
+    
+        setProjects(newProjects);
+      };
+    
+    
       
     
     return (
@@ -261,6 +316,8 @@ export const DataBaseProvider = ({ children }) => {
             addUserData,
             getUsernameByAddress,
             clearData,
+            pushProjectHashes,
+            handleDeleteProject,
         }}
         >
         {children}

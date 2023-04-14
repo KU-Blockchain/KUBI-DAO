@@ -17,7 +17,7 @@ export const useWeb3Context = () => {
 const membershipNFTAdress = '0x9F15cEf6E7bc4B6a290435A598a759DbE72b41b5';
 const execNFTAdress = '0x1F3Ae002f2058470FC5C72C70809F31Db3d93fBb';
 const kubixTokenAddress = "0x894158b1f988602b228E39a633C7A2458A82028A"
-const PMContractAddress= "0x5227970228DD9951e3e77a538a486221314Af06d"
+const PMContractAddress= "0x6a55a93CA73DFC950430aAeDdB902377fE51a8FA"
 const INFURA_PROJECT_ID = process.env.NEXT_PUBIC_INFURA_PROJECT_ID;
 
 export const Web3Provider = ({ children }) => {
