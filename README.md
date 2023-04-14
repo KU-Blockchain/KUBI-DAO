@@ -1,26 +1,39 @@
 # KU Blockchain Institute DAO README
 
-The KU Blockchain Institute DAO is a decentralized autonomous organization focused on providing a platform for its members to contribute and participate in various tasks and events. This README outlines the key features of the DAO, the hybrid tokenomics model, and instructions on how to join.
+The KU Blockchain Institute DAO is a decentralized autonomous organization focused on providing a platform for its members to contribute and participate in various tasks, events, and voting.
+
+This README outlines the key features of the DAO, the hybrid tokenomics model, and instructions on how to join.
 
 ## Key Features
 
-1. **Task Manager:** The task manager allows members to claim and complete tasks while storing the data on IPFS. Upon completion of tasks, members are automatically rewarded with KUBIX participation tokens.
+1. **Task Manager:** The task manager allows members to claim and complete tasks while storing the data on IPFS. Upon completion of tasks, members are automatically rewarded with KUBIX participation tokens. 
 2. **NFT Gating:** NFTs are used to manage membership and grant privileges such as claiming tasks, creating tasks, and reviewing completed tasks. There are two types of NFTs: Membership NFTs and Executive NFTs.
-Leaderboard: A leaderboard displays user rankings based on their total KUBIX tokens and the number of tasks completed.
-3. **User Page:** The user page allows people with a valid KU email address to join the DAO and displays user information, including KUBIX balance and tasks completed.
-KUBI Direct Democracy Coin: The DAO includes a voting mechanism using the KUBI Direct Democracy Coin, but the voting features have not been set up yet.
+3. **Leaderboard:** A leaderboard displays user rankings based on their total KUBIX tokens and the number of tasks completed.
+4. **User Page:** The user page allows people with a valid KU email address to join the DAO and displays user information, including KUBIX balance and tasks completed.
+5. **KUBI Direct Democracy Coin:** The DAO includes a voting mechanism using the KUBI Direct Democracy Coin, but the voting features have not been set up yet.
+6. **KUBIX Participation Coin:** KUBIX is rewarded for completing tasks
+7. Fetaures not mentioned here are pending like the voting, and full implementation of the hybrid tokenomics model
 
 ## Hybrid Tokenomics Model
 
-The hybrid tokenomics model combines token burning, exponential burn over time, incentive, and privilege systems. Members who participate in events and complete tasks can earn KUBIX tokens, which can be used to unlock merchandise, discounts, and other benefits.
+The hybrid tokenomics model combines the KUBIX participation token and the KUBI direct democracy token to allow for flexible tracking of participation while still ensuring members votes are equal in important decisions like elections. 
 
-###Distribution Rubric
+Members who participate in events and complete tasks can earn KUBIX tokens, which can be used to unlock merchandise, oppurtunities for trips, and other benefits.
+
+### Voting and Polls
+Both the KUBIX participation and the KUBI direct democracy token will be used for quadratic voting or polling.
+
+Every member gets 100 KUBI democracy tokens that will be used for making important decisions dealing with elections, funds, or changing the functionality of the DAO. In multi-option votes members will be able to split up the 100 tokens to different options as they see fit to have weighted voting
+
+The KUBIX token will be used for informal polls in a similar voting method
+
+### KUBIX Distribution Rubric
 The KUBIX distribution is based on a formula that takes into account the task's difficulty, estimated hours, and a base KUBIX value:
 
 **BaseKUBIX + (DifficultyMultiplier * EstimatedHours) = TotalKUBIX (rounded to whole number)**
 
 ### Merchandise and Tiers
-Members can unlock merchandise at different KUBIX levels without spending their KUBIX tokens. When a member unlocks merchandise, they receive an NFT certificate for the merchandise and an NFT to indicate their tier achievement for that year.
+There will be a 5 tier system that depends on the amount of KUBIX a user recieves. As certain KUBIX thresholds are met the membership NFT will upgrade to refelct the tier boost. At new tiers members unlock the ability to claim certain merchandise and also get the ability to go to on trips
 
 ## Joining the KU Blockchain Institute DAO
 
