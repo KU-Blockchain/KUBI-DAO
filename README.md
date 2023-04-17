@@ -2,6 +2,8 @@
 
 The KU Blockchain Institute DAO is a decentralized autonomous organization focused on providing a platform for its members to contribute and participate in various tasks, events, and voting.
 
+Students can verify there participation in clubs and show employers how much they truly accomplished.
+
 This README outlines the key features of the DAO, the hybrid tokenomics model, and instructions on how to join.
 
 ## Key Features
