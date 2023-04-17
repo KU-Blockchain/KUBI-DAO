@@ -25,7 +25,10 @@ import {
   ModalBody,		
   ModalCloseButton,		
   ModalFooter,
+  Spacer
 } from "@chakra-ui/react";
+
+import KubixButton from "@/components/KubixButton";
 
 const PMContract= "0x6a55a93CA73DFC950430aAeDdB902377fE51a8FA"
 const contractAddress = "0x9B5AE4442654281438aFD95c54C212e1eb5cEB2c";
@@ -74,6 +77,7 @@ const User = () => {
 
   const connectWallet = async () => {
     if (window.ethereum) {
+      console.log(process.env.NEXT_PUBLIC_INFURA_IPFS)
       try {
         await window.ethereum.request({ method: "eth_requestAccounts" });
         const web3 = new Web3(window.ethereum);
@@ -374,6 +378,10 @@ const User = () => {
         <Button colorScheme="blue" mt={4} onClick={handleJoin}>
           Join
         </Button>
+        <Heading as="h2" size="lg" mb={6}>
+          Import Tokens to Metamask
+        </Heading>
+        <KubixButton />
       </Box>
       <Flex
         flexDirection="column"
