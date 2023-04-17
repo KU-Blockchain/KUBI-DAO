@@ -74,6 +74,7 @@ const User = () => {
 
   const connectWallet = async () => {
     if (window.ethereum) {
+      console.log(process.env.NEXT_PUBLIC_INFURA_IPFS)
       try {
         await window.ethereum.request({ method: "eth_requestAccounts" });
         const web3 = new Web3(window.ethereum);
