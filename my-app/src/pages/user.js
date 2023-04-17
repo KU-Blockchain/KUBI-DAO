@@ -25,6 +25,7 @@ import {
   ModalBody,		
   ModalCloseButton,		
   ModalFooter,
+  Spacer
 } from "@chakra-ui/react";
 
 import KubixButton from "@/components/KubixButton";
