@@ -27,6 +27,8 @@ import {
   ModalFooter,
 } from "@chakra-ui/react";
 
+import KubixButton from "@/components/KubixButton";
+
 const PMContract= "0x6a55a93CA73DFC950430aAeDdB902377fE51a8FA"
 const contractAddress = "0x9B5AE4442654281438aFD95c54C212e1eb5cEB2c";
 const kubiMembershipNFTAddress = "0x9F15cEf6E7bc4B6a290435A598a759DbE72b41b5";
@@ -375,6 +377,10 @@ const User = () => {
         <Button colorScheme="blue" mt={4} onClick={handleJoin}>
           Join
         </Button>
+        <Heading as="h2" size="lg" mb={6}>
+          Import Tokens to Metamask
+        </Heading>
+        <KubixButton />
       </Box>
       <Flex
         flexDirection="column"
