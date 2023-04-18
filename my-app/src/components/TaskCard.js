@@ -22,7 +22,7 @@ const TaskCard = ({ id, name, description, difficulty, estHours, index, columnId
 
   const [{ isDragging }, drag] = useDrag(() => ({
     type: 'task',
-    item: { id, index, columnId, name, description,difficulty, estHours, claimedBy, claimerUsername},
+    item: { id, index, columnId, name, description,difficulty, estHours, claimedBy, claimerUsername, kubixPayout, submission},
     collect: (monitor) => ({
       isDragging: monitor.isDragging(),
     }),

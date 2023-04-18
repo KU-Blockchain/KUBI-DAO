@@ -59,7 +59,6 @@ const TaskCardModal = ({ isOpen, onClose, task, columnId, onEditTask }) => {
         try {
           onClose();
           await moveTask(task, columnId, 'completed', 0)
-          console.log("task.claimedBy", task.claimedBy)
           setTimeout(async() => {await mintKUBIX(task.claimedBy, task.kubixPayout, true)}, 2100);
           
         } catch (error) {

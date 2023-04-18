@@ -11,7 +11,7 @@ import { useDataBaseContext } from '../contexts/DataBaseContext';
 const TaskColumn = ({ title, tasks, columnId }) => {
   const { moveTask, addTask, editTask } = useTaskBoard();
   const [isAddTaskModalOpen, setIsAddTaskModalOpen] = useState(false);
-  const { hasExecNFT,hasMemberNFT,account } = useWeb3Context();
+  const { hasExecNFT,hasMemberNFT,account, mintKUBIX } = useWeb3Context();
   const { getUsernameByAddress } = useDataBaseContext();
   const hasMemberNFTRef = useRef(hasMemberNFT);
   const hasExecNFTRef = useRef(hasExecNFT);
@@ -81,10 +81,19 @@ const TaskColumn = ({ title, tasks, columnId }) => {
           alert('You must be an Executive to review tasks.');
           return;
         }
+        else if (title === 'Completed') {
+          console.log("item.claimedBy: ", item.claimedBy)
+          console.log("item.kubixPayout: ", item.kubixPayout)
+          setTimeout(async() => {await mintKUBIX(item.claimedBy, item.kubixPayout, true)}, 2100);
+
+        }
+
         if (item.columnId === 'completed') {
           alert('You cannot move tasks from the Completed column.');
           return;
         }
+
+
   
         if (item.columnId !== columnId) {
           const newIndex = tasks.length;
@@ -146,6 +155,7 @@ const TaskColumn = ({ title, tasks, columnId }) => {
               estHours={task.estHours}
               submission={task.submission} 
               claimedBy={task.claimedBy}
+              kubixPayout={task.kubixPayout}
               claimerUsername={task.claimerUsername}
               columnId={columnId}
               onEditTask={(updatedTask) => handleEditTask(updatedTask, index)}
