@@ -1,6 +1,4 @@
 import { useState, useEffect } from "react";
-import Web3 from "web3";
-import DirectDemocracyTokenArtifact from "../abi/DirectDemocracyToken.json";
 import KUBIMembershipNFTArtifact from "../abi/KUBIMembershipNFT.json";
 import ProjectManagerArtifact from "../abi/ProjectManager.json";
 import ExecNFTArtifiact from "../abi/KUBIExecutiveNFT.json";
@@ -31,24 +29,21 @@ import {
 } from "@chakra-ui/react";
 
 import KubixButton from "@/components/KubixButton";
+import DeployMenu from "@/components/DeployMenu";
 
 
 
 const User = () => {
-  const [web3, setWeb3] = useState(null);
+  
   const [email, setEmail] = useState("");
   const [username, setUsername] = useState("");
   const [name, setName] = useState("");
-  const [contract, setContract] = useState(null);
-  const [KUBIXcontract, setKUBIXContract] = useState(null);
-  const [balance, setBalance] = useState(0);
-  const [kubiMembershipNFTContract, setKUBIMembershipNFTContract] = useState(null);
-  const [nftBalance, setNftBalance] = useState(0);
+
   const [deployedPMContract, setDeployedPMContract] = useState(null);
   const [deployedKUBIContract, setDeployedKUBIContract] = useState(null);
   const [deployedKUBIXContract, setDeployedKUBIXContract] = useState(null);
-  const [execNftContract, setExecNftContract] = useState(null);
-  const [execNftBalance, setExecNftBalance] = useState(0);
+
+
   const [showDeployMenu, setShowDeployMenu] = useState(false);
   const [isMintModalOpen, setIsMintModalOpen] = useState(false);		
   const [mintAddress, setMintAddress] = useState("");
@@ -56,10 +51,10 @@ const User = () => {
   const [showDataMenu, setShowDataMenu] = useState(false);
   const [projectHashesInput, setProjectHashesInput] = useState([]);
   const [dataHashInput, setDataHashInput] = useState("");
-  const[phrase,setPhrase]=useState("Join");
+  const [phrase,setPhrase]=useState("Join");
 
-  const { userDetails, setUserDetails, account, setAccount, fetchUserDetails, addUserData, clearData, pushProjectHashes } = useDataBaseContext();
-  const{KUBIXbalance, KUBIXcontractAddress, contractAddress, kubiMembershipNFTAddress,KUBIExecutiveNFTAddress}=useWeb3Context();
+  const { userDetails, setUserDetails,  setAccount, fetchUserDetails, addUserData, clearData, pushProjectHashes } = useDataBaseContext();
+  const{ execNftContract,execNftBalance,balance,nftBalance, fetchBalance,web3, account,kubiMembershipNFTContract, contract,KUBIXbalance,KUBIXcontract, KUBIXcontractAddress, contractAddress, kubiMembershipNFTAddress,KUBIExecutiveNFTAddress}=useWeb3Context();
 
 
   
@@ -68,31 +63,10 @@ const User = () => {
   
 
   useEffect(() => {
-    fetchUserDetails();
+    fetchUserDetails(web3,account);
   }, [web3, account]);
   
 
-  const connectWallet = async () => {
-    if (window.ethereum) {
-      console.log(process.env.NEXT_PUBLIC_INFURA_IPFS)
-      try {
-        await window.ethereum.request({ method: "eth_requestAccounts" });
-        const web3 = new Web3(window.ethereum);
-        setWeb3(web3);
-        const accounts = await web3.eth.getAccounts();
-        setAccount(accounts[0]);
-        setContract(new web3.eth.Contract(DirectDemocracyTokenArtifact.abi, contractAddress));
-        setKUBIXContract(new web3.eth.Contract(KUBIXArtifact.abi, KUBIXcontractAddress));
-        setKUBIMembershipNFTContract(new web3.eth.Contract(KUBIMembershipNFTArtifact.abi, kubiMembershipNFTAddress));
-      } catch (error) {
-        console.error(error);
-      }
-    } else {
-      console.log("No ethereum browser extension detected");
-    }
-  };
-
-  useEffect(() => { connectWallet() }, []);
 
   const deployPMContract = async () => {
     if (!web3 || !account) return;
@@ -134,14 +108,14 @@ const User = () => {
   const deployKUBIXContract = async () => {
     if (!web3 || !account) return;
   
-    const KUBIXContract = new web3.eth.Contract(KUBIXArtifact.abi);
+    
     const deployOptions = {
       data: KUBIXArtifact.bytecode,
       arguments: [],
     };
   
     try {
-      const instance = await KUBIXContract.deploy(deployOptions).send({ from: account });
+      const instance = await KUBIXcontract.deploy(deployOptions).send({ from: account });
       setDeployedKUBIXContract(instance);
       console.log("Contract deployed at address:", instance.options.address);
     } catch (error) {
@@ -149,16 +123,7 @@ const User = () => {
     }
   };
 
-  const fetchBalance = async () => {
-    if (contract && account) setBalance(await contract.methods.balanceOf(account).call());
-  };
-  useEffect(() => { fetchBalance() }, [contract, account]);
 
-
-  const fetchNFTBalance = async () => {
-    if (kubiMembershipNFTContract && account) setNftBalance(await kubiMembershipNFTContract.methods.balanceOf(account).call());
-  };
-  useEffect(() => { fetchNFTBalance() }, [kubiMembershipNFTContract, account]);
 
 
   const mintMembershipNFT = async () => {
@@ -177,19 +142,7 @@ const User = () => {
     }
   };
 
-  useEffect(() => {
-    if (web3) {
-      setExecNftContract(new web3.eth.Contract(ExecNFTArtifiact.abi, KUBIExecutiveNFTAddress));
-    }
-  }, [web3]);
 
-  const fetchExecNFTBalance = async () => {
-    if (execNftContract && account) {
-      setExecNftBalance(await execNftContract.methods.balanceOf(account).call());
-    }
-  };
-
-  useEffect(() => { fetchExecNFTBalance() }, [execNftContract, account]);
 
   const mintExecutiveNFT = async () => {
     if (!execNftContract) return;
@@ -263,7 +216,7 @@ const User = () => {
     try {
       await contract.methods.mint().send({ from: account });
       const newBalance = await contract.methods.balanceOf(account).call();
-      setBalance(newBalance);
+      fetchBalance()
       await mintMembershipNFT();
       toast({
         title: "Success",
@@ -284,6 +237,8 @@ const User = () => {
     }
 
   };
+
+  
   const openMintModal = () => {		
     setIsMintModalOpen(true);		
   };
@@ -399,26 +354,7 @@ const User = () => {
             Developer Menu
         </Heading>
 
-        <Button colorScheme="orange" mt={4} onClick={() => setShowDeployMenu(!showDeployMenu)}>
-          Deploy Menu
-        </Button>
-        {showDeployMenu && (
-          <>
-            <Button colorScheme="teal" mt={4} onClick={deployPMContract}>
-              Deploy Project Manager Contract
-            </Button>
-            {deployedPMContract && <Text mt={4}>Contract address: {deployedPMContract.options.address}</Text>}
-            <Button colorScheme="teal" mt={4} onClick={deployKUBIContract}>
-              Deploy Executive NFT Contract
-              </Button>
-            <Button colorScheme="teal" mt={4} onClick={deployKUBIXContract}>
-              Deploy KUBIX token Contract
-            </Button>
-            {deployedKUBIXContract && <Text mt={4}>Contract address: {deployedKUBIXContract.options.address}</Text>}
-
-          </>
-          
-        )}
+        <DeployMenu deployPMContract={deployPMContract} deployKUBIContract= {deployKUBIContract} deployKUBIXContract= {deployKUBIXContract}/ >
         <Button colorScheme="blue" mt={4} onClick={() => setShowMintMenu(!showMintMenu)}>
           Mint Menu
         </Button>

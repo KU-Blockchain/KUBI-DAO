@@ -3,8 +3,10 @@ import { ethers } from 'ethers';
 import KUBIMembershipNFTArtifact from "../abi/KUBIMembershipNFT.json";
 import ExecNFTArtifact from "../abi/KUBIExecutiveNFT.json";
 import KUBIXTokenArtifact from "../abi/KUBIX.json";
+import DirectDemocracyTokenArtifact from "../abi/DirectDemocracyToken.json";
 import ProjectManagerArtifact from "../abi/ProjectManager.json";
 import ipfs from '../db/ipfs';
+import Web3 from 'web3';
 
 
 
@@ -18,6 +20,7 @@ const kubiMembershipNFTAddress = '0x9F15cEf6E7bc4B6a290435A598a759DbE72b41b5';
 const KUBIExecutiveNFTAddress = '0x1F3Ae002f2058470FC5C72C70809F31Db3d93fBb';
 const KUBIXcontractAddress = "0x894158b1f988602b228E39a633C7A2458A82028A"
 const PMContractAddress= "0x6a55a93CA73DFC950430aAeDdB902377fE51a8FA"
+const contractAddress = "0x9B5AE4442654281438aFD95c54C212e1eb5cEB2c";
 const INFURA_PROJECT_ID = process.env.NEXT_PUBIC_INFURA_PROJECT_ID;
 
 export const Web3Provider = ({ children }) => {
@@ -27,33 +30,47 @@ export const Web3Provider = ({ children }) => {
   const [hasMemberNFT, setMemberNFT] = useState(false);
   const [hasExecNFT, setExecNFT] = useState(false);
   const [PMContract, setPMcontract] = useState(null);
-  const [KUBIXbalance, setKubixBalance] = useState(0);
+  const [KUBIXbalance, setKUBIXBalance] = useState(0);
+  const [KUBIXcontract, setKUBIXContract] = useState(null);
+  const [contract, setContract] = useState(null);
+  const [web3, setWeb3] = useState(null);
+  const [kubiMembershipNFTContract, setKUBIMembershipNFTContract] = useState(null);
+  const [balance, setBalance] = useState(0);
+  const [nftBalance, setNftBalance] = useState(0);
+  const [execNftContract, setExecNftContract] = useState(null);
+  const [execNftBalance, setExecNftBalance] = useState(0);
 
   
 
 
 
 
-    const initProvider = async () => {
-      // Check if Web3 has been injected by MetaMask
-      if (typeof window.ethereum !== 'undefined') {
-        // Use MetaMask provider
-        const web3Provider = new ethers.providers.Web3Provider(window.ethereum);
-        await web3Provider.send('eth_requestAccounts', []);
-        setProvider(web3Provider);
-        const signer = web3Provider.getSigner();
-        setSigner(signer);
-        const accounts = await signer.getAddress();
-        setAccount(accounts);
-
-      } else {
-        alert('Reload the page with MetaMask');
-
+  const initProvider = async () => {
+    if (window.ethereum) {
+      console.log(process.env.NEXT_PUBLIC_INFURA_IPFS)
+      try {
+        await window.ethereum.request({ method: "eth_requestAccounts" });
+        const web3 = new Web3(window.ethereum);
+        setWeb3(web3);
+        const accounts = await web3.eth.getAccounts();
+        setAccount(accounts[0]);
+        setContract(new web3.eth.Contract(DirectDemocracyTokenArtifact.abi, contractAddress));
+        setKUBIXContract(new web3.eth.Contract(KUBIXTokenArtifact.abi, KUBIXcontractAddress));
+        setKUBIMembershipNFTContract(new web3.eth.Contract(KUBIMembershipNFTArtifact.abi, kubiMembershipNFTAddress));
+        fetchKUBIXBalance() 
+        fetchBalance()
+        fetchNFTBalance()
+      } catch (error) {
+        console.error(error);
       }
-    };
+    } else {
+      console.log("No ethereum browser extension detected");
+    }
+  };
 
     useEffect(() => {
         initProvider();
+        
         window.addEventListener('load', initProvider);
     
         return () => {
@@ -114,20 +131,6 @@ export const Web3Provider = ({ children }) => {
       fetchNFTOwnership();
     }, [provider, account, signer]);
 
-    const fetchKubixBalance = async (accountAddress) => {
-      try {
-        const contract = new ethers.Contract(KUBIXcontractAddress, KUBIXTokenArtifact.abi, signer);
-    
-        const balance = await contract.balanceOf(accountAddress);
-        const formattedBalance = ethers.utils.formatUnits(balance, 18);
-    
-        setKubixBalance(Math.round(formattedBalance));
-        return Math.round(formattedBalance);
-      } catch (error) {
-        console.error("Error fetching Kubix balance:", error);
-      }
-
-    };
     
 
 
@@ -152,7 +155,7 @@ export const Web3Provider = ({ children }) => {
   
       // Add the Kubix wallet balance and task completed data point to the account data
       if (accountsDataJson[to]) {
-        accountsDataJson[to].kubixBalance = ((await fetchKubixBalance(to))+amount);
+        accountsDataJson[to].kubixBalance = ((await fetchKUBIXBalance(to))+amount);
         if (taskCompleted) {
           accountsDataJson[to].tasksCompleted = (accountsDataJson[to].tasksCompleted || 0) + 1;
         }
@@ -189,6 +192,31 @@ export const Web3Provider = ({ children }) => {
   };
   
   useEffect(() => { fetchKUBIXBalance() }, [KUBIXcontract, account]);
+
+  const fetchBalance = async () => {
+    if (contract && account) setBalance(await contract.methods.balanceOf(account).call());
+  };
+  useEffect(() => { fetchBalance() }, [contract, account]);
+
+
+  const fetchNFTBalance = async () => {
+    if (kubiMembershipNFTContract && account) setNftBalance(await kubiMembershipNFTContract.methods.balanceOf(account).call());
+  };
+  useEffect(() => { fetchNFTBalance() }, [kubiMembershipNFTContract, account]);
+
+  useEffect(() => {
+    if (web3) {
+      setExecNftContract(new web3.eth.Contract(ExecNFTArtifact.abi, KUBIExecutiveNFTAddress));
+    }
+  }, [web3]);
+
+  const fetchExecNFTBalance = async () => {
+    if (execNftContract && account) {
+      setExecNftBalance(await execNftContract.methods.balanceOf(account).call());
+    }
+  };
+
+  useEffect(() => { fetchExecNFTBalance() }, [execNftContract, account]);
   
   
 
@@ -204,6 +232,16 @@ export const Web3Provider = ({ children }) => {
     contractAddress,
     KUBIXcontractAddress,
     KUBIXbalance,
+    KUBIXcontract,
+    contract,
+    kubiMembershipNFTContract,
+    web3,
+    account,
+    balance,
+    nftBalance,
+    fetchBalance,
+    execNftBalance,
+    execNftContract,
   };
 
   return <Web3Context.Provider value={value}>{children}</Web3Context.Provider>;
