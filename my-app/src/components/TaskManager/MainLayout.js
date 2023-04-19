@@ -2,9 +2,9 @@ import React, { useState, useEffect } from 'react';
 import { Flex, Box, Heading,} from '@chakra-ui/react';
 import ProjectSidebar from './ProjectSidebar';
 import TaskBoard from './TaskBoard';
-import { TaskBoardProvider } from '../contexts/TaskBoardContext';
-import { useDataBaseContext, DataBaseProvider } from '../contexts/DataBaseContext';
-import { useWeb3Context, Web3Provider } from '../contexts/Web3Context';
+import { TaskBoardProvider } from '../../contexts/TaskBoardContext';
+import { useDataBaseContext, DataBaseProvider } from '../../contexts/DataBaseContext';
+import { useWeb3Context, Web3Provider } from '../../contexts/Web3Context';
 
 
 const MainLayout = () => {

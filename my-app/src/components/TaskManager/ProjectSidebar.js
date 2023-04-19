@@ -9,7 +9,7 @@ import {
   Spacer,
   Flex,
 } from '@chakra-ui/react';
-import { useWeb3Context } from '../contexts/Web3Context';
+import { useWeb3Context } from '../../contexts/Web3Context';
 import { useDataBaseContext } from '@/contexts/DataBaseContext';
 import { DndProvider } from 'react-dnd';
 import { HTML5Backend } from 'react-dnd-html5-backend';

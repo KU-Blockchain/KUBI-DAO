@@ -19,8 +19,8 @@ import {
 } from '@chakra-ui/react';
 import { CheckIcon } from '@chakra-ui/icons';
 import EditTaskModal from './EditTaskModal';
-import { useTaskBoard } from '../contexts/TaskBoardContext';
-import { useWeb3Context } from '../contexts/Web3Context';
+import { useTaskBoard } from '../../contexts/TaskBoardContext';
+import { useWeb3Context } from '../../contexts/Web3Context';
 import { useDataBaseContext } from '@/contexts/DataBaseContext';
 
 const TaskCardModal = ({ isOpen, onClose, task, columnId, onEditTask }) => {

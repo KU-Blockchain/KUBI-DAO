@@ -44,7 +44,8 @@ const MintMenu = ({ mintExecutiveNFT }) => {
         <ModalContent>
           <ModalHeader>Mint Executive NFT</ModalHeader>
           <ModalCloseButton />
-          <ModalBody>
+          <ModalBody
+          >
             <FormControl id="mintAddress">
               <FormLabel>Address</FormLabel>
               <Input
