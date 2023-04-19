@@ -122,8 +122,8 @@ const TaskColumn = ({ title, tasks, columnId }) => {
     const columnStyle = isOver ? { backgroundColor: 'rgba(0, 255, 0, 0.1)' } : {};
   
     return (
-      <Box ref={drop} w="100%" h="100%" px={2} py={6} bg="gray.100" borderRadius="md" boxShadow="lg" style={columnStyle}>
-        <Heading size="md" mb={4} alignItems="center">
+      <Box ref={drop} w="100%" h="100%" px={2} py={2} bg="gray.100" borderRadius="md" boxShadow="lg" style={columnStyle}>
+        <Heading size="md" mb={3} alignItems="center">
           {title}
           {title === 'Open' && (
             <IconButton
@@ -131,7 +131,7 @@ const TaskColumn = ({ title, tasks, columnId }) => {
               icon={<AddIcon />}
               aria-label="Add task"
               onClick={handleOpenAddTaskModal}
-              h="1rem"
+              h="1.70rem"
             />
           )}
         </Heading>

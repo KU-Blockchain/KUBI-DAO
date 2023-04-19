@@ -59,7 +59,7 @@ const User = () => {
   const [showDataMenu, setShowDataMenu] = useState(false);
   const [projectHashesInput, setProjectHashesInput] = useState([]);
   const [dataHashInput, setDataHashInput] = useState("");
-
+  const[phrase,setPhrase]=useState("Join");
 
   const { userDetails, setUserDetails, account, setAccount, fetchUserDetails, addUserData, clearData, pushProjectHashes } = useDataBaseContext();
 
@@ -218,7 +218,9 @@ const User = () => {
 
 
 
-  const handleJoin = async () => {
+  const handleJoin = async (e) => {
+    setPhrase("Joining...")
+    e.target.disabled=true
     if (!email.endsWith("@ku.edu")) {
       toast({
         title: "Invalid email domain",
@@ -227,7 +229,10 @@ const User = () => {
         duration: 5000,
         isClosable: true
       });
+      setPhrase("Join")
+      e.target.disabled=false
       return;
+
     }
 
         //adds user data to ipfs and smart contract
@@ -251,6 +256,8 @@ const User = () => {
             duration: 5000,
             isClosable: true
           });
+
+          
     
         } catch (error) {
           console.error(error);
@@ -262,7 +269,8 @@ const User = () => {
             isClosable: true
           });
         }
-
+    setPhrase("Join")
+    e.target.disabled=false
     if (!contract) return;
 
     try {
@@ -376,7 +384,7 @@ const User = () => {
           <Input type="text" placeholder="Username" value={username} onChange={(event) => setUsername(event.target.value)} />
         </FormControl>
         <Button colorScheme="blue" mt={4} onClick={handleJoin}>
-          Join
+          {phrase}
         </Button>
         <Heading as="h2" size="lg" mb={6}>
           Import Tokens to Metamask
