@@ -30,6 +30,7 @@ import {
 
 import KubixButton from "@/components/KubixButton";
 import DeployMenu from "@/components/DeployMenu";
+import MintMenu from "@/components/MintMenu";
 
 
 
@@ -239,9 +240,6 @@ const User = () => {
   };
 
   
-  const openMintModal = () => {		
-    setIsMintModalOpen(true);		
-  };
   const closeMintModal = () => {		
     setIsMintModalOpen(false);		
     setMintAddress("");		
@@ -354,17 +352,8 @@ const User = () => {
             Developer Menu
         </Heading>
 
-        <DeployMenu deployPMContract={deployPMContract} deployKUBIContract= {deployKUBIContract} deployKUBIXContract= {deployKUBIXContract}/ >
-        <Button colorScheme="blue" mt={4} onClick={() => setShowMintMenu(!showMintMenu)}>
-          Mint Menu
-        </Button>
-        {showMintMenu && (
-          <>
-            <Button colorScheme="purple" mt={4} onClick={openMintModal}>
-              Mint Executive NFT
-            </Button>
-          </>
-        )}
+        <DeployMenu deployPMContract={deployPMContract} deployKUBIContract= {deployKUBIContract} deployKUBIXContract= {deployKUBIContract}/ >
+        <MintMenu mintExecutiveNFT={mintExecutiveNFT}/>
         <Button colorScheme="red" mt={4} onClick={() => setShowDataMenu(!showDataMenu)}>
           Data Menu
         </Button>
@@ -403,30 +392,6 @@ const User = () => {
           
         )}
       </Flex>
-      <Modal isOpen={isMintModalOpen} onClose={closeMintModal}>		
-           <ModalOverlay />		
-           <ModalContent>		
-             <ModalHeader>Mint Executive NFT</ModalHeader>		
-             <ModalCloseButton />		
-             <ModalBody>		
-               <FormControl id="mintAddress">		
-                 <FormLabel>Account Address</FormLabel>		
-                 <Input		
-                   type="text"		
-                   placeholder="Enter account address"		
-                   value={mintAddress}		
-                   onChange={(event) => setMintAddress(event.target.value)}		
-                 />		
-               </FormControl>		
-             </ModalBody>		
-             <ModalFooter>		
-               <Button colorScheme="blue" mr={3} onClick={mintExecutiveNFT}>		
-                 Mint		
-               </Button>		
-               <Button onClick={closeMintModal}>Cancel</Button>		
-             </ModalFooter>		
-           </ModalContent>		
-         </Modal>
     </Flex>
   );
 };

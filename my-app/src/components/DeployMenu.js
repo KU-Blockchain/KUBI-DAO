@@ -4,13 +4,13 @@ import {
   Text,
   VStack
 } from "@chakra-ui/react";
-
+//add in deployed contract adress pop up
 const DeployMenu = ({ deployPMContract, deployKUBIContract, deployKUBIXContract }) => {
   const [showDeployMenu, setShowDeployMenu] = useState(false);
 
   return (
     <VStack spacing={4}>
-      <Button colorScheme="orange" onClick={() => setShowDeployMenu(!showDeployMenu)}>
+      <Button mb={4} colorScheme="orange" onClick={() => setShowDeployMenu(!showDeployMenu)}>
         Deploy Menu
       </Button>
       {showDeployMenu && (
@@ -23,7 +23,7 @@ const DeployMenu = ({ deployPMContract, deployKUBIContract, deployKUBIXContract 
           </Button>
           <Button colorScheme="teal" onClick={deployKUBIXContract}>
             Deploy KUBIX token Contract
-            
+
           </Button>
         </>
       )}
