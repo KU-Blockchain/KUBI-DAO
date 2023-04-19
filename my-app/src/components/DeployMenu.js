@@ -23,6 +23,7 @@ const DeployMenu = ({ deployPMContract, deployKUBIContract, deployKUBIXContract 
           </Button>
           <Button colorScheme="teal" onClick={deployKUBIXContract}>
             Deploy KUBIX token Contract
+            
           </Button>
         </>
       )}
