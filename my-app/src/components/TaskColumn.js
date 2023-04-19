@@ -113,7 +113,7 @@ const TaskColumn = ({ title, tasks, columnId }) => {
     const columnStyle = isOver ? { backgroundColor: 'rgba(0, 255, 0, 0.1)' } : {};
   
     return (
-      <Box ref={drop} w="100%" h="100%" px={4} py={6} bg="gray.100" borderRadius="md" boxShadow="lg" style={columnStyle}>
+      <Box ref={drop} w="100%" h="100%" px={2} py={6} bg="gray.100" borderRadius="md" boxShadow="lg" style={columnStyle}>
         <Heading size="md" mb={4} alignItems="center">
           {title}
           {title === 'Open' && (
@@ -130,7 +130,7 @@ const TaskColumn = ({ title, tasks, columnId }) => {
           h="calc(100% - 3rem)"
           bg="gray.200"
           borderRadius="md"
-          p={4}
+          p={2}
           style={columnStyle}
           overflowY="auto"
         >

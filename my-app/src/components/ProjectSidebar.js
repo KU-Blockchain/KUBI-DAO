@@ -51,8 +51,9 @@ const ProjectSidebar = ({ projects,selectedProject, onSelectProject, onCreatePro
     <Box
       bg="gray.200"
       w="300px"
-      h="100vh"
-      p={4}
+      h="79.7vh"
+      p={2}
+      marginRight={2}
       borderRight="1px"
       borderColor="gray.300"
       display="flex"

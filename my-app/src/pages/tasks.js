@@ -4,7 +4,7 @@ import MainLayout from '../components/MainLayout';
 
 const Tasks = () => {
   return (
-    <Box p={0} minH="100vh" bg="blue.100">
+    <Box p={0} minH="80vh" bg="blue.100">
       <MainLayout />
     </Box>
   );
