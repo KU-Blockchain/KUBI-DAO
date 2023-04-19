@@ -17,7 +17,7 @@ const TaskBoard = ({ columns }) => {
         direction={{ base: 'column', md: 'row' }}
         justifyContent="space-between"
         w="100%"
-        h="calc(100vh - 2rem)"
+        h="80vh"
         overflowX="hidden"
         overflowY="hidden"
         wrap={{ base: 'nowrap', md: 'nowrap' }}
@@ -28,7 +28,7 @@ const TaskBoard = ({ columns }) => {
             flex={{ base: '1 1 100%', md: '1 1 24%' }}
             mx={0}
             my={{ base: 4, md: 0 }}
-            p={4}
+            p={2}
           >
             <TaskColumn
               title={column.title}
