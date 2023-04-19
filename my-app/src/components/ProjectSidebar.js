@@ -62,7 +62,7 @@ const ProjectSidebar = ({ projects,selectedProject, onSelectProject, onCreatePro
       <Heading size="md" mb={4}>
         Projects
         </Heading>
-      <Box flexGrow={1} overflowY="auto" pr={4}>
+      <Box flexGrow={1} overflowY="auto" pl={1} pr={1}>
       
         <VStack spacing={4} align="start">
           {projects.map((project) => {
