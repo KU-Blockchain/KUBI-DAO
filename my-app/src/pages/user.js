@@ -146,10 +146,10 @@ const User = () => {
 
 
 
-  const mintExecutiveNFT = async () => {
+  const mintExecutiveNFT = async (mintAdress1) => {
     if (!execNftContract) return;
     try {
-      await execNftContract.methods.mint(mintAddress).send({ from: account });
+      await execNftContract.methods.mint(mintAddress1).send({ from: account });
       toast({ title: "Success", description: "Successfully minted Executive NFT", status: "success", duration: 5000, isClosable: true });
     } catch (error) {
       console.error(error);
