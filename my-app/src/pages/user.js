@@ -7,6 +7,7 @@ import ExecNFTArtifiact from "../abi/KUBIExecutiveNFT.json";
 import KUBIXArtifact from "../abi/KUBIX.json";
 import { useDataBaseContext } from "@/contexts/DataBaseContext";
 import { ethers } from "ethers";
+import MumbaiButton from "../components/importMumbai";
 
 import {
   Box,
@@ -386,10 +387,14 @@ const User = () => {
         <Button colorScheme="blue" mt={4} onClick={handleJoin}>
           {phrase}
         </Button>
-        <Heading as="h2" size="lg" mb={6}>
+        <Heading as="h2" size="md" mb={4} mt={4}>
           Import Tokens to Metamask
         </Heading>
         <KubixButton />
+        <Heading as="h2" size="md" mb={4} mt={4}>
+          Import Mumbai Network to Metamask
+        </Heading>
+        <MumbaiButton />
       </Box>
       <Flex
         flexDirection="column"
