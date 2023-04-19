@@ -6,6 +6,7 @@ import ProjectManagerArtifact from "../abi/ProjectManager.json";
 import ExecNFTArtifiact from "../abi/KUBIExecutiveNFT.json";
 import KUBIXArtifact from "../abi/KUBIX.json";
 import { useDataBaseContext } from "@/contexts/DataBaseContext";
+import { useWeb3Context } from "@/contexts/Web3Context";
 import { ethers } from "ethers";
 import MumbaiButton from "../components/importMumbai";
 
@@ -31,11 +32,7 @@ import {
 
 import KubixButton from "@/components/KubixButton";
 
-const PMContract= "0x6a55a93CA73DFC950430aAeDdB902377fE51a8FA"
-const contractAddress = "0x9B5AE4442654281438aFD95c54C212e1eb5cEB2c";
-const kubiMembershipNFTAddress = "0x9F15cEf6E7bc4B6a290435A598a759DbE72b41b5";
-const KUBIExecutiveNFTAddress = "0x1F3Ae002f2058470FC5C72C70809F31Db3d93fBb";
-const KUBIXcontractAddress ="0x894158b1f988602b228E39a633C7A2458A82028A"
+
 
 const User = () => {
   const [web3, setWeb3] = useState(null);
@@ -45,7 +42,6 @@ const User = () => {
   const [contract, setContract] = useState(null);
   const [KUBIXcontract, setKUBIXContract] = useState(null);
   const [balance, setBalance] = useState(0);
-  const [KUBIXbalance, setKUBIXBalance] = useState(0);
   const [kubiMembershipNFTContract, setKUBIMembershipNFTContract] = useState(null);
   const [nftBalance, setNftBalance] = useState(0);
   const [deployedPMContract, setDeployedPMContract] = useState(null);
@@ -63,7 +59,7 @@ const User = () => {
   const[phrase,setPhrase]=useState("Join");
 
   const { userDetails, setUserDetails, account, setAccount, fetchUserDetails, addUserData, clearData, pushProjectHashes } = useDataBaseContext();
-
+  const{KUBIXbalance, KUBIXcontractAddress, contractAddress, kubiMembershipNFTAddress,KUBIExecutiveNFTAddress}=useWeb3Context();
 
 
   
@@ -158,16 +154,6 @@ const User = () => {
   };
   useEffect(() => { fetchBalance() }, [contract, account]);
 
-  const fetchKUBIXBalance = async () => {
-    let temp = 0;
-    if (KUBIXcontract && account) {
-      temp = await KUBIXcontract.methods.balanceOf(account).call();
-    }
-  
-    setKUBIXBalance(ethers.utils.formatEther(temp));
-  };
-  
-  useEffect(() => { fetchKUBIXBalance() }, [KUBIXcontract, account]);
 
   const fetchNFTBalance = async () => {
     if (kubiMembershipNFTContract && account) setNftBalance(await kubiMembershipNFTContract.methods.balanceOf(account).call());
