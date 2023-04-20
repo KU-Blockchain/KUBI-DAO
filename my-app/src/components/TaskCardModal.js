@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+
 import {
   Button,
   FormControl,
@@ -16,6 +17,8 @@ import {
   VStack,
   Flex,
   Spacer,
+  Toast,
+  useToast
 } from '@chakra-ui/react';
 import { CheckIcon } from '@chakra-ui/icons';
 import EditTaskModal from './EditTaskModal';
@@ -34,7 +37,7 @@ const TaskCardModal = ({ isOpen, onClose, task, columnId, onEditTask }) => {
 
 
 
-
+  const toast= useToast();
 
   const handleButtonClick =  async() => {
     if (columnId === 'open') {
@@ -46,11 +49,21 @@ const TaskCardModal = ({ isOpen, onClose, task, columnId, onEditTask }) => {
       }
     }
     if (columnId === 'inProgress') {
-      
-      if (hasMemberNFT) {
+      if(submission===""){
+        toast({
+          title:"Invalid Submission",
+          description: "Please Enter a submission",
+          status: "error",
+          duration: 3500,
+          isClosable: true
+        });
+        return;
+      }
+      else if (hasMemberNFT) {
         moveTask(task, columnId, 'inReview', 0, submission);
         onClose();
-      } else {
+      }
+      else {
          alert('You must own an NFT to submit. Go to user to join');
       }
     }
