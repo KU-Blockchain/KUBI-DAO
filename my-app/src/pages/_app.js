@@ -1,4 +1,5 @@
 import * as React from "react";
+import { useEffect } from "react";
 import { ChakraProvider, extendTheme, Flex, Box } from "@chakra-ui/react";
 import NavBar from "../components/NavBar";
 import { Web3Provider } from "@/contexts/Web3Context";
@@ -13,6 +14,9 @@ const theme = extendTheme({
 });
 
 function MyApp({ Component, pageProps }) {
+  useEffect(() => {
+    document.title = 'KUBI DAO';
+  }, []);
   return (
     <DataBaseProvider>
       <Web3Provider>
