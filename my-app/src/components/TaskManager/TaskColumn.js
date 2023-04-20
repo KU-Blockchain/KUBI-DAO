@@ -28,6 +28,7 @@ const TaskColumn = ({ title, tasks, columnId }) => {
   
   const handleOpenAddTaskModal = () => {
     if (title === 'Open') {
+      console.log(hasExecNFT)
       
       if (hasExecNFT) {
         setIsAddTaskModalOpen(true);

@@ -19,7 +19,7 @@ const AddTaskModal = ({ isOpen, onClose, onAddTask }) => {
   const [name, setName] = useState('');
   const [description, setDescription] = useState('');
   const [difficulty, setDifficulty] = useState('easy');
-  const [estHours, setEstHours] = useState(1);
+  const [estHours, setEstHours] = useState(.5);
 
 
   
@@ -73,7 +73,7 @@ const AddTaskModal = ({ isOpen, onClose, onAddTask }) => {
               <FormLabel>Estimated Hours</FormLabel>
               <Input
                 type="number"
-                min="1"
+                min=".5"
                 value={estHours}
                 onChange={(e) => setEstHours(Math.round(parseFloat(e.target.value)))}
               />
