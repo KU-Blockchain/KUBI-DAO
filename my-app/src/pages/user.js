@@ -371,7 +371,7 @@ const User = () => {
     <>
       {!isConnected && (
         <Text fontSize="xl" fontWeight="bold" color="red.500">
-          Please refresh with Metamask
+          Please refresh with Metamask. If you don't have Metamask, please install it <Link href="https://metamask.io/" isExternal fontWeight="bold" textDecoration="underline" color="blue.500">here</Link>
         </Text>
       )}
     </>
