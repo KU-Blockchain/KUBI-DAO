@@ -60,6 +60,7 @@ export const Web3Provider = ({ children }) => {
         fetchKUBIXBalance() 
         fetchBalance()
         fetchNFTBalance()
+
       } catch (error) {
         console.error(error);
       }
@@ -77,6 +78,15 @@ export const Web3Provider = ({ children }) => {
           window.removeEventListener('load', initProvider);
         };
       }, []);
+
+    useEffect(() => {
+      if(execNftBalance== 1){
+        setExecNFT(true);
+      }
+      if(nftBalance== 1){
+        setMemberNFT(true);
+      }
+    }, [execNftBalance, nftBalance]);
 
       useEffect(() => {
         const handleAccountsChanged = async (accounts) => {
@@ -201,9 +211,6 @@ export const Web3Provider = ({ children }) => {
 
   const fetchNFTBalance = async () => {
     if (kubiMembershipNFTContract && account) setNftBalance(await kubiMembershipNFTContract.methods.balanceOf(account).call());
-    if(nftBalance== 1){
-      setMemberNFT(true);
-    }
   };
   useEffect(() => { fetchNFTBalance() }, [kubiMembershipNFTContract, account]);
 
@@ -216,9 +223,6 @@ export const Web3Provider = ({ children }) => {
   const fetchExecNFTBalance = async () => {
     if (execNftContract && account) {
       setExecNftBalance(await execNftContract.methods.balanceOf(account).call());
-    }
-    if(execNftBalance== 1){
-      setExecNFT(true);
     }
   };
 
