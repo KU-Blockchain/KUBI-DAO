@@ -47,8 +47,8 @@ const User = () => {
   const [deployedKUBIXContract, setDeployedKUBIXContract] = useState(null);
 
 
-
-  
+  const [isConnected, setIsConnected] = useState(false);
+  const [isMember, setIsMember] = useState(false);
 
 
   const [showDataMenu, setShowDataMenu] = useState(false);
@@ -68,6 +68,21 @@ const User = () => {
   useEffect(() => {
     fetchUserDetails(web3,account);
   }, [web3, account]);
+
+  useEffect(() => {
+    const checkConnection = async () => {
+      if (web3 && account) {
+        setIsConnected(true);
+        const membershipNftBalance = await kubiMembershipNFTContract.methods.balanceOf(account).call();
+        setIsMember(membershipNftBalance > 0);
+      } else {
+        setIsConnected(false);
+        setIsMember(false);
+      }
+    };
+
+    checkConnection();
+  }, [web3, account, kubiMembershipNFTContract]);
   
 
 
@@ -147,13 +162,26 @@ const User = () => {
 
 
 
-
-
-
-
   const handleJoin = async (e) => {
     setPhrase("Joining...")
     e.target.disabled=true
+
+    if (web3 && account) {
+      const networkId = await web3.eth.net.getId();
+      if (networkId !== 80001) { // Polygon Mumbai Network ID
+        toast({
+          title: "Wrong network",
+          description: "Please switch to the Polygon Mumbai Network",
+          status: "error",
+          duration: 5000,
+          isClosable: true
+        });
+        setPhrase("Join")
+        e.target.disabled=false
+        return;
+      }
+    }
+
     if (!email.endsWith("@ku.edu")) {
       toast({
         title: "Invalid email domain",
@@ -242,34 +270,72 @@ const User = () => {
     await pushProjectHashes(projectHashesInput, dataHashInput);
   };
   
-
-  return (
-    <Flex
-      flexDirection="row"
-      alignItems="flex-start"
-      justifyContent="center"
-      p={6}
-      mt={6}
-      w="100%"
-      maxWidth="1200px"
-      mx="auto"
-      bg="white"
-    >
-      <Flex
-        flexDirection="column"
-        alignItems="center"
-        justifyContent="center"
-        borderRadius="lg"
-        boxShadow="lg"
-        p={6}
-        w="100%"
-        maxWidth="600px"
-        bg="white"
-      >
-        <Heading as="h2" size="lg" mb={6}>
-          KUBI User Dashboard
-        </Heading>
-        {web3 && (
+  const renderJoinSteps = () => (
+    <>
+      {isConnected && !isMember && (
+        <Box
+          flexDirection="column"
+          alignItems="center"
+          justifyContent="center"
+          borderRadius="lg"
+          boxShadow="lg"
+          p={6}
+          ml={4}
+          w="100%"
+          maxWidth="600px"
+          bg="gray.50"
+        >
+          <Heading as="h2" size="lg" mb={6}>
+            How to Join the DAO
+          </Heading>
+            <Heading as="h2" size="lg" mb={6}>
+            Join KUBI DAO
+          </Heading>
+          <FormControl id="email">
+            <FormLabel>Email</FormLabel>
+            <Input type="email" placeholder="KU Email required" value={email} onChange={(event) => setEmail(event.target.value)} />
+          </FormControl>
+          <FormControl id="name" mt={4}>
+            <FormLabel>Name</FormLabel>
+            <Input type="text" placeholder="Name" value={name} onChange={(event) => setName(event.target.value)} />
+          </FormControl>
+          <FormControl id="username" mt={4}>
+            <FormLabel>Username</FormLabel>
+            <Input type="text" placeholder="Username" value={username} onChange={(event) => setUsername(event.target.value)} />
+          </FormControl>
+          <Button colorScheme="blue" mt={4} onClick={handleJoin}>
+            {phrase}
+          </Button>
+          <Heading as="h2" size="md" mb={4} mt={4}>
+            Import Tokens to Metamask
+          </Heading>
+          <KubixButton />
+          <Heading as="h2" size="md" mb={4} mt={4}>
+            Import Mumbai Network to Metamask
+          </Heading>
+          <MumbaiButton />
+        </Box>
+      )}
+    </>
+  );
+  const renderDashboard = () => (
+    <>
+      {isConnected && isMember && (
+        <Flex
+          flexDirection="column"
+          alignItems="center"
+          justifyContent="center"
+          borderRadius="lg"
+          boxShadow="lg"
+          p={6}
+          w="100%"
+          maxWidth="600px"
+          bg="white"
+        >
+          <Heading as="h2" size="lg" mb={6}>
+            KUBI User Dashboard
+          </Heading>
+          {web3 && (
           <Text color="green.500" fontWeight="bold">
 
             Wallet Connected
@@ -284,46 +350,36 @@ const User = () => {
         <Text>Executive NFT Balance: {execNftBalance}</Text>
         
 
-      </Flex>
-      <Box
-        flexDirection="column"
-        alignItems="center"
-        justifyContent="center"
-        borderRadius="lg"
-        boxShadow="lg"
-        p={6}
-        ml={4}
-        w="100%"
-        maxWidth="600px"
-        bg="gray.50"
-      >
-        <Heading as="h2" size="lg" mb={6}>
-          Join KUBI DAO
-        </Heading>
-        <FormControl id="email">
-          <FormLabel>Email</FormLabel>
-          <Input type="email" placeholder="KU Email required" value={email} onChange={(event) => setEmail(event.target.value)} />
-        </FormControl>
-        <FormControl id="name" mt={4}>
-          <FormLabel>Name</FormLabel>
-          <Input type="text" placeholder="Name" value={name} onChange={(event) => setName(event.target.value)} />
-        </FormControl>
-        <FormControl id="username" mt={4}>
-          <FormLabel>Username</FormLabel>
-          <Input type="text" placeholder="Username" value={username} onChange={(event) => setUsername(event.target.value)} />
-        </FormControl>
-        <Button colorScheme="blue" mt={4} onClick={handleJoin}>
-          {phrase}
-        </Button>
-        <Heading as="h2" size="md" mb={4} mt={4}>
-          Import Tokens to Metamask
-        </Heading>
-        <KubixButton />
-        <Heading as="h2" size="md" mb={4} mt={4}>
-          Import Mumbai Network to Metamask
-        </Heading>
-        <MumbaiButton />
-      </Box>
+        </Flex>
+      )}
+    </>
+  );
+
+  const renderMetamaskMessage = () => (
+    <>
+      {!isConnected && (
+        <Text fontSize="xl" fontWeight="bold" color="red.500">
+          Please refresh with Metamask
+        </Text>
+      )}
+    </>
+  );
+
+  return (
+    <Flex
+      flexDirection="row"
+      alignItems="flex-start"
+      justifyContent="center"
+      p={6}
+      mt={6}
+      w="100%"
+      maxWidth="1200px"
+      mx="auto"
+      bg="white"
+    >
+      {renderMetamaskMessage()}
+      {renderDashboard()}
+      {renderJoinSteps()}
       <Flex
         flexDirection="column"
         alignItems="center"
