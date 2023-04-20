@@ -1,6 +1,8 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
 import {  useDataBaseContext} from './DataBaseContext';
 
+import { useToast } from '@chakra-ui/react';
+
 
 
 
@@ -11,6 +13,7 @@ export const useTaskBoard = () => {
 };
 
 export const TaskBoardProvider = ({ children, initialColumns, onColumnChange, onUpdateColumns, account }) => {
+  const toast=useToast();
   const [taskColumns, setTaskColumns] = useState(initialColumns);
   const { getUsernameByAddress } = useDataBaseContext();
 
@@ -19,6 +22,24 @@ export const TaskBoardProvider = ({ children, initialColumns, onColumnChange, on
   }, [initialColumns]);
 
   const moveTask = async(draggedTask, sourceColumnId, destColumnId, newIndex, submissionData, claimedBy) => {
+
+    
+    if (destColumnId==='inReview' && submissionData===undefined)
+    {
+      
+      
+      toast({
+        title:"Invalid Submission",
+        description: "Please Enter a submission",
+        status: "error",
+        duration: 3500,
+        isClosable: true
+      });
+
+      return;
+    }
+
+
     const newTaskColumns = [...taskColumns];
 
     const sourceColumn = newTaskColumns.find((column) => column.id === sourceColumnId);
@@ -27,7 +48,7 @@ export const TaskBoardProvider = ({ children, initialColumns, onColumnChange, on
     const sourceTaskIndex = sourceColumn.tasks.findIndex((task) => task.id === draggedTask.id);
     sourceColumn.tasks.splice(sourceTaskIndex, 1);
 
-
+    
     const updatedTask = {
       ...draggedTask,
       name: draggedTask.name,
@@ -38,6 +59,8 @@ export const TaskBoardProvider = ({ children, initialColumns, onColumnChange, on
       claimedBy: destColumnId === 'inProgress' ? claimedBy : (destColumnId === 'open' ? '' : draggedTask.claimedBy),
       claimerUsername: destColumnId === 'inProgress' ? await getUsernameByAddress(claimedBy) : (destColumnId === 'open' ? '' : draggedTask.claimerUsername),
     };
+
+    
 
     console.log('test')
 
