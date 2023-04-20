@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, memo } from "react";
 import {
   Button,
   VStack,
@@ -13,11 +13,18 @@ import {
   FormLabel,
   Input
 } from "@chakra-ui/react";
+import { useWeb3Context } from "@/contexts/Web3Context";
+import { useToast } from "@chakra-ui/react";
 
-const MintMenu = ({ mintExecutiveNFT }) => {
+
+
+const MintMenu = memo(( ) => {
   const [showMintMenu, setShowMintMenu] = useState(false);
   const [isMintModalOpen, setIsMintModalOpen] = useState(false);
   const [mintAddress, setMintAddress] = useState("");
+
+  const { execNftContract,account } = useWeb3Context();
+  const toast = useToast();
 
   const openMintModal = () => {
     setIsMintModalOpen(true);
@@ -26,6 +33,19 @@ const MintMenu = ({ mintExecutiveNFT }) => {
   const closeMintModal = () => {
     setIsMintModalOpen(false);
     setMintAddress("");
+  };
+
+  const mintExecutiveNFT = async () => {
+    if (!execNftContract) return;
+    try {
+      console.log(account)
+      await execNftContract.methods.mint(mintAddress).send({ from: account });
+      toast({ title: "Success", description: "Successfully minted Executive NFT", status: "success", duration: 5000, isClosable: true });
+    } catch (error) {
+      console.error(error);
+      toast({ title: "Error", description: "Error minting Executive NFT", status: "error", duration: 5000, isClosable: true });
+    }
+    closeMintModal();
   };
 
   return (
@@ -66,6 +86,6 @@ const MintMenu = ({ mintExecutiveNFT }) => {
       </Modal>
     </VStack>
   );
-};
+});
 
 export default MintMenu;

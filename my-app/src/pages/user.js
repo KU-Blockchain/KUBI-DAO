@@ -48,7 +48,7 @@ const User = () => {
 
 
   
-  const [mintAddress, setMintAddress] = useState("");
+
 
   const [showDataMenu, setShowDataMenu] = useState(false);
   const [projectHashesInput, setProjectHashesInput] = useState([]);
@@ -146,17 +146,7 @@ const User = () => {
 
 
 
-  const mintExecutiveNFT = async (mintAdress1) => {
-    if (!execNftContract) return;
-    try {
-      await execNftContract.methods.mint(mintAddress1).send({ from: account });
-      toast({ title: "Success", description: "Successfully minted Executive NFT", status: "success", duration: 5000, isClosable: true });
-    } catch (error) {
-      console.error(error);
-      toast({ title: "Error", description: "Error minting Executive NFT", status: "error", duration: 5000, isClosable: true });
-    }
-    closeMintModal();
-  };
+
 
 
 
@@ -350,8 +340,8 @@ const User = () => {
             Developer Menu
         </Heading>
 
-        <DeployMenu deployPMContract={deployPMContract} deployKUBIContract= {deployKUBIContract} deployKUBIXContract= {deployKUBIContract}/ >
-        <MintMenu mintExecutiveNFT={mintExecutiveNFT}/>
+        <DeployMenu deployPMContract={deployPMContract} deployKUBIContract= {deployKUBIContract} deployKUBIXContract= {deployKUBIXContract}/ >
+        <MintMenu />
         <DataMenu clearData={clearData}  handleAddHashes={handleAddHashes} />
       </Flex>
     </Flex>
