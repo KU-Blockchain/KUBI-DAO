@@ -201,6 +201,9 @@ export const Web3Provider = ({ children }) => {
 
   const fetchNFTBalance = async () => {
     if (kubiMembershipNFTContract && account) setNftBalance(await kubiMembershipNFTContract.methods.balanceOf(account).call());
+    if(nftBalance== 1){
+      setMemberNFT(true);
+    }
   };
   useEffect(() => { fetchNFTBalance() }, [kubiMembershipNFTContract, account]);
 
@@ -213,6 +216,9 @@ export const Web3Provider = ({ children }) => {
   const fetchExecNFTBalance = async () => {
     if (execNftContract && account) {
       setExecNftBalance(await execNftContract.methods.balanceOf(account).call());
+    }
+    if(execNftBalance== 1){
+      setExecNFT(true);
     }
   };
 
