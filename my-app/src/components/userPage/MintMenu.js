@@ -50,7 +50,7 @@ const MintMenu = memo(( ) => {
 
   return (
     <VStack spacing={4}>
-      <Button colorScheme="blue" onClick={() => setShowMintMenu(!showMintMenu)}>
+      <Button mt ={4} colorScheme="blue" onClick={() => setShowMintMenu(!showMintMenu)}>
         Mint Menu
       </Button>
       {showMintMenu && (

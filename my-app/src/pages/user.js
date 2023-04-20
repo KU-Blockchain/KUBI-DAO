@@ -41,6 +41,7 @@ const User = () => {
   const [username, setUsername] = useState("");
   const [name, setName] = useState("");
 
+  //move deploys to deploy menu component
   const [deployedPMContract, setDeployedPMContract] = useState(null);
   const [deployedKUBIContract, setDeployedKUBIContract] = useState(null);
   const [deployedKUBIXContract, setDeployedKUBIXContract] = useState(null);

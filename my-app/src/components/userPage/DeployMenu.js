@@ -10,7 +10,7 @@ const DeployMenu = ({ deployPMContract, deployKUBIContract, deployKUBIXContract 
 
   return (
     <VStack spacing={4}>
-      <Button mb={4} colorScheme="orange" onClick={() => setShowDeployMenu(!showDeployMenu)}>
+      <Button  colorScheme="orange" onClick={() => setShowDeployMenu(!showDeployMenu)}>
         Deploy Menu
       </Button>
       {showDeployMenu && (
@@ -21,7 +21,7 @@ const DeployMenu = ({ deployPMContract, deployKUBIContract, deployKUBIXContract 
           <Button colorScheme="teal" onClick={deployKUBIContract}>
             Deploy Executive NFT Contract
           </Button>
-          <Button colorScheme="teal" onClick={deployKUBIXContract}>
+          <Button  colorScheme="teal" onClick={deployKUBIXContract}>
             Deploy KUBIX token Contract
 
           </Button>
