@@ -1,6 +1,6 @@
 import React from 'react';
 import { Box } from '@chakra-ui/react';
-import MainLayout from '../components/MainLayout';
+import MainLayout from '../components/TaskManager/MainLayout';
 
 const Tasks = () => {
   return (

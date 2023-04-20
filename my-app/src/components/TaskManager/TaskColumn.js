@@ -3,10 +3,10 @@ import { AddIcon } from '@chakra-ui/icons';
 import { Box, Heading, IconButton} from '@chakra-ui/react';
 import { useDrop } from 'react-dnd';
 import TaskCard from './TaskCard';
-import { useTaskBoard } from '../contexts/TaskBoardContext';
+import { useTaskBoard } from '../../contexts/TaskBoardContext';
 import AddTaskModal from './AddTaskModal';
-import { useWeb3Context } from '../contexts/Web3Context';
-import { useDataBaseContext } from '../contexts/DataBaseContext';
+import { useWeb3Context } from '../../contexts/Web3Context';
+import { useDataBaseContext } from '../../contexts/DataBaseContext';
 
 const TaskColumn = ({ title, tasks, columnId }) => {
   const { moveTask, addTask, editTask } = useTaskBoard();

@@ -1,12 +1,12 @@
 import { useState, useEffect } from "react";
-import Web3 from "web3";
-import DirectDemocracyTokenArtifact from "../abi/DirectDemocracyToken.json";
 import KUBIMembershipNFTArtifact from "../abi/KUBIMembershipNFT.json";
 import ProjectManagerArtifact from "../abi/ProjectManager.json";
 import ExecNFTArtifiact from "../abi/KUBIExecutiveNFT.json";
 import KUBIXArtifact from "../abi/KUBIX.json";
 import { useDataBaseContext } from "@/contexts/DataBaseContext";
+import { useWeb3Context } from "@/contexts/Web3Context";
 import { ethers } from "ethers";
+import MumbaiButton from "../components/userPage/importMumbai";
 
 import {
   Box,
@@ -18,51 +18,39 @@ import {
   useToast,
   Flex,
   Heading,
-  Modal,		
-  ModalOverlay,		
-  ModalContent,		
-  ModalHeader,		
-  ModalBody,		
-  ModalCloseButton,		
-  ModalFooter,
-  Spacer
+  Link
 } from "@chakra-ui/react";
 
-import KubixButton from "@/components/KubixButton";
+import KubixButton from "@/components/userPage/KubixButton";
+import DeployMenu from "@/components/userPage/DeployMenu";
+import MintMenu from "@/components/userPage/MintMenu";
+import DataMenu from "@/components/userPage/DataMenu";
 
-const PMContract= "0x6a55a93CA73DFC950430aAeDdB902377fE51a8FA"
-const contractAddress = "0x9B5AE4442654281438aFD95c54C212e1eb5cEB2c";
-const kubiMembershipNFTAddress = "0x9F15cEf6E7bc4B6a290435A598a759DbE72b41b5";
-const KUBIExecutiveNFTAddress = "0x1F3Ae002f2058470FC5C72C70809F31Db3d93fBb";
-const KUBIXcontractAddress ="0x894158b1f988602b228E39a633C7A2458A82028A"
+
 
 const User = () => {
-  const [web3, setWeb3] = useState(null);
+  
   const [email, setEmail] = useState("");
   const [username, setUsername] = useState("");
   const [name, setName] = useState("");
-  const [contract, setContract] = useState(null);
-  const [KUBIXcontract, setKUBIXContract] = useState(null);
-  const [balance, setBalance] = useState(0);
-  const [KUBIXbalance, setKUBIXBalance] = useState(0);
-  const [kubiMembershipNFTContract, setKUBIMembershipNFTContract] = useState(null);
-  const [nftBalance, setNftBalance] = useState(0);
+
+  //move deploys to deploy menu component
   const [deployedPMContract, setDeployedPMContract] = useState(null);
   const [deployedKUBIContract, setDeployedKUBIContract] = useState(null);
   const [deployedKUBIXContract, setDeployedKUBIXContract] = useState(null);
-  const [execNftContract, setExecNftContract] = useState(null);
-  const [execNftBalance, setExecNftBalance] = useState(0);
-  const [showDeployMenu, setShowDeployMenu] = useState(false);
-  const [isMintModalOpen, setIsMintModalOpen] = useState(false);		
-  const [mintAddress, setMintAddress] = useState("");
-  const [showMintMenu, setShowMintMenu] = useState(false);
+
+
+  const [isConnected, setIsConnected] = useState(false);
+  const [isMember, setIsMember] = useState(false);
+
+
   const [showDataMenu, setShowDataMenu] = useState(false);
   const [projectHashesInput, setProjectHashesInput] = useState([]);
   const [dataHashInput, setDataHashInput] = useState("");
-  const[phrase,setPhrase]=useState("Join");
+  const [phrase,setPhrase]=useState("Join");
 
-  const { userDetails, setUserDetails, account, setAccount, fetchUserDetails, addUserData, clearData, pushProjectHashes } = useDataBaseContext();
-
+  const { userDetails, setUserDetails,  setAccount, fetchUserDetails, addUserData, clearData, pushProjectHashes } = useDataBaseContext();
+  const{ execNftContract,execNftBalance,balance,nftBalance, fetchBalance,web3, account,kubiMembershipNFTContract, contract,KUBIXbalance,KUBIXcontract, KUBIXcontractAddress, contractAddress, kubiMembershipNFTAddress,KUBIExecutiveNFTAddress}=useWeb3Context();
 
 
   
@@ -71,31 +59,25 @@ const User = () => {
   
 
   useEffect(() => {
-    fetchUserDetails();
+    fetchUserDetails(web3,account);
   }, [web3, account]);
+
+  useEffect(() => {
+    const checkConnection = async () => {
+      if (web3 && account) {
+        setIsConnected(true);
+        const membershipNftBalance = await kubiMembershipNFTContract.methods.balanceOf(account).call();
+        setIsMember(membershipNftBalance > 0);
+      } else {
+        setIsConnected(false);
+        setIsMember(false);
+      }
+    };
+
+    checkConnection();
+  }, [web3, account, kubiMembershipNFTContract]);
   
 
-  const connectWallet = async () => {
-    if (window.ethereum) {
-      console.log(process.env.NEXT_PUBLIC_INFURA_IPFS)
-      try {
-        await window.ethereum.request({ method: "eth_requestAccounts" });
-        const web3 = new Web3(window.ethereum);
-        setWeb3(web3);
-        const accounts = await web3.eth.getAccounts();
-        setAccount(accounts[0]);
-        setContract(new web3.eth.Contract(DirectDemocracyTokenArtifact.abi, contractAddress));
-        setKUBIXContract(new web3.eth.Contract(KUBIXArtifact.abi, KUBIXcontractAddress));
-        setKUBIMembershipNFTContract(new web3.eth.Contract(KUBIMembershipNFTArtifact.abi, kubiMembershipNFTAddress));
-      } catch (error) {
-        console.error(error);
-      }
-    } else {
-      console.log("No ethereum browser extension detected");
-    }
-  };
-
-  useEffect(() => { connectWallet() }, []);
 
   const deployPMContract = async () => {
     if (!web3 || !account) return;
@@ -137,14 +119,14 @@ const User = () => {
   const deployKUBIXContract = async () => {
     if (!web3 || !account) return;
   
-    const KUBIXContract = new web3.eth.Contract(KUBIXArtifact.abi);
+    
     const deployOptions = {
       data: KUBIXArtifact.bytecode,
       arguments: [],
     };
   
     try {
-      const instance = await KUBIXContract.deploy(deployOptions).send({ from: account });
+      const instance = await KUBIXcontract.deploy(deployOptions).send({ from: account });
       setDeployedKUBIXContract(instance);
       console.log("Contract deployed at address:", instance.options.address);
     } catch (error) {
@@ -152,26 +134,7 @@ const User = () => {
     }
   };
 
-  const fetchBalance = async () => {
-    if (contract && account) setBalance(await contract.methods.balanceOf(account).call());
-  };
-  useEffect(() => { fetchBalance() }, [contract, account]);
 
-  const fetchKUBIXBalance = async () => {
-    let temp = 0;
-    if (KUBIXcontract && account) {
-      temp = await KUBIXcontract.methods.balanceOf(account).call();
-    }
-  
-    setKUBIXBalance(ethers.utils.formatEther(temp));
-  };
-  
-  useEffect(() => { fetchKUBIXBalance() }, [KUBIXcontract, account]);
-
-  const fetchNFTBalance = async () => {
-    if (kubiMembershipNFTContract && account) setNftBalance(await kubiMembershipNFTContract.methods.balanceOf(account).call());
-  };
-  useEffect(() => { fetchNFTBalance() }, [kubiMembershipNFTContract, account]);
 
 
   const mintMembershipNFT = async () => {
@@ -190,37 +153,28 @@ const User = () => {
     }
   };
 
-  useEffect(() => {
-    if (web3) {
-      setExecNftContract(new web3.eth.Contract(ExecNFTArtifiact.abi, KUBIExecutiveNFTAddress));
-    }
-  }, [web3]);
-
-  const fetchExecNFTBalance = async () => {
-    if (execNftContract && account) {
-      setExecNftBalance(await execNftContract.methods.balanceOf(account).call());
-    }
-  };
-
-  useEffect(() => { fetchExecNFTBalance() }, [execNftContract, account]);
-
-  const mintExecutiveNFT = async () => {
-    if (!execNftContract) return;
-    try {
-      await execNftContract.methods.mint(mintAddress).send({ from: account });
-      toast({ title: "Success", description: "Successfully minted Executive NFT", status: "success", duration: 5000, isClosable: true });
-    } catch (error) {
-      console.error(error);
-      toast({ title: "Error", description: "Error minting Executive NFT", status: "error", duration: 5000, isClosable: true });
-    }
-    closeMintModal();
-  };
-
 
 
   const handleJoin = async (e) => {
     setPhrase("Joining...")
     e.target.disabled=true
+
+    if (web3 && account) {
+      const networkId = await web3.eth.net.getId();
+      if (networkId !== 80001) { // Polygon Mumbai Network ID
+        toast({
+          title: "Wrong network",
+          description: "Please switch to the Polygon Mumbai Network",
+          status: "error",
+          duration: 5000,
+          isClosable: true
+        });
+        setPhrase("Join")
+        e.target.disabled=false
+        return;
+      }
+    }
+
     if (!email.endsWith("@ku.edu")) {
       toast({
         title: "Invalid email domain",
@@ -276,7 +230,7 @@ const User = () => {
     try {
       await contract.methods.mint().send({ from: account });
       const newBalance = await contract.methods.balanceOf(account).call();
-      setBalance(newBalance);
+      fetchBalance()
       await mintMembershipNFT();
       toast({
         title: "Success",
@@ -297,13 +251,9 @@ const User = () => {
     }
 
   };
-  const openMintModal = () => {		
-    setIsMintModalOpen(true);		
-  };
-  const closeMintModal = () => {		
-    setIsMintModalOpen(false);		
-    setMintAddress("");		
-  };
+
+  
+
   const handleAddHashes = async () => {
     if (projectHashesInput.length === 0 || dataHashInput === "") {
       // Show error message if the inputs are not valid
@@ -313,34 +263,91 @@ const User = () => {
     await pushProjectHashes(projectHashesInput, dataHashInput);
   };
   
-
-  return (
-    <Flex
-      flexDirection="row"
-      alignItems="flex-start"
-      justifyContent="center"
-      p={6}
-      mt={6}
-      w="100%"
-      maxWidth="1200px"
-      mx="auto"
-      bg="white"
-    >
-      <Flex
-        flexDirection="column"
-        alignItems="center"
-        justifyContent="center"
-        borderRadius="lg"
-        boxShadow="lg"
-        p={6}
-        w="100%"
-        maxWidth="600px"
-        bg="white"
-      >
-        <Heading as="h2" size="lg" mb={6}>
-          KUBI User Dashboard
-        </Heading>
-        {web3 && (
+  const renderJoinSteps = () => (
+    <>
+    {isConnected && !isMember && (
+      
+      <Flex flexDirection="row" alignItems="center" justifyContent="center">
+        <Box
+          flexDirection="column"
+          alignItems="center"
+          justifyContent="center"
+          borderRadius="lg"
+          boxShadow="lg"
+          p={6}
+          w="100%"
+          maxWidth="600px"
+          bg="gray.50"
+          mr={4}
+        >
+          <Heading as="h2" size="lg" mb={6}>
+            How To Join the DAO
+          </Heading>
+          <Text fontSize="xl" mb={4}>1. If you haven't added the polygon Mumbai testnet import it below:</Text>
+          <MumbaiButton />
+          <Text fontSize="xl" mt={4} mb={4}>2. Get some free testnet MATIC by pasting your wallet adress <Link href="https://faucet.polygon.technology/" isExternal fontWeight="bold" textDecoration="underline" color="blue.500">here</Link></Text>
+          <Text fontWeight ="bold" mt= {4}>Wallet Adress for copying:</Text>
+          <Text>{account}</Text>
+          <Text fontSize="xl" mt={4} mb={4}>3. Import the KUBIX coin here:</Text>
+          <KubixButton />
+          <Text mt ={4} fontSize="xl" >4. Make sure to switch to the mumbai Network at the top of Metamask </Text>
+          <Text mt ={4} fontSize="xl" >5. Put in your information to the right and confirm the minting transaction on Metamask.</Text>
+        </Box>
+        
+          <Box
+            flexDirection="column"
+            alignItems="center"
+            justifyContent="center"
+            borderRadius="lg"
+            boxShadow="lg"
+            p={6}
+            w="100%"
+            maxWidth="600px"
+            bg="gray.50"
+          >
+            <Heading as="h2" size="lg" mb={6}>
+              Join KUBI DAO
+            </Heading>
+            <FormControl id="email">
+              <FormLabel>Email</FormLabel>
+              <Input type="email" placeholder="KU Email required" value={email} onChange={(event) => setEmail(event.target.value)} />
+            </FormControl>
+            <FormControl id="name" mt={4}>
+              <FormLabel>Name</FormLabel>
+              <Input type="text" placeholder="Name" value={name} onChange={(event) => setName(event.target.value)} />
+            </FormControl>
+            <FormControl id="username" mt={4}>
+              <FormLabel>Username</FormLabel>
+              <Input type="text" placeholder="Username" value={username} onChange={(event) => setUsername(event.target.value)} />
+            </FormControl>
+            <Button colorScheme="blue" mt={4} onClick={handleJoin}>
+              {phrase}
+            </Button>
+          </Box>
+          </Flex>
+         
+        )}
+        </>
+   );
+  
+  const renderDashboard = () => (
+    <>
+      {isConnected && isMember && (
+        <Flex
+          flexDirection="column"
+          alignItems="center"
+          justifyContent="center"
+          borderRadius="lg"
+          boxShadow="lg"
+          p={6}
+          w="100%"
+          maxWidth="600px"
+          bg="white"
+        >
+          <Heading as="h2" size="lg" mb={6}>
+            KUBI User Dashboard
+          </Heading>
+          {web3 && (
           <Text color="green.500" fontWeight="bold">
 
             Wallet Connected
@@ -355,43 +362,24 @@ const User = () => {
         <Text>Executive NFT Balance: {execNftBalance}</Text>
         
 
-      </Flex>
-      <Box
-        flexDirection="column"
-        alignItems="center"
-        justifyContent="center"
-        borderRadius="lg"
-        boxShadow="lg"
-        p={6}
-        ml={4}
-        w="100%"
-        maxWidth="600px"
-        bg="gray.50"
-      >
-        <Heading as="h2" size="lg" mb={6}>
-          Join KUBI DAO
-        </Heading>
-        <FormControl id="email">
-          <FormLabel>Email</FormLabel>
-          <Input type="email" placeholder="KU Email required" value={email} onChange={(event) => setEmail(event.target.value)} />
-        </FormControl>
-        <FormControl id="name" mt={4}>
-          <FormLabel>Name</FormLabel>
-          <Input type="text" placeholder="Name" value={name} onChange={(event) => setName(event.target.value)} />
-        </FormControl>
-        <FormControl id="username" mt={4}>
-          <FormLabel>Username</FormLabel>
-          <Input type="text" placeholder="Username" value={username} onChange={(event) => setUsername(event.target.value)} />
-        </FormControl>
-        <Button colorScheme="blue" mt={4} onClick={handleJoin}>
-          {phrase}
-        </Button>
-        <Heading as="h2" size="lg" mb={6}>
-          Import Tokens to Metamask
-        </Heading>
-        <KubixButton />
-      </Box>
-      <Flex
+        </Flex>
+      )}
+    </>
+  );
+
+  const renderMetamaskMessage = () => (
+    <>
+      {!isConnected && (
+        <Text fontSize="xl" fontWeight="bold" color="red.500">
+          Please refresh with Metamask. If you don't have Metamask, please install it <Link href="https://metamask.io/" isExternal fontWeight="bold" textDecoration="underline" color="blue.500">here</Link>
+        </Text>
+      )}
+    </>
+  );
+  const renderDevMenu = () => (
+    <>
+      {isConnected && isMember && (
+        <Flex
         flexDirection="column"
         alignItems="center"
         justifyContent="center"
@@ -408,99 +396,35 @@ const User = () => {
             Developer Menu
         </Heading>
 
-        <Button colorScheme="orange" mt={4} onClick={() => setShowDeployMenu(!showDeployMenu)}>
-          Deploy Menu
-        </Button>
-        {showDeployMenu && (
-          <>
-            <Button colorScheme="teal" mt={4} onClick={deployPMContract}>
-              Deploy Project Manager Contract
-            </Button>
-            {deployedPMContract && <Text mt={4}>Contract address: {deployedPMContract.options.address}</Text>}
-            <Button colorScheme="teal" mt={4} onClick={deployKUBIContract}>
-              Deploy Executive NFT Contract
-              </Button>
-            <Button colorScheme="teal" mt={4} onClick={deployKUBIXContract}>
-              Deploy KUBIX token Contract
-            </Button>
-            {deployedKUBIXContract && <Text mt={4}>Contract address: {deployedKUBIXContract.options.address}</Text>}
-
-          </>
-          
-        )}
-        <Button colorScheme="blue" mt={4} onClick={() => setShowMintMenu(!showMintMenu)}>
-          Mint Menu
-        </Button>
-        {showMintMenu && (
-          <>
-            <Button colorScheme="purple" mt={4} onClick={openMintModal}>
-              Mint Executive NFT
-            </Button>
-          </>
-        )}
-        <Button colorScheme="red" mt={4} onClick={() => setShowDataMenu(!showDataMenu)}>
-          Data Menu
-        </Button>
-        {showDataMenu && (
-          <>
-            <Button colorScheme="yellow" mt={4} onClick={clearData}>
-              Clear all Data
-            </Button>
-            <Button colorScheme="teal" mt={4} onClick={handleAddHashes}>
-              Push Project Hashes
-            </Button>
-            
-            <FormControl id="projectHashes" mt={4}>
-              <FormLabel>Project Hashes (comma-separated)</FormLabel>
-              <Input
-                type="text"
-                placeholder="Enter Project Hashes"
-                onChange={(event) =>
-                  setProjectHashesInput(event.target.value.split(","))
-                }
-              />
-            </FormControl>
-
-            
-            <FormControl id="dataHash" mt={4}>
-              <FormLabel>Data Hash</FormLabel>
-              <Input
-                type="text"
-                placeholder="Enter Data Hash"
-                value={dataHashInput}
-                onChange={(event) => setDataHashInput(event.target.value)}
-              />
-            </FormControl>
-
-          </>
-          
-        )}
+        <DeployMenu deployPMContract={deployPMContract} deployKUBIContract= {deployKUBIContract} deployKUBIXContract= {deployKUBIXContract}/ >
+        <MintMenu />
+        <DataMenu clearData={clearData}  handleAddHashes={handleAddHashes} />
       </Flex>
-      <Modal isOpen={isMintModalOpen} onClose={closeMintModal}>		
-           <ModalOverlay />		
-           <ModalContent>		
-             <ModalHeader>Mint Executive NFT</ModalHeader>		
-             <ModalCloseButton />		
-             <ModalBody>		
-               <FormControl id="mintAddress">		
-                 <FormLabel>Account Address</FormLabel>		
-                 <Input		
-                   type="text"		
-                   placeholder="Enter account address"		
-                   value={mintAddress}		
-                   onChange={(event) => setMintAddress(event.target.value)}		
-                 />		
-               </FormControl>		
-             </ModalBody>		
-             <ModalFooter>		
-               <Button colorScheme="blue" mr={3} onClick={mintExecutiveNFT}>		
-                 Mint		
-               </Button>		
-               <Button onClick={closeMintModal}>Cancel</Button>		
-             </ModalFooter>		
-           </ModalContent>		
-         </Modal>
+      )}
+  </>
+
+  );
+
+  return (
+    
+    <Flex
+      flexDirection="row"
+      alignItems="flex-start"
+      justifyContent="center"
+      p={6}
+      mt={6}
+      w="100%"
+      maxWidth="1200px"
+      mx="auto"
+      bg="white"
+    >
+      {renderMetamaskMessage()}
+      {renderDashboard()}
+      {renderDevMenu()}
+      {renderJoinSteps()}
+
     </Flex>
+    
   );
 };
 

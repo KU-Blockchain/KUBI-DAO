@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import Web3 from "web3";
-import erc20ABI from "../abi/KUBIX.json";
+import erc20ABI from "@/abi/KUBIX.json";
 import { Button } from "@chakra-ui/react";
 
 const KubixButton = () => {

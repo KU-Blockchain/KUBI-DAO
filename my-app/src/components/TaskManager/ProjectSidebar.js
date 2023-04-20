@@ -9,7 +9,7 @@ import {
   Spacer,
   Flex,
 } from '@chakra-ui/react';
-import { useWeb3Context } from '../contexts/Web3Context';
+import { useWeb3Context } from '../../contexts/Web3Context';
 import { useDataBaseContext } from '@/contexts/DataBaseContext';
 import { DndProvider } from 'react-dnd';
 import { HTML5Backend } from 'react-dnd-html5-backend';
@@ -51,7 +51,7 @@ const ProjectSidebar = ({ projects,selectedProject, onSelectProject, onCreatePro
     <Box
       bg="gray.200"
       w="300px"
-      h="79.7vh"
+      h="80vh"
       p={2}
       marginRight={2}
       borderRight="1px"
