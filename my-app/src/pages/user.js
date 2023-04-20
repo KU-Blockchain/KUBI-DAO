@@ -364,23 +364,10 @@ const User = () => {
       )}
     </>
   );
-
-  return (
-    <Flex
-      flexDirection="row"
-      alignItems="flex-start"
-      justifyContent="center"
-      p={6}
-      mt={6}
-      w="100%"
-      maxWidth="1200px"
-      mx="auto"
-      bg="white"
-    >
-      {renderMetamaskMessage()}
-      {renderDashboard()}
-      {renderJoinSteps()}
-      <Flex
+  const renderDevMenu = () => (
+    <>
+      {isConnected && isMember && (
+        <Flex
         flexDirection="column"
         alignItems="center"
         justifyContent="center"
@@ -401,7 +388,31 @@ const User = () => {
         <MintMenu />
         <DataMenu clearData={clearData}  handleAddHashes={handleAddHashes} />
       </Flex>
+      )}
+  </>
+
+  );
+
+  return (
+    
+    <Flex
+      flexDirection="row"
+      alignItems="flex-start"
+      justifyContent="center"
+      p={6}
+      mt={6}
+      w="100%"
+      maxWidth="1200px"
+      mx="auto"
+      bg="white"
+    >
+      {renderMetamaskMessage()}
+      {renderDashboard()}
+      {renderJoinSteps()}
+      {renderDevMenu()}
+
     </Flex>
+    
   );
 };
 

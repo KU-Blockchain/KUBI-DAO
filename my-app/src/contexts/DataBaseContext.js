@@ -144,7 +144,7 @@ export const DataBaseProvider = ({ children }) => {
     };
 
     //fetch user details from ipfs and smart contract
-    const fetchUserDetails = async (web,account) => {
+    const fetchUserDetails = async (web3,account) => {
         if (!web3 || !account) return;
         try {
           console.log("test")
