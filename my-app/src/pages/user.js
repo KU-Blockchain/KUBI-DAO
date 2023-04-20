@@ -283,12 +283,15 @@ const User = () => {
           <Heading as="h2" size="lg" mb={6}>
             How To Join the DAO
           </Heading>
-          <Text mb={4}>1. Connect your Metamask. If you don't have Metamask, set one up <Link href="https://metamask.io/" isExternal>here</Link>.</Text>
-          <Text mb={4}>2. Connect to the Polygon Mumbai Network by switching the network at the top of Metamask. Import the Mumbai network here:</Text>
+          <Text fontSize="xl" mb={4}>1. If you haven't added the polygon Mumbai testnet import it below:</Text>
           <MumbaiButton />
-          <Text mb={4}>3. Import the KUBIX coin here:</Text>
+          <Text fontSize="xl" mt={4} mb={4}>2. Get some free testnet MATIC by pasting your wallet adress <Link href="https://faucet.polygon.technology/" isExternal fontWeight="bold" textDecoration="underline" color="blue.500">here</Link></Text>
+          <Text fontWeight ="bold" mt= {4}>Wallet Adress for copying:</Text>
+          <Text>{account}</Text>
+          <Text fontSize="xl" mt={4} mb={4}>3. Import the KUBIX coin here:</Text>
           <KubixButton />
-          <Text>4. Put in your username and email to the right and click join. Then confirm the minting transaction on Metamask.</Text>
+          <Text mt ={4} fontSize="xl" >4. Make sure to switch to the mumbai Network at the top of Metamask </Text>
+          <Text mt ={4} fontSize="xl" >5. Put in your information to the right and confirm the minting transaction on Metamask.</Text>
         </Box>
         
           <Box
