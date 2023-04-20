@@ -18,14 +18,7 @@ import {
   useToast,
   Flex,
   Heading,
-  Modal,		
-  ModalOverlay,		
-  ModalContent,		
-  ModalHeader,		
-  ModalBody,		
-  ModalCloseButton,		
-  ModalFooter,
-  Spacer
+  Link
 } from "@chakra-ui/react";
 
 import KubixButton from "@/components/userPage/KubixButton";
@@ -272,7 +265,9 @@ const User = () => {
   
   const renderJoinSteps = () => (
     <>
-      {isConnected && !isMember && (
+    {isConnected && !isMember && (
+      
+      <Flex flexDirection="row" alignItems="center" justifyContent="center">
         <Box
           flexDirection="column"
           alignItems="center"
@@ -280,44 +275,58 @@ const User = () => {
           borderRadius="lg"
           boxShadow="lg"
           p={6}
-          ml={4}
           w="100%"
           maxWidth="600px"
           bg="gray.50"
+          mr={4}
         >
           <Heading as="h2" size="lg" mb={6}>
-            How to Join the DAO
+            How To Join the DAO
           </Heading>
-            <Heading as="h2" size="lg" mb={6}>
-            Join KUBI DAO
-          </Heading>
-          <FormControl id="email">
-            <FormLabel>Email</FormLabel>
-            <Input type="email" placeholder="KU Email required" value={email} onChange={(event) => setEmail(event.target.value)} />
-          </FormControl>
-          <FormControl id="name" mt={4}>
-            <FormLabel>Name</FormLabel>
-            <Input type="text" placeholder="Name" value={name} onChange={(event) => setName(event.target.value)} />
-          </FormControl>
-          <FormControl id="username" mt={4}>
-            <FormLabel>Username</FormLabel>
-            <Input type="text" placeholder="Username" value={username} onChange={(event) => setUsername(event.target.value)} />
-          </FormControl>
-          <Button colorScheme="blue" mt={4} onClick={handleJoin}>
-            {phrase}
-          </Button>
-          <Heading as="h2" size="md" mb={4} mt={4}>
-            Import Tokens to Metamask
-          </Heading>
-          <KubixButton />
-          <Heading as="h2" size="md" mb={4} mt={4}>
-            Import Mumbai Network to Metamask
-          </Heading>
+          <Text mb={4}>1. Connect your Metamask. If you don't have Metamask, set one up <Link href="https://metamask.io/" isExternal>here</Link>.</Text>
+          <Text mb={4}>2. Connect to the Polygon Mumbai Network by switching the network at the top of Metamask. Import the Mumbai network here:</Text>
           <MumbaiButton />
+          <Text mb={4}>3. Import the KUBIX coin here:</Text>
+          <KubixButton />
+          <Text>4. Put in your username and email to the right and click join. Then confirm the minting transaction on Metamask.</Text>
         </Box>
-      )}
-    </>
-  );
+        
+          <Box
+            flexDirection="column"
+            alignItems="center"
+            justifyContent="center"
+            borderRadius="lg"
+            boxShadow="lg"
+            p={6}
+            w="100%"
+            maxWidth="600px"
+            bg="gray.50"
+          >
+            <Heading as="h2" size="lg" mb={6}>
+              Join KUBI DAO
+            </Heading>
+            <FormControl id="email">
+              <FormLabel>Email</FormLabel>
+              <Input type="email" placeholder="KU Email required" value={email} onChange={(event) => setEmail(event.target.value)} />
+            </FormControl>
+            <FormControl id="name" mt={4}>
+              <FormLabel>Name</FormLabel>
+              <Input type="text" placeholder="Name" value={name} onChange={(event) => setName(event.target.value)} />
+            </FormControl>
+            <FormControl id="username" mt={4}>
+              <FormLabel>Username</FormLabel>
+              <Input type="text" placeholder="Username" value={username} onChange={(event) => setUsername(event.target.value)} />
+            </FormControl>
+            <Button colorScheme="blue" mt={4} onClick={handleJoin}>
+              {phrase}
+            </Button>
+          </Box>
+          </Flex>
+         
+        )}
+        </>
+   );
+  
   const renderDashboard = () => (
     <>
       {isConnected && isMember && (
@@ -408,8 +417,8 @@ const User = () => {
     >
       {renderMetamaskMessage()}
       {renderDashboard()}
-      {renderJoinSteps()}
       {renderDevMenu()}
+      {renderJoinSteps()}
 
     </Flex>
     
