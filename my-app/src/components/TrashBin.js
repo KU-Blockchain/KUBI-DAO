@@ -13,7 +13,7 @@ const TrashBin = ({ onDeleteProject }) => {
   }));
 
   const isActive = canDrop && isOver;
-  const backgroundColor = isActive ? 'red.500' : 'gray.200';
+  const backgroundColor = isActive ? 'red.500' : 'red.200';
 
   return (
     <Box
