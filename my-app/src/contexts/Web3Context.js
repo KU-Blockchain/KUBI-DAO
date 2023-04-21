@@ -57,9 +57,9 @@ export const Web3Provider = ({ children }) => {
         setContract(new web3.eth.Contract(DirectDemocracyTokenArtifact.abi, contractAddress));
         setKUBIXContract(new web3.eth.Contract(KUBIXTokenArtifact.abi, KUBIXcontractAddress));
         setKUBIMembershipNFTContract(new web3.eth.Contract(KUBIMembershipNFTArtifact.abi, kubiMembershipNFTAddress));
-        fetchKUBIXBalance() 
         fetchBalance()
         fetchNFTBalance()
+        fetchKUBIXBalance() 
 
       } catch (error) {
         console.error(error);
@@ -86,7 +86,7 @@ export const Web3Provider = ({ children }) => {
       if(nftBalance== 1){
         setMemberNFT(true);
       }
-    }, [execNftBalance, nftBalance]);
+    }, [execNftBalance, nftBalance, account]);
 
       useEffect(() => {
         const handleAccountsChanged = async (accounts) => {
@@ -157,7 +157,7 @@ export const Web3Provider = ({ children }) => {
       // Fetch the accountsData IPFS hash from the smart contract
       const accountsDataIpfsHash = await contractPM.accountsDataIpfsHash();
       let accountsDataJson = {};
-  
+      console.log("check",to)
       // If the IPFS hash is not empty, fetch the JSON data
       if (accountsDataIpfsHash !== '') {
         accountsDataJson = await (await fetch(`https://ipfs.io/ipfs/${accountsDataIpfsHash}`)).json();
@@ -165,11 +165,17 @@ export const Web3Provider = ({ children }) => {
   
       // Add the Kubix wallet balance and task completed data point to the account data
       if (accountsDataJson[to]) {
-        accountsDataJson[to].kubixBalance = ((await fetchKUBIXBalance(to))+amount);
+        console.log(amount)
+        console.log(to)
+        accountsDataJson[to].kubixBalance = Math.round(KUBIXbalance+amount);
+    
+        
         if (taskCompleted) {
+
           accountsDataJson[to].tasksCompleted = (accountsDataJson[to].tasksCompleted || 0) + 1;
         }
       } else {
+
         accountsDataJson[to] = {
           kubixBalance: amount,
           tasksCompleted: taskCompleted ? 1 : 0,
@@ -197,11 +203,10 @@ export const Web3Provider = ({ children }) => {
     if (KUBIXcontract && account) {
       temp = await KUBIXcontract.methods.balanceOf(account).call();
     }
-  
     setKUBIXBalance(ethers.utils.formatEther(temp));
   };
   
-  useEffect(() => { fetchKUBIXBalance() }, [KUBIXcontract, account]);
+  useEffect(() => { fetchKUBIXBalance() }, [ account]);
 
   const fetchBalance = async () => {
     if (contract && account) setBalance(await contract.methods.balanceOf(account).call());

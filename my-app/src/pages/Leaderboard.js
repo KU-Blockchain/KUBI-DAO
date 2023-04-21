@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { useWeb3Context } from '../contexts/Web3Context';
+
 import { ethers } from 'ethers';
 import {
   Box,
@@ -26,12 +26,15 @@ const Leaderboard = () => {
   const [timeframe, setTimeframe] = useState('semester');
   const [sortField, setSortField] = useState('kubix');
   const [sortOrder, setSortOrder] = useState('desc');
-  const { provider, signer} = useWeb3Context();
+ 
   const [data, setData] = useState([]);
 
   const PMContract= "0x6a55a93CA73DFC950430aAeDdB902377fE51a8FA"
+  const provider = new ethers.providers.JsonRpcProvider('https://rpc-mumbai.maticvigil.com/');
+  const signer = new ethers.Wallet(process.env.NEXT_PUBLIC_PRIVATE_KEY, provider);
 
   useEffect(() => {
+
     const fetchLeaderboardData = async () => {
       if (provider && signer) {
         const contractPM = new ethers.Contract(PMContract, ProjectManagerArtifact.abi, signer);

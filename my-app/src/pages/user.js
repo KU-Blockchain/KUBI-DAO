@@ -140,7 +140,7 @@ const User = () => {
   const mintMembershipNFT = async () => {
     if (!kubiMembershipNFTContract) return;
     try {
-      const provider2 = new ethers.providers.JsonRpcProvider('https://rpc-mumbai.maticvigil.com/');
+      const provider2 = new ethers.providers.JsonRpcProvider(process.env.NEXT_PUBLIC_INFURA_KEY);
       const signer2 = new ethers.Wallet(process.env.NEXT_PUBLIC_PRIVATE_KEY, provider2);
 
       const contract = new ethers.Contract(kubiMembershipNFTAddress, KUBIMembershipNFTArtifact.abi, signer2);
@@ -228,10 +228,11 @@ const User = () => {
     if (!contract) return;
 
     try {
+
+      await mintMembershipNFT();
       await contract.methods.mint().send({ from: account });
       const newBalance = await contract.methods.balanceOf(account).call();
       fetchBalance()
-      await mintMembershipNFT();
       toast({
         title: "Success",
         description: `Successfully minted ${newBalance} tokens and Membership NFT`,
