@@ -176,8 +176,10 @@ export const Web3Provider = ({ children }) => {
         let currentkubix = await KUBIXcontract.methods.balanceOf(to).call();
         let formattedBalance = ethers.utils.formatEther(currentkubix)
         console.log("current balance is " + formattedBalance, "amount is " + amount)
+        let newBalance = formattedBalance + amount
+        console.log("new balance is " + newBalance)
 
-        accountsDataJson[to].kubixBalance = Math.round((formattedBalance+amount));
+        accountsDataJson[to].kubixBalance = Math.round((newBalance));
 
     
         if (taskCompleted) {
