@@ -1,5 +1,4 @@
 import React, { useState, useEffect, useCallback } from 'react';
-
 import { ethers } from 'ethers';
 import {
   Box,
@@ -16,66 +15,58 @@ import {
   Tr,
   VStack,
 } from '@chakra-ui/react';
-import { TriangleDownIcon, TriangleUpIcon } from '@chakra-ui/icons';
+import { TriangleDownIcon } from '@chakra-ui/icons';
 import ProjectManagerArtifact from '../abi/ProjectManager.json';
 import { useWeb3Context } from '../contexts/Web3Context';
 
 const provider = new ethers.providers.JsonRpcProvider('https://rpc-mumbai.maticvigil.com/');
 const signer = new ethers.Wallet(process.env.NEXT_PUBLIC_PRIVATE_KEY, provider);
 
-
 const Leaderboard = () => {
-  const {KUBIXbalance} = useWeb3Context();
+  const { KUBIXbalance } = useWeb3Context();
   const [timeframe, setTimeframe] = useState('semester');
   const [sortField, setSortField] = useState('kubix');
   const [sortOrder, setSortOrder] = useState('desc');
- 
+
   const [data, setData] = useState([]);
 
-  const PMContract= "0x6a55a93CA73DFC950430aAeDdB902377fE51a8FA"
+  const PMContract = "0x6a55a93CA73DFC950430aAeDdB902377fE51a8FA";
 
+  const fetchLeaderboardData = useCallback(async () => {
+    if (provider && signer) {
+      const contractPM = new ethers.Contract(PMContract, ProjectManagerArtifact.abi, signer);
 
- 
+      // Fetch the accountsData IPFS hash from the smart contract
+      const accountsDataIpfsHash = await contractPM.accountsDataIpfsHash();
+      let accountsDataJson = {};
 
-    const fetchLeaderboardData = useCallback(async() => {
-      if (provider && signer) {
-        const contractPM = new ethers.Contract(PMContract, ProjectManagerArtifact.abi, signer);
-    
-        // Fetch the accountsData IPFS hash from the smart contract
-        const accountsDataIpfsHash = await contractPM.accountsDataIpfsHash();
-        let accountsDataJson = {};
-    
-        // If the IPFS hash is not empty, fetch the JSON data
-        if (accountsDataIpfsHash !== '') {
-          accountsDataJson = await (await fetch(`https://ipfs.io/ipfs/${accountsDataIpfsHash}`)).json();
-        }
-    
-        // Format data for the leaderboard
-        const leaderboardData = Object.entries(accountsDataJson).map(([address, data]) => ({
-          id: address,
-          name: data.username || 'Anonymous',
-          kubix: data.kubixBalance || 0,
-          tasks: data.tasksCompleted || 0,
-        }));
-    
-        // Sort data initially by kubix
-        const sortedData = leaderboardData.sort((a, b) => {
-          if (a.kubix > b.kubix) return sortOrder === 'asc' ? 1 : -1;
-          if (a.kubix < b.kubix) return sortOrder === 'asc' ? -1 : 1;
-          return 0;
-        });
-    
-        setData(sortedData);
-      } 
-    },[provider, signer, KUBIXbalance]);
+      // If the IPFS hash is not empty, fetch the JSON data
+      if (accountsDataIpfsHash !== '') {
+        accountsDataJson = await (await fetch(`https://ipfs.io/ipfs/${accountsDataIpfsHash}`)).json();
+      }
 
-  useEffect(() => {
+      // Format data for the leaderboard
+      const leaderboardData = Object.entries(accountsDataJson).map(([address, data]) => ({
+        id: address,
+        name: data.username || 'Anonymous',
+        kubix: data.kubixBalance || 0,
+        tasks: data.tasksCompleted || 0,
+      }));
 
-    fetchLeaderboardData();
+      // Sort data initially by kubix
+      const sortedData = leaderboardData.sort((a, b) => {
+        if (a.kubix > b.kubix) return sortOrder === 'asc' ? 1 : -1;
+        if (a.kubix < b.kubix) return sortOrder === 'asc' ? -1 : 1;
+        return 0;
+      });
+
+      setData(sortedData);
+    }
   }, [provider, signer, KUBIXbalance]);
 
-  
-
+  useEffect(() => {
+    fetchLeaderboardData();
+  }, [provider, signer, KUBIXbalance]);
 
   const handleTimeframeChange = (newTimeframe) => {
     setTimeframe(newTimeframe);
@@ -84,20 +75,30 @@ const Leaderboard = () => {
   };
 
   const handleSort = (field) => {
-    const newSortOrder = sortOrder === 'asc' ? 'desc' : 'asc';
     setSortField(field);
-    setSortOrder(newSortOrder);
+    setSortOrder('desc');
 
     const sortedData = [...data].sort((a, b) => {
-      if (a[field] > b[field]) return newSortOrder === 'asc' ? 1 : -1;
-      if (a[field] < b[field]) return newSortOrder === 'asc' ? -1 : 1;
-      return 0;
+      if (a[field] > b[field]) return -1;
+      if (a[field] < b[field]) return 1;
+      return 0
     });
 
     setData(sortedData);
   };
 
-
+  const getMedalColor = (rank) => {
+    switch (rank) {
+      case 0:
+        return 'gold';
+      case 1:
+        return 'silver';
+      case 2:
+        return '#cd7f32';
+      default:
+        return null;
+    }
+  };
 
   return (
     <Box w="100%" minH="100vh" p={4}>
@@ -112,13 +113,14 @@ const Leaderboard = () => {
           <Table variant="simple">
             <Thead>
               <Tr>
+                <Th>Rank</Th>
                 <Th>Name</Th>
                 <Th>
                   KUBIX
                   <IconButton
                     size="xs"
                     aria-label="Sort by KUBIX"
-                    icon={sortField === 'kubix' && sortOrder === 'asc' ? <TriangleUpIcon /> : <TriangleDownIcon />}
+                    icon={<TriangleDownIcon />}
                     onClick={() => handleSort('kubix')}
                   />
                 </Th>
@@ -127,47 +129,31 @@ const Leaderboard = () => {
                   <IconButton
                     size="xs"
                     aria-label="Sort by Tasks Completed"
-                    icon={sortField === 'tasks' && sortOrder === 'asc' ? <TriangleUpIcon /> : <TriangleDownIcon />}
+                    icon={<TriangleDownIcon />}
                     onClick={() => handleSort('tasks')}
                   />
                 </Th>
-                <Th>
-                  Polls Voted In
-                  <IconButton
-                    size="xs"
-                    aria-label="Sort by Polls Voted In"
-                    icon={sortField === 'polls' && sortOrder === 'asc' ? <TriangleUpIcon /> : <TriangleDownIcon />}
-                    onClick={() => handleSort('polls')}
-                  />
-                </Th>
-                <Th>
-                  Project Contribution
-                  <IconButton
-                    size="xs"
-                    aria-label="Sort by Project Contribution"
-                    icon={sortField === 'projectContribution' && sortOrder === 'asc' ? <TriangleUpIcon /> : <TriangleDownIcon />}
-                    onClick={() => handleSort('projectContribution')}
-                    />
-                  </Th>
-                </Tr>
-              </Thead>
-              <Tbody>
-                {data.map((entry) => (
-                  <Tr key={entry.id}>
+              </Tr>
+            </Thead>
+            <Tbody>
+              {data.map((entry, index) => {
+                const medalColor = getMedalColor(index);
+                return (
+                  <Tr key={entry.id} fontWeight={medalColor ? 'extrabold' : null}>
+                    <Td style={{ color: medalColor }}>{index + 1}</Td>
                     <Td>{entry.name}</Td>
-                    <Td>{entry.kubix}</Td>
-                    <Td>{entry.tasks}</Td>
-                    <Td>{entry.polls}</Td>
-                    <Td>{entry.projectContribution}</Td>
+                    <Td style={{ color: medalColor }}>{entry.kubix}</Td>
+                    <Td style={{ color: medalColor }}>{entry.tasks}</Td>
                   </Tr>
-                ))}
-              </Tbody>
-            </Table>
-          </Flex>
-        </VStack>
-      </Box>
-    );
-  };
-  
-  export default Leaderboard;
-  
+                );
+              })}
+            </Tbody>
+          </Table>
+        </Flex>
+      </VStack>
+    </Box>
+  );
+};
+
+export default Leaderboard;
+
