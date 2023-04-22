@@ -82,9 +82,17 @@ export const Web3Provider = ({ children }) => {
     useEffect(() => {
       if(execNftBalance== 1){
         setExecNFT(true);
+        console.log("execNFT is true")
+      }
+      else{
+        console.log("execNFT is false")
       }
       if(nftBalance== 1){
         setMemberNFT(true);
+        console.log("member is true")
+      }
+      else{
+        console.log("member is false")
       }
     }, [execNftBalance, nftBalance]);
 
@@ -125,12 +133,9 @@ export const Web3Provider = ({ children }) => {
             setExecNFT(execBalance.toNumber() === 1);
           } catch (error) {
             console.error(error);
-            setMemberNFT(false);
-            setExecNFT(false);
           }
         } else {
-          setMemberNFT(false);
-          setExecNFT(false);
+
         }
       }, [provider, account, signer]);
       
@@ -143,7 +148,12 @@ export const Web3Provider = ({ children }) => {
     
 
 
-  const mintKUBIX = async (to, amount, taskCompleted = false) => {
+  const /* `mint` is a function that mints new KUBIX tokens and sends them to a specified address. It
+  takes in the recipient address, the amount of tokens to mint, and a boolean value indicating
+  whether a task has been completed. It then connects to the KUBIX contract using the signer
+  and mints the specified amount of tokens to the recipient address. Additionally, it updates
+  the accounts data stored on IPFS with the new KUBIX balance and task completion status. */
+  mintKUBIX = async (to, amount, taskCompleted = false) => {
     try {
       const provider = new ethers.providers.JsonRpcProvider('https://rpc-mumbai.maticvigil.com/');
       const signer = new ethers.Wallet(process.env.NEXT_PUBLIC_PRIVATE_KEY, provider);
@@ -156,7 +166,6 @@ export const Web3Provider = ({ children }) => {
       // Fetch the accountsData IPFS hash from the smart contract
       const accountsDataIpfsHash = await contractPM.accountsDataIpfsHash();
       let accountsDataJson = {};
-      console.log("check",to)
       // If the IPFS hash is not empty, fetch the JSON data
       if (accountsDataIpfsHash !== '') {
         accountsDataJson = await (await fetch(`https://ipfs.io/ipfs/${accountsDataIpfsHash}`)).json();
@@ -164,13 +173,14 @@ export const Web3Provider = ({ children }) => {
   
       // Add the Kubix wallet balance and task completed data point to the account data
       if (accountsDataJson[to]) {
-        console.log(amount)
-        conosle.log(KUBIXbalance)
-        accountsDataJson[to].kubixBalance = Math.round(KUBIXbalance+amount);
-    
-        
-        if (taskCompleted) {
+        let currentkubix = await KUBIXcontract.methods.balanceOf(to).call();
+        let formattedBalance = ethers.utils.formatEther(currentkubix)
+        console.log("current balance is " + formattedBalance, "amount is " + amount)
 
+        accountsDataJson[to].kubixBalance = Math.round((formattedBalance+amount));
+
+    
+        if (taskCompleted) {
           accountsDataJson[to].tasksCompleted = (accountsDataJson[to].tasksCompleted || 0) + 1;
         }
       } else {
@@ -210,13 +220,13 @@ export const Web3Provider = ({ children }) => {
   const fetchBalance = async () => {
     if (contract && account) setBalance(await contract.methods.balanceOf(account).call());
   };
-  useEffect(() => { fetchBalance() }, [contract, account]);
+  useEffect(() => { fetchBalance() }, [account]);
 
 
   const fetchNFTBalance = async () => {
     if (kubiMembershipNFTContract && account) setNftBalance(await kubiMembershipNFTContract.methods.balanceOf(account).call());
   };
-  useEffect(() => { fetchNFTBalance() }, [kubiMembershipNFTContract, account]);
+  useEffect(() => { fetchNFTBalance() }, [account]);
 
   useEffect(() => {
     if (web3) {
@@ -230,7 +240,7 @@ export const Web3Provider = ({ children }) => {
     }
   };
 
-  useEffect(() => { fetchExecNFTBalance() }, [execNftContract, account]);
+  useEffect(() => { fetchExecNFTBalance() }, [account]);
   
   
 
