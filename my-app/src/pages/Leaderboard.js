@@ -139,9 +139,9 @@ const Leaderboard = () => {
               {data.map((entry, index) => {
                 const medalColor = getMedalColor(index);
                 return (
-                  <Tr key={entry.id} fontWeight={medalColor ? 'bold' : null}>
+                  <Tr key={entry.id} fontWeight={medalColor ? 'extrabold' : null}>
                     <Td style={{ color: medalColor }}>{index + 1}</Td>
-                    <Td style={{ color: medalColor }}>{entry.name}</Td>
+                    <Td>{entry.name}</Td>
                     <Td style={{ color: medalColor }}>{entry.kubix}</Td>
                     <Td style={{ color: medalColor }}>{entry.tasks}</Td>
                   </Tr>
