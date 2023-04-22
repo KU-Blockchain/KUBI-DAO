@@ -18,11 +18,14 @@ import {
 } from '@chakra-ui/react';
 import { TriangleDownIcon, TriangleUpIcon } from '@chakra-ui/icons';
 import ProjectManagerArtifact from '../abi/ProjectManager.json';
+import { useWeb3Context } from '../contexts/Web3Context';
 
+const provider = new ethers.providers.JsonRpcProvider('https://rpc-mumbai.maticvigil.com/');
+const signer = new ethers.Wallet(process.env.NEXT_PUBLIC_PRIVATE_KEY, provider);
 
 
 const Leaderboard = () => {
-
+  const {KUBIXbalance} = useWeb3Context();
   const [timeframe, setTimeframe] = useState('semester');
   const [sortField, setSortField] = useState('kubix');
   const [sortOrder, setSortOrder] = useState('desc');
@@ -30,8 +33,7 @@ const Leaderboard = () => {
   const [data, setData] = useState([]);
 
   const PMContract= "0x6a55a93CA73DFC950430aAeDdB902377fE51a8FA"
-  const provider = new ethers.providers.JsonRpcProvider('https://rpc-mumbai.maticvigil.com/');
-  const signer = new ethers.Wallet(process.env.NEXT_PUBLIC_PRIVATE_KEY, provider);
+
 
  
 
@@ -65,12 +67,12 @@ const Leaderboard = () => {
     
         setData(sortedData);
       } 
-    },[provider, signer]);
+    },[provider, signer, KUBIXbalance]);
 
   useEffect(() => {
 
     fetchLeaderboardData();
-  }, [provider, signer]);
+  }, [provider, signer, KUBIXbalance]);
 
   
 
