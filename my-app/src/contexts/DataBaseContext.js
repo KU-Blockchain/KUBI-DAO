@@ -3,7 +3,7 @@ import ipfs from '../db/ipfs';
 import ProjectManagerArtifact from '../abi/ProjectManager.json';
 import { createContext, useContext, useState, useEffect } from 'react';
 
-
+//UPDATE THIS FILE TO USE RPC TO UPDTAE THE DATABASE
 const DataBaseContext = createContext();
 
 export const useDataBaseContext = () => {
@@ -21,7 +21,7 @@ export const DataBaseProvider = ({ children }) => {
 
   // Create provider, signer, and contract instances only once
   const provider = new providers.JsonRpcProvider(
-    'https://rpc-mumbai.maticvigil.com/'
+   process.env. NEXT_PUBLIC_INFURA_URL
   );
   const signer = new ethers.Wallet(process.env.NEXT_PUBLIC_PRIVATE_KEY, provider);
   const contract = new ethers.Contract(PMContract, ProjectManagerArtifact.abi, signer);
@@ -71,9 +71,6 @@ export const DataBaseProvider = ({ children }) => {
     }
     setUpdateInProgress(true);
     // Fetch the latest version of the project data from IPFS and the smart contract
-    const provider = new providers.JsonRpcProvider('https://rpc-mumbai.maticvigil.com/');
-    const signer = new ethers.Wallet(process.env.NEXT_PUBLIC_PRIVATE_KEY, provider);
-    const contract = new ethers.Contract(PMContract, ProjectManagerArtifact.abi, signer);
     const projectData = await contract.projects(selectedProject.id);
     const projectIpfsHash = projectData.ipfsHash;
     const latestProjectData = JSON.parse(await (await fetch(`https://ipfs.io/ipfs/${projectIpfsHash}`)).text());
@@ -134,9 +131,6 @@ export const DataBaseProvider = ({ children }) => {
         const newIpfsHash = ipfsResult.path;
 
         // Create the project on the smart contract
-        const provider = new ethers.providers.JsonRpcProvider('https://rpc-mumbai.maticvigil.com/');
-        const signer = new ethers.Wallet(process.env.NEXT_PUBLIC_PRIVATE_KEY, provider);
-        const contract = new ethers.Contract(PMContract, ProjectManagerArtifact.abi, signer);
 
         await contract.createProject(newIpfsHash);
 
