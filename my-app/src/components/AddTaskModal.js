@@ -13,6 +13,7 @@ import {
   ModalFooter,
   VStack,
   Select,
+  Textarea
 } from '@chakra-ui/react';
 
 const AddTaskModal = ({ isOpen, onClose, onAddTask }) => {
@@ -51,7 +52,7 @@ const AddTaskModal = ({ isOpen, onClose, onAddTask }) => {
             </FormControl>
             <FormControl id="task-description">
               <FormLabel>Description</FormLabel>
-              <Input
+              <Textarea
                 type="text"
                 value={description}
                 onChange={(e) => setDescription(e.target.value)}

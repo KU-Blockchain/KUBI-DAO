@@ -18,7 +18,8 @@ import {
   Flex,
   Spacer,
   Toast,
-  useToast
+  useToast,
+  Textarea
 } from '@chakra-ui/react';
 import { CheckIcon } from '@chakra-ui/icons';
 import EditTaskModal from './EditTaskModal';
@@ -142,7 +143,7 @@ const TaskCardModal = ({ isOpen, onClose, task, columnId, onEditTask }) => {
           <ModalBody>
             <VStack spacing={4} align="start">
               <Box>
-                <Text fontWeight="bold" fontSize="lg">
+                <Text fontWeight="bold" fontSize="lg" >
                   Description:
                 </Text>
                 <Text>{task.description}</Text>
@@ -152,8 +153,8 @@ const TaskCardModal = ({ isOpen, onClose, task, columnId, onEditTask }) => {
                   <FormLabel fontWeight="bold" fontSize="lg">
                     Submission:
                   </FormLabel>
-                  <Input
-                    placeholder="Type your submission here"
+
+                  <Textarea placeholder='Enter Submission here' 
                     value={submission}
                     onChange={(e) => setSubmission(e.target.value)}
                   />
