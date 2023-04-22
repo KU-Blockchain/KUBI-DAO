@@ -33,6 +33,7 @@ const User = () => {
   const [email, setEmail] = useState("");
   const [username, setUsername] = useState("");
   const [name, setName] = useState("");
+  const[showMetaMaskMessage, setShowMetaMaskMessage]=useState(false);
 
   //move deploys to deploy menu component
   const [deployedPMContract, setDeployedPMContract] = useState(null);
@@ -158,6 +159,7 @@ const User = () => {
 
   const handleJoin = async (e) => {
     setPhrase("Joining...");
+    setShowMetaMaskMessage(true);
     e.target.disabled = true;
   
     if (web3 && account) {
@@ -349,6 +351,10 @@ const User = () => {
             <Button colorScheme="blue" mt={4} onClick={handleJoin}>
               {phrase}
             </Button>
+            {showMetaMaskMessage && (
+              <Text fontSize="xl" fontWeight="bold" color="red.500" mt={4}>
+                Wait for MetaMask popup and confirm transaction
+              </Text>)}
           </Box>
           </Flex>
          
