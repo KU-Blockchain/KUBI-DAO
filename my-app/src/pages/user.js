@@ -50,7 +50,7 @@ const User = () => {
   const [phrase,setPhrase]=useState("Join");
 
   const { userDetails, setUserDetails,  setAccount, fetchUserDetails, addUserData, clearData, pushProjectHashes } = useDataBaseContext();
-  const{ execNftContract,execNftBalance,balance,nftBalance, fetchBalance,web3, account,kubiMembershipNFTContract, contract,KUBIXbalance,KUBIXcontract, KUBIXcontractAddress, contractAddress, kubiMembershipNFTAddress,KUBIExecutiveNFTAddress}=useWeb3Context();
+  const{hasMemberNFT, execNftContract,execNftBalance,balance,nftBalance, fetchBalance,web3, account,kubiMembershipNFTContract, contract,KUBIXbalance,KUBIXcontract, KUBIXcontractAddress, contractAddress, kubiMembershipNFTAddress,KUBIExecutiveNFTAddress}=useWeb3Context();
 
 
   
@@ -66,8 +66,9 @@ const User = () => {
     const checkConnection = async () => {
       if (web3 && account) {
         setIsConnected(true);
-        const membershipNftBalance = await kubiMembershipNFTContract.methods.balanceOf(account).call();
-        setIsMember(membershipNftBalance > 0);
+        if (hasMemberNFT){
+          setIsMember(true);
+        }
       } else {
         setIsConnected(false);
         setIsMember(false);
@@ -75,7 +76,7 @@ const User = () => {
     };
 
     checkConnection();
-  }, [web3, account, kubiMembershipNFTContract]);
+  }, [web3, account, hasMemberNFT]);
   
 
 
@@ -140,7 +141,7 @@ const User = () => {
   const mintMembershipNFT = async () => {
     if (!kubiMembershipNFTContract) return;
     try {
-      const provider2 = new ethers.providers.JsonRpcProvider(process.env.NEXT_PUBLIC_INFURA_KEY);
+      const provider2 = new ethers.providers.JsonRpcProvider('https://rpc-mumbai.maticvigil.com/');
       const signer2 = new ethers.Wallet(process.env.NEXT_PUBLIC_PRIVATE_KEY, provider2);
 
       const contract = new ethers.Contract(kubiMembershipNFTAddress, KUBIMembershipNFTArtifact.abi, signer2);
@@ -156,102 +157,126 @@ const User = () => {
 
 
   const handleJoin = async (e) => {
-    setPhrase("Joining...")
-    e.target.disabled=true
-
+    setPhrase("Joining...");
+    e.target.disabled = true;
+  
     if (web3 && account) {
       const networkId = await web3.eth.net.getId();
-      if (networkId !== 80001) { // Polygon Mumbai Network ID
+      if (networkId !== 80001) {
+        // Polygon Mumbai Network ID
         toast({
           title: "Wrong network",
           description: "Please switch to the Polygon Mumbai Network",
           status: "error",
           duration: 5000,
-          isClosable: true
+          isClosable: true,
         });
-        setPhrase("Join")
-        e.target.disabled=false
+        setPhrase("Join");
+        e.target.disabled = false;
         return;
       }
     }
-
+  
     if (!email.endsWith("@ku.edu")) {
       toast({
         title: "Invalid email domain",
         description: "Please use a valid @ku.edu email",
         status: "error",
         duration: 5000,
-        isClosable: true
+        isClosable: true,
       });
-      setPhrase("Join")
-      e.target.disabled=false
+      setPhrase("Join");
+      e.target.disabled = false;
       return;
-
     }
-
-        //adds user data to ipfs and smart contract
-        try{
-          const checkUsername = await addUserData(name,username,email);
-          if(checkUsername != true){
-            toast({
-              title: "Error",
-              description: "Username already exists",
-              status: "error",
-              duration: 5000,
-              isClosable: true
-            });
-    
-          } 
-    
-          toast({
-            title: "Success",
-            description: "Successfully added user information",
-            status: "success",
-            duration: 5000,
-            isClosable: true
-          });
-
-          
-    
-        } catch (error) {
-          console.error(error);
-          toast({
-            title: "Error",
-            description: "Error adding user information",
-            status: "error",
-            duration: 5000,
-            isClosable: true
-          });
-        }
-    setPhrase("Join")
-    e.target.disabled=false
-    if (!contract) return;
-
+  
     try {
-
-      await mintMembershipNFT();
-      await contract.methods.mint().send({ from: account });
-      const newBalance = await contract.methods.balanceOf(account).call();
-      fetchBalance()
+      const checkUsername = await addUserData(name, username, email);
+      if (checkUsername !== true) {
+        toast({
+          title: "Error",
+          description: "Username already exists",
+          status: "error",
+          duration: 5000,
+          isClosable: true,
+        });
+        setPhrase("Join");
+        e.target.disabled = false;
+        return;
+      }
+  
       toast({
         title: "Success",
-        description: `Successfully minted ${newBalance} tokens and Membership NFT`,
+        description: "Successfully added user information",
         status: "success",
         duration: 5000,
-        isClosable: true
+        isClosable: true,
       });
     } catch (error) {
       console.error(error);
       toast({
         title: "Error",
-        description: "Error minting tokens and Membership NFT",
+        description: "Error adding user information",
         status: "error",
         duration: 5000,
-        isClosable: true
+        isClosable: true,
+      });
+      setPhrase("Join");
+      e.target.disabled = false;
+      return;
+    }
+  
+    if (!contract) return;
+  
+    try {
+      await mintMembershipNFT();
+      toast({
+        title: "Success",
+        description: "Successfully minted Membership NFT",
+        status: "success",
+        duration: 5000,
+        isClosable: true,
+      });
+    } catch (error) {
+      console.error(error);
+      toast({
+        title: "Error",
+        description: "Error minting Membership NFT",
+        status: "error",
+        duration: 5000,
+        isClosable: true,
+      });
+      setPhrase("Join");
+      e.target.disabled = false;
+      return;
+    }
+  
+    try {
+      await contract.methods.mint().send({ from: account });
+      const newBalance = await contract.methods.balanceOf(account).call();
+      fetchBalance();
+      toast({
+        title: "Success",
+        description: `Successfully minted ${newBalance} tokens`,
+        status: "success",
+        duration: 5000,
+        isClosable: true,
+      });
+    } catch (error) {
+      console.error(error);
+      toast({
+        title: "Error",
+        description: "Error minting tokens",
+        status: "error",
+        duration: 5000,
+        isClosable: true,
       });
     }
-
+  
+    setPhrase("Join");
+    e.target.disabled = false;
   };
+  
 
   
 
