@@ -29,7 +29,7 @@ const AddTaskModal = ({ isOpen, onClose, onAddTask }) => {
     setDescription('');
     setName('');
     setDifficulty('easy');
-    setEstHours(1);
+    setEstHours(.5);
     onClose();
   };
 
