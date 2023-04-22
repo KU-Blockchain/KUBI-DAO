@@ -1,4 +1,4 @@
-import { createContext, useContext, useState, useEffect } from 'react';
+import { createContext, useContext, useState, useEffect, useCallback } from 'react';
 import { ethers } from 'ethers';
 import KUBIMembershipNFTArtifact from "../abi/KUBIMembershipNFT.json";
 import ExecNFTArtifact from "../abi/KUBIExecutiveNFT.json";
@@ -86,7 +86,7 @@ export const Web3Provider = ({ children }) => {
       if(nftBalance== 1){
         setMemberNFT(true);
       }
-    }, [execNftBalance, nftBalance, account]);
+    }, [execNftBalance, nftBalance]);
 
       useEffect(() => {
         const handleAccountsChanged = async (accounts) => {
@@ -108,22 +108,18 @@ export const Web3Provider = ({ children }) => {
         };
       }, [provider]);
 
-
-
-    //checks exec NFT ownership and membership NFT ownership
-    useEffect(() => {
-      const fetchNFTOwnership = async () => {
+      const fetchNFTOwnership = useCallback(async () => {
         if (provider && account && signer) {
           try {
             const memberContract = new ethers.Contract(kubiMembershipNFTAddress, KUBIMembershipNFTArtifact.abi, signer);
             const execContract = new ethers.Contract(KUBIExecutiveNFTAddress, ExecNFTArtifact.abi, signer);
-
+      
             // Fetch the balances of both NFTs in parallel
             const [memberBalance, execBalance] = await Promise.all([
               memberContract.balanceOf(account),
               execContract.balanceOf(account),
             ]);
-
+      
             // Check if NFT balances are 1, meaning the user owns the NFTs
             setMemberNFT(memberBalance.toNumber() === 1);
             setExecNFT(execBalance.toNumber() === 1);
@@ -136,8 +132,11 @@ export const Web3Provider = ({ children }) => {
           setMemberNFT(false);
           setExecNFT(false);
         }
-      };
+      }, [provider, account, signer]);
+      
 
+    //checks exec NFT ownership and membership NFT ownership
+    useEffect(() => {
       fetchNFTOwnership();
     }, [provider, account, signer]);
 
@@ -166,7 +165,7 @@ export const Web3Provider = ({ children }) => {
       // Add the Kubix wallet balance and task completed data point to the account data
       if (accountsDataJson[to]) {
         console.log(amount)
-        console.log(to)
+        conosle.log(KUBIXbalance)
         accountsDataJson[to].kubixBalance = Math.round(KUBIXbalance+amount);
     
         

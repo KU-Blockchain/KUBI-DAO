@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 
 import { ethers } from 'ethers';
 import {
@@ -33,9 +33,9 @@ const Leaderboard = () => {
   const provider = new ethers.providers.JsonRpcProvider('https://rpc-mumbai.maticvigil.com/');
   const signer = new ethers.Wallet(process.env.NEXT_PUBLIC_PRIVATE_KEY, provider);
 
-  useEffect(() => {
+ 
 
-    const fetchLeaderboardData = async () => {
+    const fetchLeaderboardData = useCallback(async() => {
       if (provider && signer) {
         const contractPM = new ethers.Contract(PMContract, ProjectManagerArtifact.abi, signer);
     
@@ -64,9 +64,10 @@ const Leaderboard = () => {
         });
     
         setData(sortedData);
-      }
-    };
-    
+      } 
+    },[provider, signer]);
+
+  useEffect(() => {
 
     fetchLeaderboardData();
   }, [provider, signer]);
