@@ -47,7 +47,6 @@ export const Web3Provider = ({ children }) => {
 
   const initProvider = async () => {
     if (window.ethereum) {
-      console.log(process.env.NEXT_PUBLIC_INFURA_IPFS)
       try {
         await window.ethereum.request({ method: "eth_requestAccounts" });
         const web3 = new Web3(window.ethereum);
@@ -119,13 +118,11 @@ export const Web3Provider = ({ children }) => {
       const fetchNFTOwnership = useCallback(async () => {
         if (provider && account && signer) {
           try {
-            const memberContract = new ethers.Contract(kubiMembershipNFTAddress, KUBIMembershipNFTArtifact.abi, signer);
-            const execContract = new ethers.Contract(KUBIExecutiveNFTAddress, ExecNFTArtifact.abi, signer);
       
             // Fetch the balances of both NFTs in parallel
             const [memberBalance, execBalance] = await Promise.all([
-              memberContract.balanceOf(account),
-              execContract.balanceOf(account),
+              kubiMembershipNFTContract.balanceOf(account),
+              execNftContract.balanceOf(account),
             ]);
       
             // Check if NFT balances are 1, meaning the user owns the NFTs
@@ -155,9 +152,6 @@ export const Web3Provider = ({ children }) => {
   the accounts data stored on IPFS with the new KUBIX balance and task completion status. */
   mintKUBIX = async (to, amount, taskCompleted = false) => {
     try {
-      const provider = new ethers.providers.JsonRpcProvider('https://rpc-mumbai.maticvigil.com/');
-      const signer = new ethers.Wallet(process.env.NEXT_PUBLIC_PRIVATE_KEY, provider);
-      const contract = new ethers.Contract(KUBIXcontractAddress, KUBIXTokenArtifact.abi, signer);
 
       const contractPM = new ethers.Contract(PMContractAddress, ProjectManagerArtifact.abi, signer);
 
@@ -175,9 +169,8 @@ export const Web3Provider = ({ children }) => {
       if (accountsDataJson[to]) {
         let currentkubix = await KUBIXcontract.methods.balanceOf(to).call();
         let formattedBalance = ethers.utils.formatEther(currentkubix)
-        console.log("current balance is " + formattedBalance, "amount is " + amount)
         let newBalance = formattedBalance + (amount*1000)
-        console.log("new balance is " + newBalance)
+
 
         accountsDataJson[to].kubixBalance = Math.round((newBalance));
 
@@ -203,7 +196,7 @@ export const Web3Provider = ({ children }) => {
       // Mint the token
       const amountToMint = ethers.utils.parseUnits(amount.toString(), 18);
 
-      await contract.mint(to, amountToMint);
+      await KUBIXcontract.mint(to, amountToMint);
     } catch (error) {
       console.error("Error minting KUBIX:", error);
     }
