@@ -44,7 +44,7 @@ const TaskCard = ({ id, name, description, difficulty, estHours, index, columnId
     <>
       <Box
         ref={drag}
-        bg='white'
+        bg="ghostwhite"
         borderRadius='md'
         boxShadow='sm'
         p={2}
@@ -53,7 +53,7 @@ const TaskCard = ({ id, name, description, difficulty, estHours, index, columnId
         style={cardStyle}
         onClick={onOpen}
       >
-        <Box fontWeight="600">{name}</Box>
+        <Box fontWeight="900">{name}</Box>
         <Box fontSize="xs">{truncateDescription(description, 40)}</Box>
         {kubixPayout && (
           <Box mt={2} fontWeight="500">KUBIX Payout: {kubixPayout}</Box>
