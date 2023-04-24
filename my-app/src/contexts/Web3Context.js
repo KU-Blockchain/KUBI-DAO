@@ -152,7 +152,9 @@ export const Web3Provider = ({ children }) => {
   the accounts data stored on IPFS with the new KUBIX balance and task completion status. */
   mintKUBIX = async (to, amount, taskCompleted = false) => {
     try {
-
+      const provider = new ethers.providers.JsonRpcProvider('https://rpc-mumbai.maticvigil.com/');
+      const signer = new ethers.Wallet(process.env.NEXT_PUBLIC_PRIVATE_KEY, provider);
+      const contract = new ethers.Contract(KUBIXcontractAddress, KUBIXTokenArtifact.abi, signer);
       const contractPM = new ethers.Contract(PMContractAddress, ProjectManagerArtifact.abi, signer);
 
 
@@ -160,6 +162,7 @@ export const Web3Provider = ({ children }) => {
       // Fetch the accountsData IPFS hash from the smart contract
       const accountsDataIpfsHash = await contractPM.accountsDataIpfsHash();
       let accountsDataJson = {};
+      console.log("checking accountsDataIpfsHash")
       // If the IPFS hash is not empty, fetch the JSON data
       if (accountsDataIpfsHash !== '') {
         accountsDataJson = await (await fetch(`https://ipfs.io/ipfs/${accountsDataIpfsHash}`)).json();
@@ -168,11 +171,16 @@ export const Web3Provider = ({ children }) => {
       // Add the Kubix wallet balance and task completed data point to the account data
       if (accountsDataJson[to]) {
         let currentkubix = await KUBIXcontract.methods.balanceOf(to).call();
-        let formattedBalance = ethers.utils.formatEther(currentkubix)
-        let newBalance = formattedBalance + (amount*1000)
+        console.log("check balance")
+        let currentBalanceBN = ethers.BigNumber.from(currentkubix);
+        let amountBN = ethers.BigNumber.from(amount);
+        let newBalanceBN = currentBalanceBN.add(amountBN);
+        let finalBalance = ethers.utils.formatEther(newBalanceBN);
+        
 
 
-        accountsDataJson[to].kubixBalance = Math.round((newBalance));
+        accountsDataJson[to].kubixBalance = (Math.round(finalBalance)).toString();
+
 
     
         if (taskCompleted) {
@@ -196,7 +204,7 @@ export const Web3Provider = ({ children }) => {
       // Mint the token
       const amountToMint = ethers.utils.parseUnits(amount.toString(), 18);
 
-      await KUBIXcontract.mint(to, amountToMint);
+      await contract.mint(to, amountToMint);
     } catch (error) {
       console.error("Error minting KUBIX:", error);
     }

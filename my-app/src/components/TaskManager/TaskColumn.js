@@ -154,7 +154,7 @@ const TaskColumn = ({ title, tasks, columnId }) => {
       zIndex={1}
     >
       <div className="glass" style={glassLayerStyle} />
-        <Heading size="md" mb={3} mt={2}ml={2}alignItems="center" color='white'>
+        <Heading size="md" mb={3} mt={0}ml={3}alignItems="center" color='white'>
           {title}
           {title === 'Open' && (
             <IconButton
