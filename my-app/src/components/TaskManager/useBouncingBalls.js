@@ -6,6 +6,7 @@ const useBouncingBalls = (containerRef) => {
   const redBallPos = useRef({ x: 200, y: 200 });
   const blueBallPos = useRef({ x: 600, y: 300 });
   const blackBallPos = useRef({ x: 700, y: 100 });
+  const cornflowerBallPos = useRef({ x: 400, y: 100 });
   const [_, setRender] = useState({});
 
   useEffect(() => {
@@ -17,13 +18,19 @@ const useBouncingBalls = (containerRef) => {
 
     let redBallVelocity = { x: 0.25, y: .5 };
     let blueBallVelocity = { x: -1, y: .5 };
-    let blackBallVelocity = { x: -0.5, y: -1 };
+    let blackBallVelocity = { x: 0.5, y: -1 };
+    let cornflowerBallVelocity = { x: -0.5, y: -1 };
     let animationFrameId;
 
     const updatePositions = () => {
       const newPosRedBall = {
         x: redBallPos.current.x + redBallVelocity.x,
         y: redBallPos.current.y + redBallVelocity.y,
+      };
+
+      const newPosCornflowerBall = { 
+        x: cornflowerBallPos.current.x + cornflowerBallVelocity.x,
+        y: cornflowerBallPos.current.y + cornflowerBallVelocity.y,
       };
 
       const newPosBlueBall = {
@@ -56,10 +63,17 @@ const useBouncingBalls = (containerRef) => {
       if (newPosBlackBall.y < 0 || newPosBlackBall.y + 100 > containerRect.height-100) {
         blackBallVelocity.y *= -1;
       }
+      if (newPosCornflowerBall.x < 0 || newPosCornflowerBall.x + 100 > containerRect.width-300) { // Step 4
+        cornflowerBallVelocity.x *= -1;
+      }
+      if (newPosCornflowerBall.y < 0 || newPosCornflowerBall.y + 100 > containerRect.height-100) {
+        cornflowerBallVelocity.y *= -1;
+      }
 
       redBallPos.current = newPosRedBall;
       blueBallPos.current = newPosBlueBall;
       blackBallPos.current = newPosBlackBall;
+      cornflowerBallPos.current = newPosCornflowerBall;
 
       setRender({}); // Trigger a re-render
 
@@ -74,7 +88,7 @@ const useBouncingBalls = (containerRef) => {
     };
   }, [containerRef]);
 
-  return { redBallPos: redBallPos.current, blueBallPos: blueBallPos.current, blackBallPos: blackBallPos.current };
+  return { cornflowerBallPos: cornflowerBallPos.current, redBallPos: redBallPos.current, blueBallPos: blueBallPos.current, blackBallPos: blackBallPos.current };
 };
 
 export default useBouncingBalls;

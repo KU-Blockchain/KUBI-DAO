@@ -5,7 +5,7 @@ import useBouncingBalls from './useBouncingBalls';
 import styles from '../../styles/floatingBalls.module.css';
 
 const FloatingBalls = ({containerRef}) => {
-  const { redBallPos, blueBallPos,blackBallPos } = useBouncingBalls(containerRef);
+  const { redBallPos, blueBallPos,blackBallPos, cornflowerBallPos } = useBouncingBalls(containerRef);
 
   return (
     <div className={styles.floatingBalls}>
@@ -21,6 +21,10 @@ const FloatingBalls = ({containerRef}) => {
       <div
         className={styles.ball + ' ' + styles.blackBall}
         style={{ left: blackBallPos.x, top: blackBallPos.y }}
+      ></div>
+      <div
+        className={styles.ball + ' ' + styles.cornflowerBall}
+        style={{ left: cornflowerBallPos.x, top: cornflowerBallPos.y }}
       ></div>
     </div>
   );
