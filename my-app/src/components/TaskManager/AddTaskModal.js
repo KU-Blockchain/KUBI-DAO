@@ -136,10 +136,6 @@ const AddTaskModal = ({ isOpen, onClose, onAddTask }) => {
     }}
   />
 </FormControl>
-
-
-
-
           </VStack>
         </ModalBody>
         <ModalFooter>
