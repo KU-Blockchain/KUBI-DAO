@@ -17,9 +17,9 @@ const useBouncingBalls = (containerRef) => {
     const containerRect = containerRef.current.getBoundingClientRect();
 
     let redBallVelocity = { x: 0.25, y: .5 };
-    let blueBallVelocity = { x: -1, y: .5 };
-    let blackBallVelocity = { x: 0.5, y: -1 };
-    let cornflowerBallVelocity = { x: -0.5, y: -1 };
+    let blueBallVelocity = { x: -.5, y: .5 };
+    let blackBallVelocity = { x: 0.25, y: -.5 };
+    let cornflowerBallVelocity = { x: -0.25, y: -.5 };
     let animationFrameId;
 
     const updatePositions = () => {
@@ -63,7 +63,7 @@ const useBouncingBalls = (containerRef) => {
       if (newPosBlackBall.y < 0 || newPosBlackBall.y + 100 > containerRect.height-100) {
         blackBallVelocity.y *= -1;
       }
-      if (newPosCornflowerBall.x < 0 || newPosCornflowerBall.x + 100 > containerRect.width-300) { // Step 4
+      if (newPosCornflowerBall.x < 0 || newPosCornflowerBall.x + 100 > containerRect.width-300) {
         cornflowerBallVelocity.x *= -1;
       }
       if (newPosCornflowerBall.y < 0 || newPosCornflowerBall.y + 100 > containerRect.height-100) {
