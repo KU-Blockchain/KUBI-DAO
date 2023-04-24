@@ -17,7 +17,7 @@ const TaskBoard = ({ columns }) => {
         direction={{ base: 'column', md: 'row' }}
         justifyContent="space-between"
         w="100%"
-        h="80vh"
+        h="85vh"
         overflowX="hidden"
         overflowY="hidden"
         wrap={{ base: 'nowrap', md: 'nowrap' }}

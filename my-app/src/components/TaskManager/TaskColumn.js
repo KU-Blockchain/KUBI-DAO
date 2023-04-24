@@ -8,6 +8,7 @@ import AddTaskModal from './AddTaskModal';
 import { useWeb3Context } from '../../contexts/Web3Context';
 import { useDataBaseContext } from '../../contexts/DataBaseContext';
 
+
 const TaskColumn = ({ title, tasks, columnId }) => {
   const { moveTask, addTask, editTask } = useTaskBoard();
   const [isAddTaskModalOpen, setIsAddTaskModalOpen] = useState(false);
