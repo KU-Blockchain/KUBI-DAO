@@ -1,0 +1,37 @@
+/* components/TaskManager/FloatingBalls.module.css */
+
+.floatingBalls {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: -1;
+}
+
+.ball {
+  position: absolute;
+  border-radius: 50%;
+}
+.blackBall {
+  width: 200px;
+  height: 200px;
+  background-color: black;
+}
+.redBall {
+  width: 600px;
+  height: 600px;
+  background-color: red;
+}
+
+.blueBall {
+  width: 900px;
+  height: 900px;
+  background-color: blue;
+}
+
+.blackBall {
+  width: 200px;
+  height: 200px;
+  background-color: black;
+}

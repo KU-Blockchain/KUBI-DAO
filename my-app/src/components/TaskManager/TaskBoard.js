@@ -21,22 +21,22 @@ const TaskBoard = ({ columns }) => {
         overflowX="hidden"
         overflowY="hidden"
         wrap={{ base: 'nowrap', md: 'nowrap' }}
+        mt={2}
       >
-        {taskColumns && taskColumns.map((column) => (
-          <Box
-            key={column.id}
-            flex={{ base: '1 1 100%', md: '1 1 24%' }}
-            mx={0}
-            my={{ base: 4, md: 0 }}
-            p={2}
-          >
-            <TaskColumn
-              title={column.title}
-              tasks={column.tasks}
-              columnId={column.id}
-            />
-          </Box>
-        ))}
+        {taskColumns &&
+          taskColumns.map((column) => (
+              <Box
+                key={column.id}
+                flex={{ base: '1 1 100%', md: '1 1 24%' }}
+                mx={{ base: 0, md: 2 }} // Change mx value
+                my={{ base: 2, md: 0 }} // Change my value
+                p={2}
+                bg="rgba(0, 0, 0, 0.6)"
+                borderRadius="2xl"
+              >
+              <TaskColumn title={column.title} tasks={column.tasks} columnId={column.id} zIndex={1}  />
+            </Box>
+          ))}
       </Flex>
     </DndProvider>
   );
