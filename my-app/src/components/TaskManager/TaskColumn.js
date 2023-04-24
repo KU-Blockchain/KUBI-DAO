@@ -17,7 +17,7 @@ const glassLayerStyle = {
   height: '100%',
   zIndex: -1,
   borderRadius: 'inherit',
-  backdropFilter: 'blur(20px)',
+  backdropFilter: 'blur(50px)',
   backgroundColor: 'rgba(0, 0, 0, .3)',
 };
 
@@ -145,8 +145,6 @@ const TaskColumn = ({ title, tasks, columnId }) => {
       ref={drop}
       w="100%"
       h="100%"
-      px={0}
-      py={0}
       bg="transparent" // Set the background to transparent
       borderRadius="md"
       boxShadow="lg"
@@ -158,12 +156,18 @@ const TaskColumn = ({ title, tasks, columnId }) => {
           {title}
           {title === 'Open' && (
             <IconButton
-              ml={2}
-              icon={<AddIcon color="black" />}
+              ml={8}
+              icon={<AddIcon color="white" />} // Change color to white
               aria-label="Add task"
               onClick={handleOpenAddTaskModal}
-              h="1.70rem"
+              h="1.50rem" // Adjust height
+              w="1.50rem" // Adjust width
+              minW={0} // Set minimum width to 0
+              bg="" // Set background color to black
+              border= ".5px solid white"
+              boxshadow="md"
             />
+
           )}
         </Heading>
         <Box

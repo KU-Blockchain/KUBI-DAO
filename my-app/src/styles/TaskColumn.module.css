@@ -1,7 +1,7 @@
 .glass {
     background: rgba(255, 255, 255, 0.01);
     border-radius: 10px;
-    backdrop-filter: blur(30px);
+    backdrop-filter: blur(10px);
     box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
   }
    

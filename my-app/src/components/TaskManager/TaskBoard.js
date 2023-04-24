@@ -1,9 +1,18 @@
 import { useEffect } from 'react';
-import { Box, Flex } from '@chakra-ui/react';
+import { Flex, Box } from '@chakra-ui/react';
 import { DndProvider } from 'react-dnd';
 import { HTML5Backend } from 'react-dnd-html5-backend';
 import { TaskBoardProvider, useTaskBoard } from '../../contexts/TaskBoardContext';
 import TaskColumn from './TaskColumn';
+import '../../styles/TaskColumn.module.css';
+
+const glassLayerStyle = {
+  width: '100%',
+  height: '100%',
+  borderRadius: '3xl',
+  backdropFilter: 'blur(10px)',
+  backgroundColor: 'rgba(0, 0, 0, .3)',
+};
 
 const TaskBoard = ({ columns }) => {
   const { taskColumns, setTaskColumns } = useTaskBoard();
@@ -25,16 +34,21 @@ const TaskBoard = ({ columns }) => {
       >
         {taskColumns &&
           taskColumns.map((column) => (
-              <Box
-                key={column.id}
-                flex={{ base: '1 1 100%', md: '1 1 25%' }}
-                mx={{ base: 0, md: 1 }} 
-                my={{ base: 2, md: 0 }} // Change my value
-                p={3}
-                bg="rgba(0, 0, 0, 0.5)"
-                borderRadius="3xl"
-              >
-              <TaskColumn title={column.title} tasks={column.tasks} columnId={column.id} zIndex={1}  />
+            <Box
+              key={column.id}
+              flex="1 1 100%"
+              mx={{ base: 0, md: 1 }}
+              p={3}
+              borderRadius="3xl"
+              position="relative"
+              sx={glassLayerStyle}
+            >
+              <TaskColumn
+                title={column.title}
+                tasks={column.tasks}
+                columnId={column.id}
+                zIndex={1}
+              />
             </Box>
           ))}
       </Flex>
