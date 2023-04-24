@@ -8,15 +8,15 @@ const DataMenu = ({ clearData, handleAddHashes }) => {
 
   return (
     <VStack spacing={4}>
-      <Button mt={4} colorScheme="red" onClick={() => setShowMintMenu(!showMintMenu)}>
+      <Button mt={4} colorScheme="red" onClick={() => setShowMintMenu(!showMintMenu)} _hover={{ bg: "red.600", boxShadow: "md", transform: "scale(1.05)"}}>
         Data Menu
       </Button>
       {showMintMenu && (
         <>
-          <Button colorScheme="yellow" mt={4} onClick={clearData}>
+          <Button colorScheme="yellow" mt={4} onClick={clearData} _hover={{ bg: "yellow.600", boxShadow: "md", transform: "scale(1.05)"}}>
             Clear all Data
           </Button>
-          <Button colorScheme="teal" mt={4} onClick={handleAddHashes}>
+          <Button colorScheme="teal" mt={4} onClick={handleAddHashes} _hover={{ bg: "teal.600", boxShadow: "md", transform: "scale(1.05)"}}>
             Push Project Hashes
           </Button>
 

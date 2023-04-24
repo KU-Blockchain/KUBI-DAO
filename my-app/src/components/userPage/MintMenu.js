@@ -50,11 +50,11 @@ const MintMenu = memo(( ) => {
 
   return (
     <VStack spacing={4}>
-      <Button mt ={4} colorScheme="blue" onClick={() => setShowMintMenu(!showMintMenu)}>
+      <Button mt ={4} colorScheme="blue" onClick={() => setShowMintMenu(!showMintMenu)} _hover={{ bg: "blue.600", boxShadow: "md", transform: "scale(1.05)"}}>
         Mint Menu
       </Button>
       {showMintMenu && (
-        <Button colorScheme="purple" onClick={openMintModal}>
+        <Button colorScheme="purple" onClick={openMintModal} _hover={{ bg: "purple.600", boxShadow: "md", transform: "scale(1.05)"}}>
           Mint Executive NFT
         </Button>
       )}
@@ -77,7 +77,7 @@ const MintMenu = memo(( ) => {
             </FormControl>
           </ModalBody>
           <ModalFooter>
-            <Button colorScheme="blue" mr={3} onClick={mintExecutiveNFT}>
+            <Button colorScheme="blue" mr={3} onClick={mintExecutiveNFT} _hover={{ bg: "blue.600", boxShadow: "md", transform: "scale(1.05)"}}>
               Mint
             </Button>
             <Button onClick={closeMintModal}>Cancel</Button>
