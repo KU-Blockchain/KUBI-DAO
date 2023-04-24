@@ -71,74 +71,30 @@ const AddTaskModal = ({ isOpen, onClose, onAddTask }) => {
               </Select>
             </FormControl>
             <FormControl id="task-estimated-hours">
-  <FormLabel>Estimated Hours</FormLabel>
-  <Input
-    type="number"
-    min="0.5"
-    step="0.5"
-    value={estHours}
-    onBlur={(e) => {
-      const val = parseFloat(e.target.value);
-      if (val <= 0.5) {
-        setEstHours(0.5);
-      } else {
-        setEstHours(Math.round(val));
-      }
-    }}
-    onKeyDown={(e) => {
-      if (e.key === 'ArrowUp' || e.key === 'ArrowDown') {
-        e.preventDefault();
-        const val = parseFloat(e.target.value);
-        if (e.key === 'ArrowUp') {
-          console.log(val)
-          if (val === 0.5) {
-            setEstHours(1);
-          } else {
-            setEstHours(val + 1);
-          }
-        } else {
-          if (val === 1) {
-            setEstHours(0.5);
-          } else if (val > 1) {
-            setEstHours(val - 1);
-          }
-        }
-      }
-    }}
-    onMouseDown={(e) => {
-      if (e.buttons === 1) {
-        e.preventDefault();
-        const input = e.target;
-        const val = parseFloat(input.value);
-        const direction = e.clientY < input.getBoundingClientRect().top + input.offsetHeight / 2 ? 1 : -1;
-        if (direction === 1) {
-          if (val === 0.5) {
-            setEstHours(1);
-          } else {
-            setEstHours(val + 1);
-          }
-        } else {
-          if (val === 1) {
-            setEstHours(0.5);
-          } else if (val > 1) {
-            setEstHours(val - 1);
-          }
-        }
-      }
-    }}
-    onChange={(e) => {
-      const val = parseFloat(e.target.value);
-      if (isNaN(val)) {
-        setEstHours(0.5);
-      } else {
-        setEstHours(val);
-      }
-    }}
-  />
-</FormControl>
-
-
-
+              <FormLabel>Estimated Hours</FormLabel>
+              <Input
+                type="number"
+                min="0.5"
+                step="0.5"
+                value={estHours}
+                onChange={(e) => {
+                  const val = parseFloat(e.target.value);
+                  if (isNaN(val)) {
+                    setEstHours(0.5);
+                  } else {
+                    setEstHours(val);
+                  }
+                }}
+                onBlur={(e) => {
+                  const val = parseFloat(e.target.value);
+                  if (val <= 0.5) {
+                    setEstHours(0.5);
+                  } else {
+                    setEstHours(Math.round(val * 2) / 2);
+                  }
+                }}
+              />
+            </FormControl>
 
           </VStack>
         </ModalBody>
