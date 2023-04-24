@@ -19,14 +19,14 @@
   background-color: black;
 }
 .redBall {
-  width: 600px;
-  height: 600px;
+  width: 500px;
+  height: 500px;
   background-color: red;
 }
 
 .blueBall {
-  width: 900px;
-  height: 900px;
+  width: 800px;
+  height: 800px;
   background-color: blue;
 }
 
