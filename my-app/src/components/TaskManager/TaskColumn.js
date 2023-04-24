@@ -17,7 +17,7 @@ const glassLayerStyle = {
   height: '100%',
   zIndex: -1,
   borderRadius: 'inherit',
-  backdropFilter: 'blur(50px)',
+  backdropFilter: 'blur(60px)',
   backgroundColor: 'rgba(0, 0, 0, .3)',
 };
 
@@ -160,8 +160,8 @@ const TaskColumn = ({ title, tasks, columnId }) => {
               icon={<AddIcon color="white" />} // Change color to white
               aria-label="Add task"
               onClick={handleOpenAddTaskModal}
-              h="1.50rem" // Adjust height
-              w="1.50rem" // Adjust width
+              h="1.60rem" // Adjust height
+              w="1.60rem" // Adjust width
               minW={0} // Set minimum width to 0
               bg="" // Set background color to black
               border= ".5px solid white"

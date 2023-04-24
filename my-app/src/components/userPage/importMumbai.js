@@ -35,7 +35,7 @@ const AddMumbaiNetworkButton = () => {
   };
 
   return (
-    <Button colorScheme= "purple" onClick={addMumbaiNetwork}>
+    <Button colorScheme= "purple" onClick={addMumbaiNetwork} _hover={{ bg: "purple.600", boxShadow: "md", transform: "scale(1.05)"}}>
       Add Mumbai Testnet
     </Button>
   );

@@ -53,7 +53,7 @@ const KubixButton = () => {
   };
 
   return (
-    <Button colorScheme = "green" onClick={importKubixToken} disabled={!web3 || !account}>
+    <Button colorScheme = "green" onClick={importKubixToken} disabled={!web3 || !account} _hover={{ bg: "green.600", boxShadow: "md", transform: "scale(1.05)"}}>
       Import KUBIX Token
     </Button>
   );

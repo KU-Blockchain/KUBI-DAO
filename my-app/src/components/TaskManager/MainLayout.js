@@ -31,11 +31,10 @@ const MainLayout = () => {
   return (
     <Flex direction="column" w="100%" minH="85vh">
       <Box bg={"cornflowerblue"} p={4} boxShadow="md">
-        <Heading color={'whiteAlpha.900'} size="md">KUBI Task Manager</Heading>
+        <Heading mr={"300px"}color={'white'} size="md">KUBI Task Manager</Heading>
       </Box>
       <Flex w="100%" flex="1">
         <ProjectSidebar
-          
           projects={projects}
           selectedProject={selectedProject}
           onSelectProject={handleSelectProject}

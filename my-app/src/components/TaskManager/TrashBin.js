@@ -1,5 +1,5 @@
 import React from 'react';
-import { Box } from '@chakra-ui/react';
+import { Box, Text } from '@chakra-ui/react';
 import { useDrop } from 'react-dnd';
 
 const TrashBin = ({ onDeleteProject }) => {
@@ -12,20 +12,24 @@ const TrashBin = ({ onDeleteProject }) => {
     }),
   }));
 
-  const isActive = canDrop && isOver;
-  const backgroundColor = isActive ? 'red.500' : 'gray.200';
+  const isActive = canDrop;
+  const backgroundColor = isActive ? 'red.500' : "transparent";
 
   return (
     <Box
       ref={drop}
       bg={backgroundColor}
-      w="100%"
+      w="90%"
+      ml="5%"
       h="50px"
       display="flex"
       alignItems="center"
       justifyContent="center"
+      borderRadius="md"
     >
-      {isActive ? 'Release to delete' : 'Drag a project here to delete'}
+      <Text color="white">
+      {isActive ? 'Release here to delete' : 'Drag a project here to delete'}
+      </Text>
     </Box>
   );
 };

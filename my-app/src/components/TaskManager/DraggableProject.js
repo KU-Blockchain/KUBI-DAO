@@ -1,5 +1,5 @@
 import React from 'react';
-import { Button } from '@chakra-ui/react';
+import { Button, Text } from '@chakra-ui/react';
 import { useDrag } from 'react-dnd';
 
 const DraggableProject = ({ project, isSelected, onSelectProject, onDeleteProject }) => {
@@ -20,13 +20,17 @@ const DraggableProject = ({ project, isSelected, onSelectProject, onDeleteProjec
   const opacity = isDragging ? 0.4 : 1;
   return (
     <Button
+      width="90%"
+      mx="5%"
       ref={drag}
       onClick={() => onSelectProject(project.id)}
-      width="100%"
-      bg={isSelected ? 'gray.300' : undefined}
+      bg={isSelected ? 'cornflowerblue' : 'ghostwhite'}
       style={{ opacity }}
+      _hover={{ bg: "cornflowerblue", boxShadow: "md", transform: "scale(1.05)"}}
     >
+      <Text fontWeight="900">
       {project.name}
+      </Text>
     </Button>
   );
 };

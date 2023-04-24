@@ -9,7 +9,7 @@ const Tasks = () => {
   const containerRef = useRef();
 
   return (
-    <Box p={0} minH="80vh" position="relative" bg="blackAlpha.500" ref={containerRef}>
+    <Box p={0} minH="80vh" position="relative" bg="blackAlpha.600" ref={containerRef}>
       <FloatingBalls containerRef={containerRef} />
       <MainLayout />
     </Box>

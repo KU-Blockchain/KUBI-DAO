@@ -7,6 +7,8 @@ import { useDataBaseContext } from "@/contexts/DataBaseContext";
 import { useWeb3Context } from "@/contexts/Web3Context";
 import { ethers } from "ethers";
 import MumbaiButton from "../components/userPage/importMumbai";
+import { ScaleFade } from "@chakra-ui/react";
+
 
 import {
   Box,
@@ -292,6 +294,7 @@ const User = () => {
   };
   
   const renderJoinSteps = () => (
+    <ScaleFade initialScale={0.8} in={true}>
     <>
     {isConnected && !isMember && (
       
@@ -348,7 +351,7 @@ const User = () => {
               <FormLabel>Username</FormLabel>
               <Input type="text" placeholder="Username" value={username} onChange={(event) => setUsername(event.target.value)} />
             </FormControl>
-            <Button colorScheme="blue" mt={4} onClick={handleJoin}>
+            <Button colorScheme="blue" mt={4} onClick={handleJoin} _hover={{ bg: "blue.600", boxShadow: "md", transform: "scale(1.05)"}}>
               {phrase}
             </Button>
             {showMetaMaskMessage && (
@@ -360,9 +363,11 @@ const User = () => {
          
         )}
         </>
+        </ScaleFade>
    );
   
   const renderDashboard = () => (
+    <ScaleFade initialScale={0.8} in={true}>
     <>
       {isConnected && isMember && (
         <Flex
@@ -397,9 +402,11 @@ const User = () => {
         </Flex>
       )}
     </>
+    </ScaleFade>
   );
 
   const renderMetamaskMessage = () => (
+    <ScaleFade initialScale={0.8} in={true}>
     <>
       {!isConnected && (
         <Text fontSize="xl" fontWeight="bold" color="red.500">
@@ -407,6 +414,7 @@ const User = () => {
         </Text>
       )}
     </>
+    </ScaleFade>
   );
   const renderDevMenu = () => (
     <>
@@ -434,6 +442,7 @@ const User = () => {
       </Flex>
       )}
   </>
+
 
   );
 

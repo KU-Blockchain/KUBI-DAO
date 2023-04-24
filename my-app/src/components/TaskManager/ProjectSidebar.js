@@ -8,6 +8,7 @@ import {
   FormControl,
   Spacer,
   Flex,
+  Text,
 } from '@chakra-ui/react';
 import { useWeb3Context } from '../../contexts/Web3Context';
 import { useDataBaseContext } from '@/contexts/DataBaseContext';
@@ -16,6 +17,17 @@ import { HTML5Backend } from 'react-dnd-html5-backend';
 import DraggableProject from './DraggableProject';
 import TrashBin from './TrashBin';
 
+import '../../styles/ProjectSidebar.module.css';
+
+const glassLayerStyle = {
+  position: 'absolute',
+  width: '100%',
+  height: '100%',
+  zIndex: -1,
+  borderRadius: 'inherit',
+  backdropFilter: 'blur(50px)',
+  backgroundColor: 'rgba(0, 0, 0, .8)',
+};
 
 const ProjectSidebar = ({ projects,selectedProject, onSelectProject, onCreateProject }) => {
   const [newProjectName, setNewProjectName] = useState('');
@@ -48,23 +60,24 @@ const ProjectSidebar = ({ projects,selectedProject, onSelectProject, onCreatePro
 
   return (
     <DndProvider backend={HTML5Backend}>
-    <Box
-      bg="gray.200"
-      w="300px"
-      h="85vh"
-      p={2}
-      marginRight={2}
-      borderRight="1px"
-      borderColor="gray.300"
-      display="flex"
-      flexDirection="column"
-    >
-      <Heading size="md" mb={4}>
+      <Box
+        w="300px"
+        marginRight={1}
+
+        display="flex"
+        flexDirection="column"
+        bg="transparent" // Set the background to transparent
+        boxShadow="lg"
+        position="relative" // Add position: 'relative'
+        zIndex={1}
+      >
+        <div className="glass" style={glassLayerStyle} />
+      <Heading size="md" mb={4} color="white" mt={3}ml="7%">
         Projects
         </Heading>
       <Box flexGrow={1} overflowY="auto" pl={1} pr={1}>
       
-        <VStack spacing={4} align="start">
+        <VStack spacing={4} width="100%" align="center">
           {projects.map((project) => {
             const isSelected = selectedProject && project.id === selectedProject.id;
 
@@ -88,6 +101,7 @@ const ProjectSidebar = ({ projects,selectedProject, onSelectProject, onCreatePro
         {showInput && (
           <FormControl>
             <Input
+              color="white"
               placeholder="New project name"
               value={newProjectName}
               onChange={(e) => setNewProjectName(e.target.value)}
@@ -98,9 +112,15 @@ const ProjectSidebar = ({ projects,selectedProject, onSelectProject, onCreatePro
           mt={2}
           onClick={showInput ? handleCreateProject : () => setShowInput(true)}
           disabled={showInput && !newProjectName.trim()}
-          width="100%" // Set width to 100%
+          ml="5%"
+          width="90%" // Set width to 100%
+          _hover={{ bg: "cornflowerblue", boxShadow: "md", transform: "scale(1.05)"}}
+          mb="4"
+          color={'ghostwhite'}
         >
+          <Text color="black">
           {showInput ? 'Save Project' : 'Create Project'}
+          </Text>
         </Button>
       </Flex>
     </Box>
