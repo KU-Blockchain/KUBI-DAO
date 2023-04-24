@@ -5,8 +5,9 @@ import NextLink from 'next/link';
 
 const Navbar = () => {
   return (
-    <Box bg="blue.500" p={4}>
-      <Flex justifyContent="space-around" alignItems="center" h="100%" maxH="40px">
+
+    <Box bg="blackAlpha.900" p={4}>
+      <Flex justifyContent="space-around" alignItems="center" h="100%" maxH="62px">
         <Box h="calc(100% - 6px)" w="auto" maxW="6%" mr={{ base: '4', md: '8' }}>
           <Image
             src="/images/simple-logo-white-smaller.png"

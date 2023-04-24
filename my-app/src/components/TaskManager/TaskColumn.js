@@ -7,6 +7,25 @@ import { useTaskBoard } from '../../contexts/TaskBoardContext';
 import AddTaskModal from './AddTaskModal';
 import { useWeb3Context } from '../../contexts/Web3Context';
 import { useDataBaseContext } from '../../contexts/DataBaseContext';
+// ... other imports
+import '../../styles/TaskColumn.module.css';
+
+// ... inside TaskColumn component, before return statement
+const glassLayerStyle = {
+  position: 'absolute',
+  width: '100%',
+  height: '100%',
+  zIndex: -1,
+  borderRadius: 'inherit',
+  backdropFilter: 'blur(20px)',
+  backgroundColor: 'rgba(0, 0, 0, .3)',
+};
+
+
+
+
+
+
 
 const TaskColumn = ({ title, tasks, columnId }) => {
   const { moveTask, addTask, editTask } = useTaskBoard();
@@ -122,13 +141,25 @@ const TaskColumn = ({ title, tasks, columnId }) => {
     const columnStyle = isOver ? { backgroundColor: 'rgba(0, 255, 0, 0.1)' } : {};
   
     return (
-      <Box ref={drop} w="100%" h="100%" px={2} py={2} bg="gray.100" borderRadius="md" boxShadow="lg" style={columnStyle}>
-        <Heading size="md" mb={3} alignItems="center">
+      <Box
+      ref={drop}
+      w="100%"
+      h="100%"
+      px={0}
+      py={0}
+      bg="transparent" // Set the background to transparent
+      borderRadius="md"
+      boxShadow="lg"
+      style={{ ...columnStyle, position: 'relative' }} // Add position: 'relative'
+      zIndex={1}
+    >
+      <div className="glass" style={glassLayerStyle} />
+        <Heading size="md" mb={3} mt={2}ml={2}alignItems="center" color='white'>
           {title}
           {title === 'Open' && (
             <IconButton
               ml={2}
-              icon={<AddIcon />}
+              icon={<AddIcon color="black" />}
               aria-label="Add task"
               onClick={handleOpenAddTaskModal}
               h="1.70rem"
@@ -136,33 +167,31 @@ const TaskColumn = ({ title, tasks, columnId }) => {
           )}
         </Heading>
         <Box
-          h="calc(100% - 3rem)"
-          bg="gray.200"
-          borderRadius="md"
-          p={2}
-          style={columnStyle}
-          overflowY="auto"
-        >
-          
-          {tasks.map((task, index) => (
-            
-            <TaskCard
-              key={task.id}
-              id={task.id}
-              name={task.name}
-              description={task.description}
-              difficulty={task.difficulty} 
-              estHours={task.estHours}
-              submission={task.submission} 
-              claimedBy={task.claimedBy}
-              kubixPayout={task.kubixPayout}
-              claimerUsername={task.claimerUsername}
-              columnId={columnId}
-              onEditTask={(updatedTask) => handleEditTask(updatedTask, index)}
-            />
-          ))}
+            h="calc(100% - 3rem)"
+            borderRadius="md"
+            bg="transparent"
+            p={2} // Change p value
+            style={columnStyle}
+            overflowY="auto"
+          >
+            {tasks.map((task, index) => (
+              <TaskCard
+                key={task.id}
+                id={task.id}
+                name={task.name}
+                description={task.description}
+                difficulty={task.difficulty}
+                estHours={task.estHours}
+                submission={task.submission}
+                claimedBy={task.claimedBy}
+                kubixPayout={task.kubixPayout}
+                claimerUsername={task.claimerUsername}
+                columnId={columnId}
+                onEditTask={(updatedTask) => handleEditTask(updatedTask, index)}
+              />
+            ))}
+          </Box>
 
-        </Box>
         {title === 'Open' && (
           <AddTaskModal
             isOpen={isAddTaskModalOpen}
