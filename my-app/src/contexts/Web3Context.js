@@ -59,6 +59,7 @@ export const Web3Provider = ({ children }) => {
         fetchBalance()
         fetchNFTBalance()
         fetchKUBIXBalance() 
+        
 
       } catch (error) {
         console.error(error);
@@ -144,13 +145,12 @@ export const Web3Provider = ({ children }) => {
 
     
 
-
-  const /* `mint` is a function that mints new KUBIX tokens and sends them to a specified address. It
+ /* `mint` is a function that mints new KUBIX tokens and sends them to a specified address. It
   takes in the recipient address, the amount of tokens to mint, and a boolean value indicating
   whether a task has been completed. It then connects to the KUBIX contract using the signer
   and mints the specified amount of tokens to the recipient address. Additionally, it updates
   the accounts data stored on IPFS with the new KUBIX balance and task completion status. */
-  mintKUBIX = async (to, amount, taskCompleted = false) => {
+  const mintKUBIX = async (to, amount, taskCompleted = false) => {
     try {
       const provider = new ethers.providers.JsonRpcProvider('https://rpc-mumbai.maticvigil.com/');
       const signer = new ethers.Wallet(process.env.NEXT_PUBLIC_PRIVATE_KEY, provider);
@@ -171,15 +171,11 @@ export const Web3Provider = ({ children }) => {
       // Add the Kubix wallet balance and task completed data point to the account data
       if (accountsDataJson[to]) {
         let currentkubix = await KUBIXcontract.methods.balanceOf(to).call();
-        console.log("check balance")
-        let currentBalanceBN = ethers.BigNumber.from(currentkubix);
-        let amountBN = ethers.BigNumber.from(amount);
-        let newBalanceBN = currentBalanceBN.add(amountBN);
-        let finalBalance = ethers.utils.formatEther(newBalanceBN);
+        const balance = ethers.BigNumber.from(currentkubix);
+        const balanceFinal = parseFloat(ethers.utils.formatEther(balance));
+
         
-
-
-        accountsDataJson[to].kubixBalance = (Math.round(finalBalance)).toString();
+        accountsDataJson[to].kubixBalance = (Math.round((balanceFinal + amount)))
 
 
     
