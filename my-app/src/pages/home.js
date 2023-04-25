@@ -1,31 +1,26 @@
 import React from 'react';
-import {
-  Box,
-  Flex,
-  Heading,
-  Text,
-  Button,
-  VStack,
-  Container,
-  Image,
-} from '@chakra-ui/react';
-
-
+import { Box, Flex, Heading, Text, Button, VStack, Container, Image } from '@chakra-ui/react';
+import Link from 'next/link';
+import User from './user.js';
+ 
 
 const Home = () => {
   return (
     <VStack spacing={10}>
       <Box bg="blue.500" w="100%" py={20}>
-        <Container centerContent>
+        <Container centerContent>         
           <Heading as="h1" size="2xl" color="white">
             Welcome to KUBI DAO
           </Heading>
           <Text fontSize="xl" color="white" mt={5}>
             The University of Kansas Blockchain Institute's decentralized platform for collaboration and reward distribution
           </Text>
-          <Button colorScheme="whiteAlpha" mt={8}>
-            Get Started
-          </Button>
+          <Link href="/user">
+         <Button colorScheme="whiteAlpha" mt={8}>
+              Get Started
+         </Button>
+          </Link>
+
         </Container>
       </Box>
 
@@ -41,7 +36,6 @@ const Home = () => {
             platform that encourages active participation and fair
             distribution of rewards.
           </Text>
-
         </VStack>
       </Container>
     </VStack>
@@ -49,4 +43,3 @@ const Home = () => {
 };
 
 export default Home;
-
