@@ -5,39 +5,36 @@ import NextLink from 'next/link';
 
 const Navbar = () => {
   return (
-
-    <Box bg="blackAlpha.900" p={4}>
-      <Flex justifyContent="space-around" alignItems="center" h="100%" maxH="62px">
-        <Box h="calc(100% - 6px)" w="auto" maxW="6%" mr={{ base: '4', md: '8' }}>
+    <Box bg="black" p={4}>
+      <Flex  alignItems="center" h="100%" maxH="62px"> {/* Change justifyContent to "space-between" */}
+        <Box h="calc(100% - 6px)" w="auto" maxW="8%" mr={{ base: '4', md: '8' }}>
           <Image
-            src="/images/simple-logo-white-smaller.png"
+            src="/images/KUBC-logo-RGB-1200.png"
             alt="KUBC Logo"
             h="100%"
             w="auto"
-            objectFit="contain"
           />
         </Box>
-        <Link as={NextLink} href="/" color="white" fontWeight="extrabold">
-          Home
-        </Link>
-        <Link as={NextLink} href="/tasks" color="white" fontWeight="extrabold">
-          Tasks
-        </Link>
-        <Link as={NextLink} href="/Leaderboard" color="white" fontWeight="extrabold">
-          Leaderboard
-        </Link>
-        <Link as={NextLink} href="/voting" color="white" fontWeight="extrabold">
-          Voting
-        </Link>
-        <Link as={NextLink} href="/user" color="white" fontWeight="extrabold">
-          User
-        </Link>
+        <Flex> 
+          <Link as={NextLink} href="/" color="white" fontWeight="extrabold" mx={"45%"}> 
+            Home
+          </Link>
+          <Link as={NextLink} href="/tasks" color="white" fontWeight="extrabold" mx={"45%"}>
+            Tasks
+          </Link>
+          <Link as={NextLink} href="/Leaderboard" color="white" fontWeight="extrabold" mx={"45%"}>
+            Leaderboard
+          </Link>
+          <Link as={NextLink} href="/voting" color="white" fontWeight="extrabold" mx={"45%"}>
+            Voting
+          </Link>
+          <Link as={NextLink} href="/user" color="white" fontWeight="extrabold" mx={"45%"}>
+            User
+          </Link>
+        </Flex>
       </Flex>
     </Box>
   );
 };
 
 export default Navbar;
-
-
-
