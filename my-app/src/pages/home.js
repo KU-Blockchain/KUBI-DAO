@@ -8,6 +8,7 @@ import {
   VStack,
   Container,
   Image,
+  Link
 } from '@chakra-ui/react';
 
 import '../styles/TaskColumn.module.css';
@@ -62,6 +63,9 @@ const Home = () => {
             hybrid tokenomics system combines KUBIX and KUBI tokens to create a
             platform that encourages active participation and fair
             distribution of rewards.
+          </Text>
+          <Text fontSize="2xl" textAlign="center" fontWeight={900}>
+            Read more here at our github readme <Link href="https://metamask.io/" isExternal fontWeight="bold" textDecoration="underline" color="white">here</Link>
           </Text>
 
         </VStack>
