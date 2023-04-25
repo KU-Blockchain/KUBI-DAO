@@ -4,7 +4,7 @@ import Home from './home';
 
 export default function Index() {
   return (
-    <Box p={8} minH="100vh" bg="gray.50">
+    <Box minH="100vh" bg="cornflowerblue">
       <Home />
     </Box>
   );
