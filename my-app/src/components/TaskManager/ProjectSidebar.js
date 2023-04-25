@@ -58,6 +58,7 @@ const ProjectSidebar = ({ projects,selectedProject, onSelectProject, onCreatePro
 
   }
 
+  
   return (
     <DndProvider backend={HTML5Backend}>
       <Box
@@ -80,7 +81,6 @@ const ProjectSidebar = ({ projects,selectedProject, onSelectProject, onCreatePro
         <VStack spacing={4} width="100%" align="center">
           {projects.map((project) => {
             const isSelected = selectedProject && project.id === selectedProject.id;
-
             return (
               <DraggableProject
                 key={project.id}

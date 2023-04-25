@@ -5,6 +5,7 @@ import TaskBoard from './TaskBoard';
 import { TaskBoardProvider } from '../../contexts/TaskBoardContext';
 import { useDataBaseContext, DataBaseProvider } from '../../contexts/DataBaseContext';
 import { useWeb3Context, Web3Provider } from '../../contexts/Web3Context';
+import { Alert } from '@chakra-ui/alert';
 
 
 const MainLayout = () => {
@@ -18,11 +19,28 @@ const MainLayout = () => {
   } = useDataBaseContext();
 
   const {account}= useWeb3Context()
+  const [projectName,setProjectName]=useState('No Project Selected');
+  
+  React.useEffect(() => {
+    console.log("Mounted")
+    setTimeout(()=>{
+      try {
+        
+        setProjectName(selectedProject.name)
+      } catch (error) {
+        
+      }
+    },2000)
+    return ()=>{console.log("UnMounted")}
+  }, []);
+  
+  
   
 
   const handleSelectProject = (projectId) => {
     const selected = projects.find((project) => project.id === projectId);
     setSelectedProject(selected);
+    setProjectName(selected.name);
   };
 
 
@@ -31,7 +49,7 @@ const MainLayout = () => {
   return (
     <Flex direction="column" w="100%" minH="85vh">
       <Box bg={"cornflowerblue"} p={4} boxShadow="md">
-        <Heading mr={"300px"}color={'white'} size="md">KUBI Task Manager</Heading>
+        <Heading mr={"300px"}color={'white'} size="md">{projectName}</Heading>
       </Box>
       <Flex w="100%" flex="1">
         <ProjectSidebar
