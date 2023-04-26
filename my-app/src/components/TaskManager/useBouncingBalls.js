@@ -16,10 +16,10 @@ const useBouncingBalls = (containerRef) => {
 
     const containerRect = containerRef.current.getBoundingClientRect();
 
-    let redBallVelocity = { x: 0.25, y: .5 };
-    let blueBallVelocity = { x: -.5, y: .5 };
-    let blackBallVelocity = { x: 0.25, y: -.5 };
-    let cornflowerBallVelocity = { x: -0.25, y: -.5 };
+    let redBallVelocity = { x: 0.3, y: .6 };
+    let blueBallVelocity = { x: -.5, y: .7 };
+    let blackBallVelocity = { x: 0.3, y: -.7 };
+    let cornflowerBallVelocity = { x: -0.4, y: -.5 };
     let animationFrameId;
 
     const updatePositions = () => {
