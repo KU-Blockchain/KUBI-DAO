@@ -9,6 +9,7 @@ import {
   Spacer,
   Flex,
   Text,
+  Textarea,
 } from '@chakra-ui/react';
 import { useWeb3Context } from '../../contexts/Web3Context';
 import { useDataBaseContext } from '@/contexts/DataBaseContext';
@@ -32,13 +33,14 @@ const glassLayerStyle = {
 const ProjectSidebar = ({ projects,selectedProject, onSelectProject, onCreateProject }) => {
   const [newProjectName, setNewProjectName] = useState('');
   const [showInput, setShowInput] = useState(false);
+  const [projectDesription,setProjectDescription] = useState('')
   const { hasExecNFT} = useWeb3Context();
   const { handleDeleteProject } = useDataBaseContext();
   
   const handleCreateProject = () => {
     
       if (hasExecNFT) {
-        onCreateProject(newProjectName);
+        onCreateProject(newProjectName,projectDesription);
         setNewProjectName('');
         setShowInput(false);
       } else {
@@ -105,6 +107,13 @@ const ProjectSidebar = ({ projects,selectedProject, onSelectProject, onCreatePro
               placeholder="New project name"
               value={newProjectName}
               onChange={(e) => setNewProjectName(e.target.value)}
+            />
+
+            <Textarea
+            color="white"
+            placeholder='Enter Description'
+            value={projectDesription}
+            onChange={(e) =>  {setProjectDescription(e.target.value)}}
             />
           </FormControl>
         )}

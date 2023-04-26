@@ -109,10 +109,10 @@ export const DataBaseProvider = ({ children }) => {
     };
     
     //handle creating a new project and uploading to ipfs and smart contract
-    const handleCreateProject = async (projectName) => {
+    const handleCreateProject = async (projectName,projectDescription) => {
         const newProject = {
         id: projects.length + 1,
-
+        projectDescription: projectDescription,
         name: projectName,
         columns: [
             { id: "open", title: "Open", tasks: [] },
@@ -125,6 +125,7 @@ export const DataBaseProvider = ({ children }) => {
         const projectData = {
         name: newProject.name, 
         columns: newProject.columns,
+        description: newProject.projectDescription,
         };
         // Save the new project to IPFS
         const ipfsResult = await ipfs.add(JSON.stringify(projectData));

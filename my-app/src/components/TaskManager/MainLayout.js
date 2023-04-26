@@ -6,7 +6,7 @@ import { TaskBoardProvider } from '../../contexts/TaskBoardContext';
 import { useDataBaseContext, DataBaseProvider } from '../../contexts/DataBaseContext';
 import { useWeb3Context, Web3Provider } from '../../contexts/Web3Context';
 import { Alert } from '@chakra-ui/alert';
-import ProjectDescription from './ProjectDescription';
+import ProjectDescription from './ProjectDescriptionTab';
 
 
 const MainLayout = () => {
@@ -90,7 +90,9 @@ const MainLayout = () => {
             </Flex>
           )
         ) : (
-          <ProjectDescription />
+          <ProjectDescription
+          project={selectedProject}
+           />
         )}
          
       </Flex>
