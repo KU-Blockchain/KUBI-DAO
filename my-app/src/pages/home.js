@@ -1,15 +1,4 @@
 import React from 'react';
-import {
-  Box,
-  Flex,
-  Heading,
-  Text,
-  Button,
-  VStack,
-  Container,
-  Image,
-  Link
-} from '@chakra-ui/react';
 
 import '../styles/TaskColumn.module.css';
 
@@ -24,6 +13,12 @@ const glassLayerStyle = {
 };
 
 
+import { Box, Flex, Heading, Text, Button, VStack, Container, Image, Link } from '@chakra-ui/react';
+import Link2 from 'next/link';
+import User from './user.js';
+ 
+
+
 const Home = () => {
   return (
     <VStack spacing={10}>
@@ -33,7 +28,7 @@ const Home = () => {
        borderRadius="2xl"
        display="flex"
        flexDirection="column"
-       bg="transparent" // Set the background to transparent
+       bg="transparent" 
        boxShadow="lg"
        position="relative" // Add position: 'relative'
        zIndex={1}
@@ -41,14 +36,26 @@ const Home = () => {
       <div className="glass" style={glassLayerStyle} />
         <Container centerContent>
           <Heading as="h1" size="2xl" color="white"mt="4%">
+
+      <Box bg="blue.500" w="100%" py={20}>
+        <Container centerContent>         
+          <Heading as="h1" size="2xl" color="white">
+
             Welcome to KUBI DAO
           </Heading>
           <Text fontSize="2xl" color="white" mt={8}>
             The University of Kansas Blockchain Institute's decentralized platform for collaboration, voting, and reward distribution
           </Text>
+
+
+
+          <Link2 href="/user">
           <Button size ="lg" bg="green.300" mt={10} mb="6%" _hover={{ bg: "green.500", boxShadow: "md", transform: "scale(1.05)"}}>
             Get Started
           </Button>
+          </Link2>
+
+
         </Container>
       </Box>
 
@@ -64,6 +71,7 @@ const Home = () => {
             platform that encourages active participation and fair
             distribution of rewards.
           </Text>
+
           <Text fontSize="2xl" textAlign="center" fontWeight={900}>
             Read more here at our github readme <Link href="https://metamask.io/" isExternal fontWeight="bold" textDecoration="underline" color="white">here</Link>
           </Text>
@@ -75,4 +83,3 @@ const Home = () => {
 };
 
 export default Home;
-
