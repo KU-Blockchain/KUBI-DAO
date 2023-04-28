@@ -306,8 +306,6 @@ export const DataBaseProvider = ({ children }) => {
             handleCreateProject,
             userDetails,
             setUserDetails,
-            account,
-            setAccount,
             fetchUserDetails,
             addUserData,
             getUsernameByAddress,

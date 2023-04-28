@@ -47,13 +47,13 @@ const User = () => {
   const [isMember, setIsMember] = useState(false);
 
 
-  const [showDataMenu, setShowDataMenu] = useState(false);
+
   const [projectHashesInput, setProjectHashesInput] = useState([]);
   const [dataHashInput, setDataHashInput] = useState("");
   const [phrase,setPhrase]=useState("Join");
 
-  const { userDetails, setUserDetails,  setAccount, fetchUserDetails, addUserData, clearData, pushProjectHashes } = useDataBaseContext();
-  const{hasMemberNFT, execNftContract,execNftBalance,balance,nftBalance, fetchBalance,web3, account,kubiMembershipNFTContract, contract,KUBIXbalance,KUBIXcontract, KUBIXcontractAddress, contractAddress, kubiMembershipNFTAddress,KUBIExecutiveNFTAddress}=useWeb3Context();
+  const { userDetails, fetchUserDetails, addUserData, clearData, pushProjectHashes } = useDataBaseContext();
+  const{hasMemberNFT, execNftBalance,balance,nftBalance, fetchBalance,web3, account,kubiMembershipNFTContract, contract,KUBIXbalance,KUBIXcontract,  kubiMembershipNFTAddress}=useWeb3Context();
 
 
   
