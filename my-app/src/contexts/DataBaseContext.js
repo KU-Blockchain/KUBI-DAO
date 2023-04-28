@@ -14,7 +14,6 @@ export const DataBaseProvider = ({ children }) => {
   const [projects, setProjects] = useState([]);
   const [selectedProject, setSelectedProject] = useState(null);
   const [userDetails, setUserDetails] = useState(null);
-  const [account, setAccount] = useState('');
   const [updateInProgress, setUpdateInProgress] = useState(false);
 
   const PMContract = '0x6a55a93CA73DFC950430aAeDdB902377fE51a8FA';
@@ -25,6 +24,8 @@ export const DataBaseProvider = ({ children }) => {
   );
   const signer = new ethers.Wallet(process.env.NEXT_PUBLIC_PRIVATE_KEY, provider);
   const contract = new ethers.Contract(PMContract, ProjectManagerArtifact.abi, signer);
+
+
 
   useEffect(() => {
     const loadInitialProject = async () => {
@@ -159,7 +160,7 @@ export const DataBaseProvider = ({ children }) => {
         }
       };
 
-      const addUserData = async (name, username, email) => {
+      const addUserData = async (account, name, username, email) => {
         // Fetch the accounts data IPFS hash from the smart contract
         const accountsDataIpfsHash = await contract.accountsDataIpfsHash();
         let accountsDataJson = {};

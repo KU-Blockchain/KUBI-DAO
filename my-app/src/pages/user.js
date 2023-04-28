@@ -195,7 +195,7 @@ const User = () => {
     }
   
     try {
-      const checkUsername = await addUserData(name, username, email);
+      const checkUsername = await addUserData(account, name, username, email);
       if (checkUsername !== true) {
         toast({
           title: "Error",
