@@ -284,14 +284,7 @@ const User = () => {
 
   
 
-  const handleAddHashes = async () => {
-    if (projectHashesInput.length === 0 || dataHashInput === "") {
-      // Show error message if the inputs are not valid
-      return;
-    }
-  
-    await pushProjectHashes(projectHashesInput, dataHashInput);
-  };
+
   
   const renderJoinSteps = () => (
     <ScaleFade initialScale={0.8} in={true}>
@@ -438,7 +431,7 @@ const User = () => {
 
         <DeployMenu deployPMContract={deployPMContract} deployKUBIContract= {deployKUBIContract} deployKUBIXContract= {deployKUBIXContract}/ >
         <MintMenu />
-        <DataMenu clearData={clearData}  handleAddHashes={handleAddHashes} />
+        <DataMenu />
       </Flex>
       )}
   </>

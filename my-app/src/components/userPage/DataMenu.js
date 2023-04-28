@@ -1,10 +1,22 @@
 import { useState } from "react";
 import { Button, FormControl, FormLabel, Input, VStack } from "@chakra-ui/react";
+import { useDataBaseContext } from "@/contexts/DataBaseContext";
 
-const DataMenu = ({ clearData, handleAddHashes }) => {
+const DataMenu = ( ) => {
   const [projectHashesInput, setProjectHashesInput] = useState([]);
   const [dataHashInput, setDataHashInput] = useState("");
   const [showMintMenu, setShowMintMenu] = useState(false);
+
+  const handleAddHashes = async () => {
+    console.log("check1")
+    if ( dataHashInput === "") {
+      // Show error message if the inputs are not valid
+      return;
+    }
+    console.log("check")
+    await pushProjectHashes(projectHashesInput, dataHashInput);
+  };
+  const {clearData, pushProjectHashes } = useDataBaseContext();
 
   return (
     <VStack spacing={4}>
