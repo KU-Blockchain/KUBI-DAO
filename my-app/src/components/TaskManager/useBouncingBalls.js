@@ -1,13 +1,30 @@
-// components/TaskManager/useBouncingBalls.js
-
 import { useState, useEffect, useRef } from 'react';
 
 const useBouncingBalls = (containerRef) => {
-  const redBallPos = useRef({ x: 200, y: 200 });
-  const blueBallPos = useRef({ x: 600, y: 300 });
-  const blackBallPos = useRef({ x: 700, y: 100 });
-  const cornflowerBallPos = useRef({ x: 400, y: 100 });
-  const [_, setRender] = useState({});
+  const balls = useRef([
+    { position: { x: 200, y: 200 }, velocity: { x: 0.25, y: 0.5 }, bounds: { x: 100, y: 100 } },
+    { position: { x: 600, y: 300 }, velocity: { x: -0.4, y: 0.55 }, bounds: { x: 100, y: 100 } },
+    { position: { x: 700, y: 100 }, velocity: { x: 0.3, y: -0.55 }, bounds: { x: 100, y: 100 } },
+    { position: { x: 400, y: 100 }, velocity: { x: -0.4, y: -0.5 }, bounds: { x: 100, y: 100 } },
+  ]);
+
+  const [, setRender] = useState({});
+
+  const updateBallPosition = (ball, containerRect) => {
+    const newPos = {
+      x: ball.position.x + ball.velocity.x,
+      y: ball.position.y + ball.velocity.y,
+    };
+
+    if (newPos.x < 0 || newPos.x + ball.bounds.x > containerRect.width - 300) {
+      ball.velocity.x *= -1;
+    }
+    if (newPos.y < 0 || newPos.y + ball.bounds.y > containerRect.height - 175) {
+      ball.velocity.y *= -1;
+    }
+
+    ball.position = newPos;
+  };
 
   useEffect(() => {
     if (!containerRef.current) {
@@ -15,68 +32,15 @@ const useBouncingBalls = (containerRef) => {
     }
 
     const containerRect = containerRef.current.getBoundingClientRect();
-
-    let redBallVelocity = { x: 0.3, y: .6 };
-    let blueBallVelocity = { x: -.5, y: .7 };
-    let blackBallVelocity = { x: 0.3, y: -.7 };
-    let cornflowerBallVelocity = { x: -0.4, y: -.5 };
     let animationFrameId;
+    let lastTime = 0;
 
-    const updatePositions = () => {
-      const newPosRedBall = {
-        x: redBallPos.current.x + redBallVelocity.x,
-        y: redBallPos.current.y + redBallVelocity.y,
-      };
-
-      const newPosCornflowerBall = { 
-        x: cornflowerBallPos.current.x + cornflowerBallVelocity.x,
-        y: cornflowerBallPos.current.y + cornflowerBallVelocity.y,
-      };
-
-      const newPosBlueBall = {
-        x: blueBallPos.current.x + blueBallVelocity.x,
-        y: blueBallPos.current.y + blueBallVelocity.y,
-      };
-
-      const newPosBlackBall = {
-        x: blackBallPos.current.x + blackBallVelocity.x,
-        y: blackBallPos.current.y + blackBallVelocity.y,
-      };
-
-      if (newPosRedBall.x < 0 || newPosRedBall.x + 100 > containerRect.width-300) {
-        redBallVelocity.x *= -1;
+    const updatePositions = (time) => {
+      if (time - lastTime > 1000 / 60) { // Throttle to 60fps
+        balls.current.forEach((ball) => updateBallPosition(ball, containerRect));
+        setRender({}); // Trigger a re-render
+        lastTime = time;
       }
-      if (newPosRedBall.y < 0 || newPosRedBall.y + 100 > containerRect.height-175) {
-        redBallVelocity.y *= -1;
-      }
-
-      if (newPosBlueBall.x < 0 || newPosBlueBall.x + 100 > containerRect.width-250) {
-        blueBallVelocity.x *= -1;
-      }
-      if (newPosBlueBall.y < 0 || newPosBlueBall.y + 100 > containerRect.height-250) {
-        blueBallVelocity.y *= -1;
-      }
-
-      if (newPosBlackBall.x < 0 || newPosBlackBall.x + 100 > containerRect.width-300) {
-        blackBallVelocity.x *= -1;
-      }
-      if (newPosBlackBall.y < 0 || newPosBlackBall.y + 100 > containerRect.height-100) {
-        blackBallVelocity.y *= -1;
-      }
-      if (newPosCornflowerBall.x < 0 || newPosCornflowerBall.x + 100 > containerRect.width-300) {
-        cornflowerBallVelocity.x *= -1;
-      }
-      if (newPosCornflowerBall.y < 0 || newPosCornflowerBall.y + 100 > containerRect.height-100) {
-        cornflowerBallVelocity.y *= -1;
-      }
-
-      redBallPos.current = newPosRedBall;
-      blueBallPos.current = newPosBlueBall;
-      blackBallPos.current = newPosBlackBall;
-      cornflowerBallPos.current = newPosCornflowerBall;
-
-      setRender({}); // Trigger a re-render
-
       animationFrameId = requestAnimationFrame(updatePositions);
     };
 
@@ -88,7 +52,12 @@ const useBouncingBalls = (containerRef) => {
     };
   }, [containerRef]);
 
-  return { cornflowerBallPos: cornflowerBallPos.current, redBallPos: redBallPos.current, blueBallPos: blueBallPos.current, blackBallPos: blackBallPos.current };
+  return {
+    cornflowerBallPos: balls.current[3].position,
+    redBallPos: balls.current[0].position,
+    blueBallPos: balls.current[1].position,
+    blackBallPos: balls.current[2].position,
+  };
 };
 
 export default useBouncingBalls;
