@@ -211,7 +211,7 @@ export const Web3Provider = ({ children }) => {
     if (KUBIXcontract && account) {
       temp = await KUBIXcontract.methods.balanceOf(account).call();
     }
-    setKUBIXBalance(ethers.utils.formatEther(temp));
+    setKUBIXBalance(Math.round(ethers.utils.formatEther(temp)));
   };
   
   useEffect(() => { fetchKUBIXBalance() }, [ account]);
