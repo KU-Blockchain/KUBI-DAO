@@ -19,10 +19,6 @@ const FloatingBalls = ({containerRef}) => {
         style={{ left: redBallPos.x, top: redBallPos.y }}
       ></div>
       <div
-        className={styles.ball + ' ' + styles.blackBall}
-        style={{ left: blackBallPos.x, top: blackBallPos.y }}
-      ></div>
-      <div
         className={styles.ball + ' ' + styles.cornflowerBall}
         style={{ left: cornflowerBallPos.x, top: cornflowerBallPos.y }}
       ></div>

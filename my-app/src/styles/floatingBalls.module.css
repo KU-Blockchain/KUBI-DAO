@@ -25,18 +25,12 @@
 }
 
 .blueBall {
-  width: 750px;
-  height: 750px;
+  width: 675px;
+  height: 675px;
   background-color: blue;
 }
-
-.blackBall {
-  width: 200px;
-  height: 200px;
-  background-color: black;
-}
 .cornflowerBall {
-  width: 250px;
-  height: 250px;
+  width: 275px;
+  height: 275px;
   background-color: cornflowerblue;
 }
