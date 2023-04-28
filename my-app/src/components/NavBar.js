@@ -6,13 +6,12 @@ const Navbar = () => {
   return (
     <Box bg="black" p={4}>
       <Flex alignItems="center" h="100%" maxH="62px" maxW={"100%"} justifyContent="space-between">
-        <Box h="calc(100% - 6px)" w="auto"  mr={{ base: '4', md: '8' }}>
+        <Box h="100%" w="12%"  mr={{ base: '4', md: '8' }}>
           <Image
             src="/images/KUBC-logo-RGB-1200.png"
             alt="KUBC Logo"
-            h="100%"
             w="auto"
-            maxW="140px"
+            maxW="65%"
           />
         </Box>
         <Flex justifyContent="space-between" flexGrow={1} ml={4} mr={4}>
