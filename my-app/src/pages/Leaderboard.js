@@ -31,7 +31,7 @@ const glassLayerStyle = {
   zIndex: -1,
   borderRadius: 'inherit',
   backdropFilter: 'blur(20px)',
-  backgroundColor: 'rgba(0, 0, 0, .5)',
+  backgroundColor: 'rgba(0, 0, 0, .8)',
 };
 
 const Leaderboard = () => {
@@ -132,7 +132,7 @@ const Leaderboard = () => {
             zIndex={1}
           >
             <div style={glassLayerStyle} />
-            <Table variant="simple" borderCollapse="collapse">
+            <Table variant="simple" className="leaderboard-table">
               <Thead>
                 <Tr>
                   <Th color="ghostwhite">Rank</Th>
@@ -151,7 +151,7 @@ const Leaderboard = () => {
                     <IconButton
                       size="xs"
                       aria-label="Sort by Tasks Completed"
-                      icon={<TriangleDownIcon />}
+                      icon={<TriangleDownIcon color="gray.600" />}
                       onClick={() => handleSort('tasks')}
                     />
                   </Th>
@@ -164,13 +164,16 @@ const Leaderboard = () => {
                     <Tr
                       key={entry.id}
                       fontWeight={medalColor ? 'extrabold' : null}
-                      style={{ borderBottom: index === data.length - 1 ? 'none' : null }}
+                      _last={{ borderBottom: 'none' }}
                     >
-                      <Td style={{ color: medalColor || 'ghostwhite' }}>{index + 1}</Td>
-                      <Td color="ghostwhite">{entry.name}</Td>
-                      <Td style={{ color: medalColor || 'ghostwhite' }}>{entry.kubix}</Td>
-                      <Td style={{ color: medalColor || 'ghostwhite' }}>{entry.tasks}</Td>
+                      <Td borderBottom="none" style={{ color: medalColor || 'ghostwhite' }}>{index + 1}</Td>
+                      <Td borderBottom="none" color="ghostwhite">{entry.name}</Td>
+                      <Td borderBottom="none" style={{ color: medalColor || 'ghostwhite' }}>{entry.kubix}</Td>
+                      <Td borderBottom="none" style={{ color: medalColor || 'ghostwhite' }}>{entry.tasks}</Td>
+
                     </Tr>
+
+
                   );
                 })}
               </Tbody>
