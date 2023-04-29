@@ -167,9 +167,9 @@ const Leaderboard = () => {
                       _last={{ borderBottom: 'none' }}
                     >
                       <Td borderBottom="none" style={{ color: medalColor || 'ghostwhite' }}>{index + 1}</Td>
-                      <Td borderBottom="none" color="ghostwhite">{entry.name}</Td>
-                      <Td borderBottom="none" style={{ color: medalColor || 'ghostwhite' }}>{entry.kubix}</Td>
-                      <Td borderBottom="none" style={{ color: medalColor || 'ghostwhite' }}>{entry.tasks}</Td>
+                    <Td borderBottom="none" color="ghostwhite">{entry.name}</Td>
+                    <Td borderBottom="none" style={{ color: medalColor || 'ghostwhite' }}>{entry.kubix}</Td>
+                    <Td borderBottom="none" style={{ color: medalColor || 'ghostwhite' }}>{entry.tasks}</Td>
 
                     </Tr>
 
