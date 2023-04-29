@@ -19,8 +19,20 @@ import { TriangleDownIcon } from '@chakra-ui/icons';
 import ProjectManagerArtifact from '../abi/ProjectManager.json';
 import { useWeb3Context } from '../contexts/Web3Context';
 
+import '../styles/TaskColumn.module.css';
+
 const provider = new ethers.providers.JsonRpcProvider('https://rpc-mumbai.maticvigil.com/');
 const signer = new ethers.Wallet(process.env.NEXT_PUBLIC_PRIVATE_KEY, provider);
+
+const glassLayerStyle = {
+  position: 'absolute',
+  height: '100%',
+  width: '100%',
+  zIndex: -1,
+  borderRadius: 'inherit',
+  backdropFilter: 'blur(20px)',
+  backgroundColor: 'rgba(0, 0, 0, .8)',
+};
 
 const Leaderboard = () => {
   const { KUBIXbalance } = useWeb3Context();
@@ -101,7 +113,7 @@ const Leaderboard = () => {
   };
 
   return (
-    <Box w="100%" minH="100vh" p={4}>
+    <Box position="relative" w="100%" minH="100vh" p={4} bg="cornflowerblue">
       <VStack spacing={4}>
         <Heading as="h1">Leaderboard</Heading>
         <HStack spacing={4}>
@@ -110,45 +122,63 @@ const Leaderboard = () => {
           <Button onClick={() => handleTimeframeChange('allTime')} isActive={timeframe === 'allTime'}>All Time</Button>
         </HStack>
         <Flex justifyContent="center" alignItems="center">
-          <Table variant="simple">
-            <Thead>
-              <Tr>
-                <Th>Rank</Th>
-                <Th>Name</Th>
-                <Th>
-                  KUBIX
-                  <IconButton
-                    size="xs"
-                    aria-label="Sort by KUBIX"
-                    icon={<TriangleDownIcon />}
-                    onClick={() => handleSort('kubix')}
-                  />
-                </Th>
-                <Th>
-                  Tasks Completed
-                  <IconButton
-                    size="xs"
-                    aria-label="Sort by Tasks Completed"
-                    icon={<TriangleDownIcon />}
-                    onClick={() => handleSort('tasks')}
-                  />
-                </Th>
-              </Tr>
-            </Thead>
-            <Tbody>
-              {data.map((entry, index) => {
-                const medalColor = getMedalColor(index);
-                return (
-                  <Tr key={entry.id} fontWeight={medalColor ? 'extrabold' : null}>
-                    <Td style={{ color: medalColor }}>{index + 1}</Td>
-                    <Td>{entry.name}</Td>
-                    <Td style={{ color: medalColor }}>{entry.kubix}</Td>
-                    <Td style={{ color: medalColor }}>{entry.tasks}</Td>
-                  </Tr>
-                );
-              })}
-            </Tbody>
-          </Table>
+          <Box
+            w="100%"
+            mt="4%"
+            borderRadius="2xl"
+            bg="transparent"
+            boxShadow="lg"
+            position="relative"
+            zIndex={1}
+          >
+            <div style={glassLayerStyle} />
+            <Table variant="simple" className="leaderboard-table">
+              <Thead>
+                <Tr>
+                  <Th color="ghostwhite">Rank</Th>
+                  <Th color="ghostwhite">Name</Th>
+                  <Th color="ghostwhite">
+                    KUBIX
+                    <IconButton
+                      size="xs"
+                      aria-label="Sort by KUBIX"
+                      icon={<TriangleDownIcon color="gray.600" />}
+                      onClick={() => handleSort('kubix')}
+                    />
+                  </Th>
+                  <Th color="ghostwhite">
+                    Tasks Completed
+                    <IconButton
+                      size="xs"
+                      aria-label="Sort by Tasks Completed"
+                      icon={<TriangleDownIcon color="gray.600" />}
+                      onClick={() => handleSort('tasks')}
+                    />
+                  </Th>
+                </Tr>
+              </Thead>
+              <Tbody>
+                {data.map((entry, index) => {
+                  const medalColor = getMedalColor(index);
+                  return (
+                    <Tr
+                      key={entry.id}
+                      fontWeight={medalColor ? 'extrabold' : null}
+                      _last={{ borderBottom: 'none' }}
+                    >
+                      <Td borderBottom="none" style={{ color: medalColor || 'ghostwhite' }}>{index + 1}</Td>
+                      <Td borderBottom="none" color="ghostwhite">{entry.name}</Td>
+                      <Td borderBottom="none" style={{ color: medalColor || 'ghostwhite' }}>{entry.kubix}</Td>
+                      <Td borderBottom="none" style={{ color: medalColor || 'ghostwhite' }}>{entry.tasks}</Td>
+
+                    </Tr>
+
+
+                  );
+                })}
+              </Tbody>
+            </Table>
+          </Box>
         </Flex>
       </VStack>
     </Box>

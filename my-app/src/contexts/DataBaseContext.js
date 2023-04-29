@@ -240,22 +240,30 @@ export const DataBaseProvider = ({ children }) => {
       
       const pushProjectHashes = async (projectHashes, accountsDataHash) => {
         try {
-          if (projectHashes instanceof Array) {
-            for (let i = 0; i < projectHashes.length; i++) {
-              await contract.createProject(projectHashes[i]);
-            }
+          if (projectHashes == ""){
+            await contract.updateAccountsData(accountsDataHash);
 
           }
           else{
-            console.log("projectHashes", projectHashes)
-            await contract.createProject(projectHashes);
-            console.log("check")
+            if (projectHashes instanceof Array) {
+              for (let i = 0; i < projectHashes.length; i++) {
+                await contract.createProject(projectHashes[i]);
+              }
+  
+            }
+            else{
+              console.log("projectHashes", projectHashes)
+              await contract.createProject(projectHashes);
+              console.log("check")
+  
+            }
+            // Update each project hash in the smart contract
+  
+            // Update the accounts data hash in the smart contract
+            await contract.updateAccountsData(accountsDataHash);
 
           }
-          // Update each project hash in the smart contract
 
-          // Update the accounts data hash in the smart contract
-          await contract.updateAccountsData(accountsDataHash);
       
           console.log("Project hashes and accounts data hash pushed successfully.");
         } catch (error) {
