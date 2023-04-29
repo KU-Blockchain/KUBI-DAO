@@ -316,24 +316,25 @@ const User = () => {
           maxWidth="600px"
           bg="transparent"
           position="relative"
-          mr={4}
+          mr={6}
+          p={6}
           zIndex={1}
           mt={4}
         >
-          <div className="glass"  p ={6} style={glassLayerStyle} />
+          <div className="glass" style={glassLayerStyle} />
 
-          <Heading  as="h2" size="lg" mb={6}mt={4}>
+          <Heading  as="h2" size="lg" mb={6}>
             How To Join the DAO
           </Heading>
-          <Text fontSize="xl" ml="5%" mb={4}>1. If you haven't added the polygon Mumbai testnet import it below:</Text>
+          <Text fontSize="xl"  mb={4}>1. If you haven't added the polygon Mumbai testnet import it below:</Text>
           <MumbaiButton />
-          <Text  fontSize="xl" ml="5%" mt={4} mb={4}>2. Get some free testnet MATIC by pasting your wallet adress <Link href="https://faucet.polygon.technology/" isExternal fontWeight="bold" textDecoration="underline" color="blue.500">here</Link></Text>
+          <Text  fontSize="xl" mt={4} mb={4}>2. Get some free testnet MATIC by pasting your wallet adress <Link href="https://faucet.polygon.technology/" isExternal fontWeight="bold" textDecoration="underline" color="blue.500">here</Link></Text>
           <Text fontWeight ="bold" mt= {4}>Wallet Adress for copying:</Text>
           <Text  >{account}</Text>
           <Text  fontSize="xl" mt={4} mb={4}>3. Import the KUBIX coin here:</Text>
           <KubixButton />
-          <Text mt ={4} ml="5%" fontSize="xl" >4. Make sure to switch to the mumbai Network at the top of Metamask </Text>
-          <Text mt ={4} ml="5%" mb="5%" fontSize="xl" >5. Put in your information to the right and confirm the minting transaction on Metamask.</Text>
+          <Text mt ={4}  fontSize="xl" >4. Make sure to switch to the mumbai Network at the top of Metamask </Text>
+          <Text mt ={4}  mb="5%" fontSize="xl" >5. Put in your information to the right and confirm the minting transaction on Metamask.</Text>
         </Box>
         
           <Box
@@ -342,15 +343,19 @@ const User = () => {
             justifyContent="center"
             borderRadius="lg"
             boxShadow="lg"
-            p={6}
             w="100%"
-            maxWidth="600px"
-            bg="gray.50"
+            bg="transparent"
+            position="relative"
+            display="flex"
+            p={6}
+            zIndex={1}
+            ml={6}
           >
-            <Heading as="h2" size="lg" mb={6}>
+             <div className="glass" style={glassLayerStyle} />
+            <Heading as="h2" size="lg" mb={6} mt="4%" >
               Join KUBI DAO
             </Heading>
-            <FormControl id="email">
+            <FormControl id="email" >
               <FormLabel>Email</FormLabel>
               <Input type="email" placeholder="KU Email required" value={email} onChange={(event) => setEmail(event.target.value)} />
             </FormControl>
@@ -362,7 +367,7 @@ const User = () => {
               <FormLabel>Username</FormLabel>
               <Input type="text" placeholder="Username" value={username} onChange={(event) => setUsername(event.target.value)} />
             </FormControl>
-            <Button colorScheme="blue" mt={4} onClick={handleJoin} _hover={{ bg: "blue.600", boxShadow: "md", transform: "scale(1.05)"}}>
+            <Button colorScheme="blue" mt={6} onClick={handleJoin} _hover={{ bg: "blue.600", boxShadow: "md", transform: "scale(1.05)"}}>
               {phrase}
             </Button>
             {showMetaMaskMessage && (
