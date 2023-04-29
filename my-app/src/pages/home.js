@@ -13,12 +13,43 @@ const glassLayerStyle = {
   backgroundColor: 'rgba(0, 0, 0, .6)',
 };
 
+const waveBackgroundStyle = {
+  position: 'absolute',
+  top: 0,
+  left: 0,
+  width: '100%',
+  height: '100%',
+  zIndex: 0,
+};
+
 const Home = () => {
   return (
-    <VStack spacing={10}>
+    <VStack spacing={20} style={{ position: 'relative' }}>
+      
+    <Box style={waveBackgroundStyle}>
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1440 320">
+        <defs>
+          <linearGradient id="waveGradient" x1="0" y1="0" x2="0" y2="100%">
+            <stop offset="0%" stopColor="#cc0000" />
+            <stop offset="100%" stopColor="#6495ED00" />
+          </linearGradient>
+        </defs>
+        <path fill="url(#waveGradient)" d="M0,96L48,117.3C96,139,192,181,288,192C384,203,480,181,576,176C672,171,768,181,864,170.7C960,160,1056,128,1152,133.3C1248,139,1344,181,1392,202.7L1440,224V320H1392C1344,320,1248,320,1152,320C1056,320,960,320,864,320C768,320,672,320,576,320C480,320,384,320,288,320C192,320,96,320,48,320H0Z" />
+      </svg>
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1440 320">
+        <defs>
+          <linearGradient id="waveGradient" x1="0" y1="0" x2="0" y2="100%">
+            <stop offset="0%" stopColor="#cc0000" />
+            <stop offset="100%" stopColor="#6495ED00" />
+          </linearGradient>
+        </defs>
+        <path fill="url(#waveGradient)" d="M0,96L48,117.3C96,139,192,181,288,192C384,203,480,181,576,176C672,171,768,181,864,170.7C960,160,1056,128,1152,133.3C1248,139,1344,181,1392,202.7L1440,224V320H1392C1344,320,1248,320,1152,320C1056,320,960,320,864,320C768,320,672,320,576,320C480,320,384,320,288,320C192,320,96,320,48,320H0Z" />
+      </svg>
+    </Box>
+    
       <Box
         w="60%"
-        mt="4%"
+        mt="10%"
         borderRadius="2xl"
         display="flex"
         flexDirection="column"
