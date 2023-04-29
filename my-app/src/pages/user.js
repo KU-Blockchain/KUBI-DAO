@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import React, { useState, useEffect } from "react";
 import KUBIMembershipNFTArtifact from "../abi/KUBIMembershipNFT.json";
 import ProjectManagerArtifact from "../abi/ProjectManager.json";
 import ExecNFTArtifiact from "../abi/KUBIExecutiveNFT.json";
@@ -8,7 +8,6 @@ import { useWeb3Context } from "@/contexts/Web3Context";
 import { ethers } from "ethers";
 import MumbaiButton from "../components/userPage/importMumbai";
 import { ScaleFade } from "@chakra-ui/react";
-
 
 import {
   Box,
@@ -20,7 +19,8 @@ import {
   useToast,
   Flex,
   Heading,
-  Link
+  Link,
+  VStack,
 } from "@chakra-ui/react";
 
 import KubixButton from "@/components/userPage/KubixButton";
@@ -28,6 +28,15 @@ import DeployMenu from "@/components/userPage/DeployMenu";
 import MintMenu from "@/components/userPage/MintMenu";
 import DataMenu from "@/components/userPage/DataMenu";
 
+const glassLayerStyle = {
+  position: "absolute",
+  height: "100%",
+  width: "100%",
+  zIndex: -1,
+  borderRadius: "inherit",
+  backdropFilter: "blur(20px)",
+  backgroundColor: "rgba(0, 0, 0, .6)",
+};
 
 
 const User = () => {
@@ -288,7 +297,10 @@ const User = () => {
   
   const renderJoinSteps = () => (
     <ScaleFade initialScale={0.8} in={true}>
-    <>
+      <VStack
+        spacing={20}
+        style={{ position: "relative", width: "100%", maxWidth: "1200px" }}
+      >
     {isConnected && !isMember && (
       
       <Flex flexDirection="row" alignItems="center" justifyContent="center">
@@ -298,12 +310,16 @@ const User = () => {
           justifyContent="center"
           borderRadius="lg"
           boxShadow="lg"
-          p={6}
+
           w="100%"
           maxWidth="600px"
-          bg="gray.50"
+          bg="transparent"
+          position="relative"
           mr={4}
+          zIndex={1}
         >
+          <div className="glass"  p ={6} style={glassLayerStyle} />
+
           <Heading as="h2" size="lg" mb={6}>
             How To Join the DAO
           </Heading>
@@ -355,8 +371,8 @@ const User = () => {
           </Flex>
          
         )}
-        </>
-        </ScaleFade>
+      </VStack>
+    </ScaleFade>
    );
   
   const renderDashboard = () => (

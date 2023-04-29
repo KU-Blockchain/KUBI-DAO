@@ -15,19 +15,19 @@ const Navbar = () => {
           />
         </Box>
         <Flex justifyContent="space-between" flexGrow={1} ml={4} mr={4}>
-          <Link as={NextLink} href="/" color="white" fontWeight="extrabold" mx={"2%"}> 
+          <Link as={NextLink} href="/" color="white" fontWeight="extrabold" fontSize="xl" mx={"2%"}> 
             Home
           </Link>
-          <Link as={NextLink} href="/tasks" color="white" fontWeight="extrabold" mx={"2%"}>
+          <Link as={NextLink} href="/tasks" color="white" fontWeight="extrabold" fontSize="xl" mx={"2%"}>
             Tasks
           </Link>
-          <Link as={NextLink} href="/Leaderboard" color="white" fontWeight="extrabold" mx={"2%"}>
+          <Link as={NextLink} href="/Leaderboard" color="white" fontWeight="extrabold" fontSize="xl" mx={"2%"}>
             Leaderboard
           </Link>
-          <Link as={NextLink} href="/voting" color="white" fontWeight="extrabold" mx={"2%"}>
+          <Link as={NextLink} href="/voting" color="white" fontWeight="extrabold"  fontSize="xl" mx={"2%"}>
             Voting
           </Link>
-          <Link as={NextLink} href="/user" color="white" fontWeight="extrabold" mx={"2%"}>
+          <Link as={NextLink} href="/user" color="white" fontWeight="extrabold"  fontSize="xl" mx={"2%"}>
             User
           </Link>
         </Flex>
