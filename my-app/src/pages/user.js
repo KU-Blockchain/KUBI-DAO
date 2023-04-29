@@ -300,6 +300,7 @@ const User = () => {
       <VStack
         spacing={20}
         style={{ position: "relative", width: "100%", maxWidth: "1200px" }}
+        color={"ghostwhite"}
       >
     {isConnected && !isMember && (
       
@@ -310,28 +311,29 @@ const User = () => {
           justifyContent="center"
           borderRadius="lg"
           boxShadow="lg"
-
+          display="flex"
           w="100%"
           maxWidth="600px"
           bg="transparent"
           position="relative"
           mr={4}
           zIndex={1}
+          mt={4}
         >
           <div className="glass"  p ={6} style={glassLayerStyle} />
 
-          <Heading as="h2" size="lg" mb={6}>
+          <Heading  as="h2" size="lg" mb={6}mt={4}>
             How To Join the DAO
           </Heading>
-          <Text fontSize="xl" mb={4}>1. If you haven't added the polygon Mumbai testnet import it below:</Text>
+          <Text fontSize="xl" ml="5%" mb={4}>1. If you haven't added the polygon Mumbai testnet import it below:</Text>
           <MumbaiButton />
-          <Text fontSize="xl" mt={4} mb={4}>2. Get some free testnet MATIC by pasting your wallet adress <Link href="https://faucet.polygon.technology/" isExternal fontWeight="bold" textDecoration="underline" color="blue.500">here</Link></Text>
+          <Text  fontSize="xl" ml="5%" mt={4} mb={4}>2. Get some free testnet MATIC by pasting your wallet adress <Link href="https://faucet.polygon.technology/" isExternal fontWeight="bold" textDecoration="underline" color="blue.500">here</Link></Text>
           <Text fontWeight ="bold" mt= {4}>Wallet Adress for copying:</Text>
-          <Text>{account}</Text>
-          <Text fontSize="xl" mt={4} mb={4}>3. Import the KUBIX coin here:</Text>
+          <Text  >{account}</Text>
+          <Text  fontSize="xl" mt={4} mb={4}>3. Import the KUBIX coin here:</Text>
           <KubixButton />
-          <Text mt ={4} fontSize="xl" >4. Make sure to switch to the mumbai Network at the top of Metamask </Text>
-          <Text mt ={4} fontSize="xl" >5. Put in your information to the right and confirm the minting transaction on Metamask.</Text>
+          <Text mt ={4} ml="5%" fontSize="xl" >4. Make sure to switch to the mumbai Network at the top of Metamask </Text>
+          <Text mt ={4} ml="5%" mb="5%" fontSize="xl" >5. Put in your information to the right and confirm the minting transaction on Metamask.</Text>
         </Box>
         
           <Box
@@ -461,12 +463,11 @@ const User = () => {
       flexDirection="row"
       alignItems="flex-start"
       justifyContent="center"
-      p={6}
-      mt={6}
+      p={8}
       w="100%"
-      maxWidth="1200px"
-      mx="auto"
-      bg="white"
+      h="100%"
+      bg="cornflowerblue"
+      minH="100vh"
     >
       {renderMetamaskMessage()}
       {renderDashboard()}
