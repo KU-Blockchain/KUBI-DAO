@@ -395,8 +395,11 @@ const User = () => {
           p={6}
           w="100%"
           maxWidth="600px"
-          bg="white"
+          bg="transparent"
+          position="relative"
+          display="flex"
         >
+          <div className="glass" style={glassLayerStyle} />
           <Heading as="h2" size="lg" mb={6}>
             KUBI User Dashboard
           </Heading>
@@ -425,8 +428,8 @@ const User = () => {
     <ScaleFade initialScale={0.8} in={true}>
     <>
       {!isConnected && (
-        <Text fontSize="xl" fontWeight="bold" color="red.500">
-          Please refresh with Metamask. If you don't have Metamask, please install it <Link href="https://metamask.io/" isExternal fontWeight="bold" textDecoration="underline" color="blue.500">here</Link>
+        <Text fontSize="3xl" fontWeight="extrabold" color="black" mt="15%">
+          Please refresh with Metamask. If you don't have Metamask, please install it <Link href="https://metamask.io/" isExternal fontWeight="bold" textDecoration="underline" color="ghostwhite">here</Link>
         </Text>
       )}
     </>
@@ -445,8 +448,12 @@ const User = () => {
         ml={4}
         w="100%"
         maxWidth="600px"
-        bg="white"
+        bg="transparent"
+        zIndex={1}
+        position="relative" 
+        display="flex"
       >
+        <div className="glass" style={glassLayerStyle} />
 
         <Heading as="h2" size="lg" mb={6}>
             Developer Menu
