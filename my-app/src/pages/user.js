@@ -398,24 +398,26 @@ const User = () => {
           bg="transparent"
           position="relative"
           display="flex"
+          zIndex={0}
+          color= "ghostwhite"
         >
           <div className="glass" style={glassLayerStyle} />
-          <Heading as="h2" size="lg" mb={6}>
+          <Heading as="h2" size="lg" mb={4}>
             KUBI User Dashboard
           </Heading>
           {web3 && (
-          <Text color="green.500" fontWeight="bold">
+          <Text color="green.400" fontWeight="extrabold">
 
             Wallet Connected
           </Text>
         )}
-        <Text >Username: {userDetails && userDetails.username}</Text>
+        <Text mt={4} fontWeight="extrabold">Username: {userDetails && userDetails.username}</Text>
         <Text mt= {4}>Account:</Text>
         <Text>{account}</Text>
-        <Text mt={4}>KUBI Token Balance: {balance}</Text>
-        <Text>KUBIX Token Balance: {KUBIXbalance}</Text>
-        <Text>Membership NFT Balance: {nftBalance}</Text>
-        <Text>Executive NFT Balance: {execNftBalance}</Text>
+        <Text fontWeight="bold" mt={4}>KUBI Token Balance: {balance}</Text>
+        <Text fontWeight="bold">KUBIX Token Balance: {KUBIXbalance}</Text>
+        <Text fontWeight="bold">Membership NFT Balance: {nftBalance}</Text>
+        <Text fontWeight="bold">Executive NFT Balance: {execNftBalance}</Text>
         
 
         </Flex>
@@ -447,15 +449,16 @@ const User = () => {
         p={6}
         ml={4}
         w="100%"
-        maxWidth="600px"
+        maxWidth="400px"
         bg="transparent"
         zIndex={1}
         position="relative" 
         display="flex"
+        
       >
         <div className="glass" style={glassLayerStyle} />
 
-        <Heading as="h2" size="lg" mb={6}>
+        <Heading color = "ghostwhite" as="h2" size="lg" mb={6}>
             Developer Menu
         </Heading>
 
