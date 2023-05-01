@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import React, { useState, useEffect } from "react";
 import KUBIMembershipNFTArtifact from "../abi/KUBIMembershipNFT.json";
 import ProjectManagerArtifact from "../abi/ProjectManager.json";
 import ExecNFTArtifiact from "../abi/KUBIExecutiveNFT.json";
@@ -8,7 +8,6 @@ import { useWeb3Context } from "@/contexts/Web3Context";
 import { ethers } from "ethers";
 import MumbaiButton from "../components/userPage/importMumbai";
 import { ScaleFade } from "@chakra-ui/react";
-
 
 import {
   Box,
@@ -20,7 +19,8 @@ import {
   useToast,
   Flex,
   Heading,
-  Link
+  Link,
+  VStack,
 } from "@chakra-ui/react";
 
 import KubixButton from "@/components/userPage/KubixButton";
@@ -28,6 +28,15 @@ import DeployMenu from "@/components/userPage/DeployMenu";
 import MintMenu from "@/components/userPage/MintMenu";
 import DataMenu from "@/components/userPage/DataMenu";
 
+const glassLayerStyle = {
+  position: "absolute",
+  height: "100%",
+  width: "100%",
+  zIndex: -1,
+  borderRadius: "inherit",
+  backdropFilter: "blur(20px)",
+  backgroundColor: "rgba(0, 0, 0, .6)",
+};
 
 
 const User = () => {
@@ -288,7 +297,11 @@ const User = () => {
   
   const renderJoinSteps = () => (
     <ScaleFade initialScale={0.8} in={true}>
-    <>
+      <VStack
+        spacing={20}
+        style={{ position: "relative", width: "100%", maxWidth: "1200px" }}
+        color={"ghostwhite"}
+      >
     {isConnected && !isMember && (
       
       <Flex flexDirection="row" alignItems="center" justifyContent="center">
@@ -298,24 +311,30 @@ const User = () => {
           justifyContent="center"
           borderRadius="lg"
           boxShadow="lg"
-          p={6}
+          display="flex"
           w="100%"
           maxWidth="600px"
-          bg="gray.50"
-          mr={4}
+          bg="transparent"
+          position="relative"
+          mr={6}
+          p={6}
+          zIndex={1}
+          mt={4}
         >
-          <Heading as="h2" size="lg" mb={6}>
+          <div className="glass" style={glassLayerStyle} />
+
+          <Heading  as="h2" size="lg" mb={6}>
             How To Join the DAO
           </Heading>
-          <Text fontSize="xl" mb={4}>1. If you haven't added the polygon Mumbai testnet import it below:</Text>
+          <Text fontSize="xl"  mb={4}>1. If you haven't added the polygon Mumbai testnet import it below:</Text>
           <MumbaiButton />
-          <Text fontSize="xl" mt={4} mb={4}>2. Get some free testnet MATIC by pasting your wallet adress <Link href="https://faucet.polygon.technology/" isExternal fontWeight="bold" textDecoration="underline" color="blue.500">here</Link></Text>
+          <Text  fontSize="xl" mt={4} mb={4}>2. Get some free testnet MATIC by pasting your wallet adress <Link href="https://faucet.polygon.technology/" isExternal fontWeight="bold" textDecoration="underline" color="blue.500">here</Link></Text>
           <Text fontWeight ="bold" mt= {4}>Wallet Adress for copying:</Text>
-          <Text>{account}</Text>
-          <Text fontSize="xl" mt={4} mb={4}>3. Import the KUBIX coin here:</Text>
+          <Text  >{account}</Text>
+          <Text  fontSize="xl" mt={4} mb={4}>3. Import the KUBIX coin here:</Text>
           <KubixButton />
-          <Text mt ={4} fontSize="xl" >4. Make sure to switch to the mumbai Network at the top of Metamask </Text>
-          <Text mt ={4} fontSize="xl" >5. Put in your information to the right and confirm the minting transaction on Metamask.</Text>
+          <Text mt ={4}  fontSize="xl" >4. Make sure to switch to the mumbai Network at the top of Metamask </Text>
+          <Text mt ={4}  mb="5%" fontSize="xl" >5. Put in your information to the right and confirm the minting transaction on Metamask.</Text>
         </Box>
         
           <Box
@@ -324,15 +343,19 @@ const User = () => {
             justifyContent="center"
             borderRadius="lg"
             boxShadow="lg"
-            p={6}
             w="100%"
-            maxWidth="600px"
-            bg="gray.50"
+            bg="transparent"
+            position="relative"
+            display="flex"
+            p={6}
+            zIndex={1}
+            ml={6}
           >
-            <Heading as="h2" size="lg" mb={6}>
+             <div className="glass" style={glassLayerStyle} />
+            <Heading as="h2" size="lg" mb={6} mt="4%" >
               Join KUBI DAO
             </Heading>
-            <FormControl id="email">
+            <FormControl id="email" >
               <FormLabel>Email</FormLabel>
               <Input type="email" placeholder="KU Email required" value={email} onChange={(event) => setEmail(event.target.value)} />
             </FormControl>
@@ -344,7 +367,7 @@ const User = () => {
               <FormLabel>Username</FormLabel>
               <Input type="text" placeholder="Username" value={username} onChange={(event) => setUsername(event.target.value)} />
             </FormControl>
-            <Button colorScheme="blue" mt={4} onClick={handleJoin} _hover={{ bg: "blue.600", boxShadow: "md", transform: "scale(1.05)"}}>
+            <Button colorScheme="blue" mt={6} onClick={handleJoin} _hover={{ bg: "blue.600", boxShadow: "md", transform: "scale(1.05)"}}>
               {phrase}
             </Button>
             {showMetaMaskMessage && (
@@ -355,8 +378,8 @@ const User = () => {
           </Flex>
          
         )}
-        </>
-        </ScaleFade>
+      </VStack>
+    </ScaleFade>
    );
   
   const renderDashboard = () => (
@@ -372,24 +395,29 @@ const User = () => {
           p={6}
           w="100%"
           maxWidth="600px"
-          bg="white"
+          bg="transparent"
+          position="relative"
+          display="flex"
+          zIndex={0}
+          color= "ghostwhite"
         >
-          <Heading as="h2" size="lg" mb={6}>
+          <div className="glass" style={glassLayerStyle} />
+          <Heading as="h2" size="lg" mb={4}>
             KUBI User Dashboard
           </Heading>
           {web3 && (
-          <Text color="green.500" fontWeight="bold">
+          <Text color="green.400" fontWeight="extrabold">
 
             Wallet Connected
           </Text>
         )}
-        <Text >Username: {userDetails && userDetails.username}</Text>
+        <Text mt={4} fontWeight="extrabold">Username: {userDetails && userDetails.username}</Text>
         <Text mt= {4}>Account:</Text>
         <Text>{account}</Text>
-        <Text mt={4}>KUBI Token Balance: {balance}</Text>
-        <Text>KUBIX Token Balance: {KUBIXbalance}</Text>
-        <Text>Membership NFT Balance: {nftBalance}</Text>
-        <Text>Executive NFT Balance: {execNftBalance}</Text>
+        <Text fontWeight="bold" mt={4}>KUBI Token Balance: {balance}</Text>
+        <Text fontWeight="bold">KUBIX Token Balance: {KUBIXbalance}</Text>
+        <Text fontWeight="bold">Membership NFT Balance: {nftBalance}</Text>
+        <Text fontWeight="bold">Executive NFT Balance: {execNftBalance}</Text>
         
 
         </Flex>
@@ -402,8 +430,8 @@ const User = () => {
     <ScaleFade initialScale={0.8} in={true}>
     <>
       {!isConnected && (
-        <Text fontSize="xl" fontWeight="bold" color="red.500">
-          Please refresh with Metamask. If you don't have Metamask, please install it <Link href="https://metamask.io/" isExternal fontWeight="bold" textDecoration="underline" color="blue.500">here</Link>
+        <Text fontSize="3xl" fontWeight="extrabold" color="black" mt="15%">
+          Please refresh with Metamask. If you don't have Metamask, please install it <Link href="https://metamask.io/" isExternal fontWeight="bold" textDecoration="underline" color="ghostwhite">here</Link>
         </Text>
       )}
     </>
@@ -421,11 +449,16 @@ const User = () => {
         p={6}
         ml={4}
         w="100%"
-        maxWidth="600px"
-        bg="white"
+        maxWidth="400px"
+        bg="transparent"
+        zIndex={1}
+        position="relative" 
+        display="flex"
+        
       >
+        <div className="glass" style={glassLayerStyle} />
 
-        <Heading as="h2" size="lg" mb={6}>
+        <Heading color = "ghostwhite" as="h2" size="lg" mb={6}>
             Developer Menu
         </Heading>
 
@@ -445,12 +478,11 @@ const User = () => {
       flexDirection="row"
       alignItems="flex-start"
       justifyContent="center"
-      p={6}
-      mt={6}
+      p={8}
       w="100%"
-      maxWidth="1200px"
-      mx="auto"
-      bg="white"
+      h="100%"
+      bg="cornflowerblue"
+      minH="100vh"
     >
       {renderMetamaskMessage()}
       {renderDashboard()}
