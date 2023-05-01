@@ -89,63 +89,7 @@ const User = () => {
 
     checkConnection();
   }, [web3, account, hasMemberNFT]);
-  
 
-
-  const deployPMContract = async () => {
-    if (!web3 || !account) return;
-  
-    const projectManagerContract = new web3.eth.Contract(ProjectManagerArtifact.abi);
-    const deployOptions = {
-      data: ProjectManagerArtifact.bytecode,
-      arguments: [],
-    };
-  
-    try {
-      const instance = await projectManagerContract.deploy(deployOptions).send({ from: account });
-      setDeployedPMContract(instance);
-      console.log("Contract deployed at address:", instance.options.address);
-    } catch (error) {
-      console.error("Error deploying contract:", error);
-    }
-  };
-  
-  const deployKUBIContract = async () => {
-    if (!web3 || !account) return;
-  
-    const KUBIContract = new web3.eth.Contract(ExecNFTArtifiact.abi);
-    const deployOptions = {
-      data: ExecNFTArtifiact.bytecode,
-      arguments: ["https://ipfs.io/ipfs/QmXrAL39tPc8wWhvuDNNp9rbaWwHPnHhZC28npMGVJvm3N"
-    ],
-    };
-  
-    try {
-      const instance = await KUBIContract.deploy(deployOptions).send({ from: account });
-      setDeployedKUBIContract(instance);
-      console.log("Contract deployed at address:", instance.options.address);
-    } catch (error) {
-      console.error("Error deploying contract:", error);
-    }
-  };
-
-  const deployKUBIXContract = async () => {
-    if (!web3 || !account) return;
-  
-    
-    const deployOptions = {
-      data: KUBIXArtifact.bytecode,
-      arguments: [],
-    };
-  
-    try {
-      const instance = await KUBIXcontract.deploy(deployOptions).send({ from: account });
-      setDeployedKUBIXContract(instance);
-      console.log("Contract deployed at address:", instance.options.address);
-    } catch (error) {
-      console.error("Error deploying contract:", error);
-    }
-  };
 
 
 
