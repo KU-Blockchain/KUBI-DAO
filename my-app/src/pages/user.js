@@ -406,7 +406,7 @@ const User = () => {
             Developer Menu
         </Heading>
 
-        <DeployMenu deployPMContract={deployPMContract} deployKUBIContract= {deployKUBIContract} deployKUBIXContract= {deployKUBIXContract}/ >
+        <DeployMenu / >
         <MintMenu />
         <DataMenu />
       </Flex>

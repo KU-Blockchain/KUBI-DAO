@@ -8,13 +8,16 @@ import { useWeb3Context } from "@/contexts/Web3Context";
 import ProjectManagerArtifact from "../../abi/ProjectManager.json";
 import ExecNFTArtifiact from "../../abi/KUBIExecutiveNFT.json";
 import KUBIXArtifact from "../../abi/KUBIX.json";
+import KubixVotingArtifact from "../../abi/KubixVoting.json";
 //add in deployed contract adress pop up
 const DeployMenu = () => {
   const [showDeployMenu, setShowDeployMenu] = useState(false);
   const [deployedPMContract, setDeployedPMContract] = useState(null);
   const [deployedKUBIContract, setDeployedKUBIContract] = useState(null);
   const [deployedKUBIXContract, setDeployedKUBIXContract] = useState(null);
+  const [deployedKubixVotingContract, setDeployedKubixVotingContract] = useState(null);
 
+  const KUBIXcontractAddress = "0x894158b1f988602b228E39a633C7A2458A82028A"
 
   const { web3, account } = useWeb3Context();
 
@@ -73,6 +76,25 @@ const DeployMenu = () => {
     }
   };
 
+  const deployKubixVotingContract = async () => {
+    if (!web3 || !account) return;
+  
+    const kubixVotingContract = new web3.eth.Contract(KubixVotingArtifact.abi);
+    const deployOptions = {
+      data: KubixVotingArtifact.bytecode,
+      arguments: [KUBIXcontractAddress, account],
+    };
+  
+    try {
+      const instance = await kubixVotingContract.deploy(deployOptions).send({ from: account });
+      setDeployedKubixVotingContract(instance);
+      console.log("Contract deployed at address:", instance.options.address);
+    } catch (error) {
+      console.error("Error deploying contract:", error);
+    }
+  };
+  
+
   return (
     <VStack spacing={4}>
       <Button  colorScheme="orange" onClick={() => setShowDeployMenu(!showDeployMenu)} _hover={{ bg: "orange.600", boxShadow: "md", transform: "scale(1.05)"}}>
@@ -89,6 +111,18 @@ const DeployMenu = () => {
           <Button  colorScheme="teal" onClick={deployKUBIXContract} _hover={{ bg: "teal.600", boxShadow: "md", transform: "scale(1.05)"}}>
             Deploy KUBIX token Contract
           </Button>
+          <Button
+            colorScheme="teal"
+            onClick={deployKubixVotingContract}
+            _hover={{
+              bg: "teal.600",
+              boxShadow: "md",
+              transform: "scale(1.05)",
+            }}
+          >
+            Deploy KubixVoting Contract
+          </Button>
+
         </>
       )}
     </VStack>
