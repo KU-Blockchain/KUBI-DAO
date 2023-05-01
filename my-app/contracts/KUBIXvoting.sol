@@ -32,23 +32,33 @@ contract KubixVoting {
         _;
     }
 
-    function createProposal(
-        string memory _name,
-        string memory _description,
-        string memory _execution,
-        bool _isPoll,
-        uint256 _maxBalance,
-        uint256 _minBalance
-    ) external onlyDAO {
-        require(_minBalance > 0, "Min balance must be greater than 0");
-        require(_maxBalance > _minBalance, "Max balance must be greater than min balance");
+function createProposal(
+    string memory _name,
+    string memory _description,
+    string memory _execution,
+    bool _isPoll,
+    uint256 _maxBalance,
+    uint256 _minBalance
+) external onlyDAO {
+    require(_minBalance > 0, "Min balance must be greater than 0");
+    require(_maxBalance > _minBalance, "Max balance must be greater than min balance");
 
-        uint256 newId = proposals.length;
-        proposals.push(
-            Proposal(_name, _description, _execution, 0, _isPoll, _maxBalance, _minBalance)
-        );
-        emit NewProposal(newId, _name, _isPoll);
-    }
+    uint256 newId = proposals.length;
+
+    proposals.push();
+    Proposal storage newProposal = proposals[newId];
+    newProposal.name = _name;
+    newProposal.description = _description;
+    newProposal.execution = _execution;
+    newProposal.totalVotes = 0;
+    newProposal.isPoll = _isPoll;
+    newProposal.maxBalance = _maxBalance;
+    newProposal.minBalance = _minBalance;
+
+    emit NewProposal(newId, _name, _isPoll);
+}
+
+
 
 
     function vote(uint256 _proposalId, address _voter) external {
