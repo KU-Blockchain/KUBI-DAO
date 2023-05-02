@@ -15,9 +15,18 @@ import {
   Button,
   Collapse,
 } from '@chakra-ui/react';
+import { ethers } from 'ethers';
+import KubixVotingABI from '../abi/KubixVoting.json';
+import { useDataBaseContext } from '@/contexts/DataBaseContext';
+
+const provider = new ethers.providers.JsonRpcProvider('https://rpc-mumbai.maticvigil.com/');
+const signer = new ethers.Wallet(process.env.NEXT_PUBLIC_PRIVATE_KEY, provider);
+const contract = new ethers.Contract('0x6e30E170cDC9Cde0D02De181366EbD8A8A786415', KubixVotingABI, signer);
 
 const Voting = () => {
-  const [proposal, setProposal] = useState({ name: '', description: '', execution: '' });
+  const { findMinMaxKubixBalance } = useDataBaseContext();
+
+  const [proposal, setProposal] = useState({ name: '', description: '', execution: '', time: 0, options: [] });
   const [selectedTab, setSelectedTab] = useState(0);
   const [showCreateVote, setShowCreateVote] = useState(false);
   const [showCreatePoll, setShowCreatePoll] = useState(false);
@@ -35,6 +44,15 @@ const Voting = () => {
 
   const handleTabsChange = (index) => {
     setSelectedTab(index);
+  };
+
+  const createProposal = async () => {
+    //find max and min KUBIX balance
+    const balances = await findMinMaxKubixBalance();
+    // Call createProposal function from the contract
+    const tx = await contract.createProposal(proposal.name, proposal.description, proposal.execution, balances.maxBalance, balances.minBalance, proposal.time, proposal.options);
+    await tx.wait();
+    // Refresh proposal list or handle UI updates here
   };
 
   return (

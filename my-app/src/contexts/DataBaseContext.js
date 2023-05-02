@@ -299,6 +299,37 @@ export const DataBaseProvider = ({ children }) => {
     
         setProjects(newProjects);
       };
+
+      const findMinMaxKubixBalance = async () => {
+        // Fetch the accounts data IPFS hash from the smart contract
+        const accountsDataIpfsHash = await contract.accountsDataIpfsHash();
+        let accountsDataJson = {};
+      
+        // If the IPFS hash is not empty, fetch the JSON data
+        if (accountsDataIpfsHash !== '') {
+          accountsDataJson = await (await fetch(`https://ipfs.io/ipfs/${accountsDataIpfsHash}`)).json();
+        }
+      
+        // Initialize variables to store the min and max balances
+        let minBalance = Infinity;
+        let maxBalance = 0;
+      
+        // Loop through the accounts data and compare the Kubix balances
+        for (const accountData of Object.values(accountsDataJson)) {
+          const balance = parseFloat(accountData.balance);
+      
+          if (balance < minBalance) {
+            minBalance = balance;
+          }
+          if (balance > maxBalance) {
+            maxBalance = balance;
+          }
+        }
+      
+        // Return the min and max balances
+        return { minBalance, maxBalance };
+      };
+      
     
     
       
@@ -320,6 +351,7 @@ export const DataBaseProvider = ({ children }) => {
             clearData,
             pushProjectHashes,
             handleDeleteProject,
+            findMinMaxKubixBalance,
         }}
         >
         {children}
