@@ -316,19 +316,24 @@ export const DataBaseProvider = ({ children }) => {
       
         // Loop through the accounts data and compare the Kubix balances
         for (const accountData of Object.values(accountsDataJson)) {
-          const balance = parseFloat(accountData.balance);
+          const balance = parseFloat(accountData.kubixBalance);
+          console.log("balance", balance)
       
-          if (balance < minBalance) {
-            minBalance = balance;
-          }
-          if (balance > maxBalance) {
-            maxBalance = balance;
+          // Check if the balance is valid before making comparisons
+          if (!isNaN(balance)&& balance !== 0) {
+            if (balance < minBalance) {
+              minBalance = balance;
+            }
+            if (balance > maxBalance) {
+              maxBalance = balance;
+            }
           }
         }
       
         // Return the min and max balances
         return { minBalance, maxBalance };
       };
+      
       
     
     
