@@ -82,7 +82,7 @@ contract KubixVoting {
 
         uint256 balance = kubixToken.balanceOf(_voter);
         require(balance > 0, "No KUBIX tokens");
-        
+
         if (balance > proposal.maxBalance) {
             balance = proposal.maxBalance;
         }
@@ -117,4 +117,9 @@ contract KubixVoting {
 
         return proposal.options[winningOptionIndex].optionName;
     }
+
+    function proposalsCount() public view returns (uint256) {
+        return proposals.length;
+    }
+
 }

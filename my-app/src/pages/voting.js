@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   Box,
   VStack,
@@ -31,7 +31,28 @@ const Voting = () => {
   const [selectedTab, setSelectedTab] = useState(0);
   const [showCreateVote, setShowCreateVote] = useState(false);
   const [showCreatePoll, setShowCreatePoll] = useState(false);
+  const [ongoingPolls, setOngoingPolls] = useState([]);
   const toast = useToast();
+
+  const fetchOngoingPolls = async () => {
+    try {
+      const pollCount = await contract.proposalsCount();
+      const polls = [];
+
+      for (let i = 0; i < pollCount; i++) {
+        const poll = await contract.proposals(i);
+        polls.push(poll);
+      }
+
+      setOngoingPolls(polls);
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
+  useEffect(() => {
+    fetchOngoingPolls();
+  }, []);
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
@@ -149,7 +170,13 @@ const Voting = () => {
               {/* Ongoing Polls */}
               <VStack spacing={4}>
                 <Heading size="md">Ongoing Polls</Heading>
-                {/* List ongoing polls here */}
+                {/* Step 4: Display ongoing polls in the Ongoing Polls section. */}
+                {ongoingPolls.map((poll, index) => (
+                  <Box key={index} borderWidth={1} borderRadius="lg" p={4}>
+                    <Text fontWeight="bold">{poll.name}</Text>
+                    <Text>{poll.description}</Text>
+                  </Box>
+                ))}
               </VStack>
               <Button onClick={() => setShowCreatePoll(!showCreatePoll)} mt={4}>
                 {showCreatePoll ? 'Hide Create Poll Form' : 'Create Poll'}
