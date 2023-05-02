@@ -18,10 +18,11 @@ import {
 import { ethers } from 'ethers';
 import KubixVotingABI from '../abi/KubixVoting.json';
 import { useDataBaseContext } from '@/contexts/DataBaseContext';
+import { useToast } from '@chakra-ui/react';
 
 const provider = new ethers.providers.JsonRpcProvider('https://rpc-mumbai.maticvigil.com/');
 const signer = new ethers.Wallet(process.env.NEXT_PUBLIC_PRIVATE_KEY, provider);
-const contract = new ethers.Contract('0x6e30E170cDC9Cde0D02De181366EbD8A8A786415', KubixVotingABI, signer);
+const contract = new ethers.Contract('0x6e30E170cDC9Cde0D02De181366EbD8A8A786415', KubixVotingABI.abi, signer);
 
 const Voting = () => {
   const { findMinMaxKubixBalance } = useDataBaseContext();
@@ -30,30 +31,62 @@ const Voting = () => {
   const [selectedTab, setSelectedTab] = useState(0);
   const [showCreateVote, setShowCreateVote] = useState(false);
   const [showCreatePoll, setShowCreatePoll] = useState(false);
+  const toast = useToast();
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
     setProposal({ ...proposal, [name]: value });
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    // Submit the proposal here
-    console.log(proposal);
+    try {
+
+      await createPoll();
+      toast({
+        title: 'Poll created successfully',
+        description: 'Your poll has been created.',
+        status: 'success',
+        duration: 3000,
+        isClosable: true,
+      });
+      // Reset the form
+      setProposal({ name: '', description: '', execution: '', time: 0, options: [] });
+      setShowCreatePoll(false);
+    } catch (error) {
+      console.error(error);
+      toast({
+        title: 'Error creating poll',
+        description: 'There was an error creating the poll. Please try again.',
+        status: 'error',
+        duration: 3000,
+        isClosable: true,
+      });
+    }
   };
 
   const handleTabsChange = (index) => {
     setSelectedTab(index);
   };
 
-  const createProposal = async () => {
+  const createPoll = async () => {
     //find max and min KUBIX balance
+
     const balances = await findMinMaxKubixBalance();
+    console.log('proposal:', proposal);
+    console.log('balances:', balances);
+
     // Call createProposal function from the contract
     const tx = await contract.createProposal(proposal.name, proposal.description, proposal.execution, balances.maxBalance, balances.minBalance, proposal.time, proposal.options);
     await tx.wait();
     // Refresh proposal list or handle UI updates here
   };
+
+  const handleOptionsChange = (e) => {
+    const options = e.target.value.split(', ');
+    setProposal({ ...proposal, options });
+  };
+  
 
   return (
     <Box>
@@ -141,6 +174,35 @@ const Voting = () => {
                       name="description"
                       value={proposal.description}
                       onChange={handleInputChange}
+                      required
+                    />
+                  </FormControl>
+                  <FormControl>
+                    <FormLabel>Execution</FormLabel>
+                    <Textarea
+                      name="execution"
+                      value={proposal.execution}
+                      onChange={handleInputChange}
+                      required
+                    />
+                  </FormControl>
+                  <FormControl>
+                    <FormLabel>Time</FormLabel>
+                    <Input
+                      type="number"
+                      name="time"
+                      value={proposal.time}
+                      onChange={handleInputChange}
+                      required
+                    />
+                  </FormControl>
+                  <FormControl>
+                    <FormLabel>Options</FormLabel>
+                    <Textarea
+                      name="options"
+                      value={proposal.options.join(', ')}
+                      onChange={handleOptionsChange}
+                      placeholder="Option 1, Option 2, Option 3"
                       required
                     />
                   </FormControl>
