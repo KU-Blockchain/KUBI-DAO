@@ -14,6 +14,7 @@ import {
   Textarea,
   Button,
   Collapse,
+  Text,
 } from '@chakra-ui/react';
 import { ethers } from 'ethers';
 import KubixVotingABI from '../abi/KubixVoting.json';
@@ -22,7 +23,7 @@ import { useToast } from '@chakra-ui/react';
 
 const provider = new ethers.providers.JsonRpcProvider('https://rpc-mumbai.maticvigil.com/');
 const signer = new ethers.Wallet(process.env.NEXT_PUBLIC_PRIVATE_KEY, provider);
-const contract = new ethers.Contract('0x6e30E170cDC9Cde0D02De181366EbD8A8A786415', KubixVotingABI.abi, signer);
+const contract = new ethers.Contract('0xAc143CD035749dbFaA31A16dbDE8e0C78b4f0Ecc', KubixVotingABI.abi, signer);
 
 const Voting = () => {
   const { findMinMaxKubixBalance } = useDataBaseContext();
@@ -175,6 +176,10 @@ const Voting = () => {
                   <Box key={index} borderWidth={1} borderRadius="lg" p={4}>
                     <Text fontWeight="bold">{poll.name}</Text>
                     <Text>{poll.description}</Text>
+                    <Text>{poll.execution}</Text>
+                    <Text>Time: {}</Text>
+                    <Text>Options: {}</Text>
+                    <Text>Min Balance: {}</Text>
                   </Box>
                 ))}
               </VStack>
