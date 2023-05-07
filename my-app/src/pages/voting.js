@@ -35,8 +35,29 @@ const Voting = () => {
   const [showCreatePoll, setShowCreatePoll] = useState(false);
   const [ongoingPolls, setOngoingPolls] = useState([]);
   const [blockTimestamp, setBlockTimestamp] = useState(0);
+  const [completedPolls, setCompletedPolls] = useState([]);
+
 
   const toast = useToast();
+
+  const fetchCompletedPolls = async () => {
+    try {
+      const completedPollsCount = await contract.completedProposalsCount();
+      const polls = [];
+  
+      for (let i = 0; i < completedPollsCount; i++) {
+        const completedProposalIndex = await contract.completedProposalIndices(i);
+        const poll = await contract.activeProposals(completedProposalIndex);
+        polls.push(poll);
+      }
+  
+      setCompletedPolls(polls);
+    } catch (error) {
+      console.error(error);
+    }
+  };
+  
+  
 
   const fetchOngoingPolls = async () => {
     try {
@@ -45,12 +66,12 @@ const Voting = () => {
       console.log(pollCount);
       const polls = [];
   
-      for (let i = 0; i < pollCount; i++) {
+      for (let i = 1; i <= pollCount; i++) {
         const poll = await contract.activeProposals(i);
 
         polls.push(poll);
       }
-  
+      console.log(polls)
       setOngoingPolls(polls);
     } catch (error) {
       console.error(error);
@@ -60,6 +81,7 @@ const Voting = () => {
 
   useEffect(() => {
     fetchOngoingPolls();
+    fetchCompletedPolls();
   }, []);
 
   const handleInputChange = (e) => {
@@ -125,16 +147,6 @@ const Voting = () => {
     fetchBlockTimestamp();
   }, []);
   
-  const ongoingPollsOnly = (polls) => {
-    return polls.filter((poll) => {
-      console.log(`Poll creationTimestamp: ${poll.creationTimestamp}`);
-      console.log(`Block timestamp: ${blockTimestamp}`);
-      console.log(`Poll timeInMinutes: ${poll.timeInMinutes}`);
-      console.log(`Poll time plus minutes: ${Number(poll.creationTimestamp) + Number(poll.timeInMinutes * 60)}`);
-
-      return blockTimestamp <= Number(poll.creationTimestamp) + Number(poll.timeInMinutes) * 60;
-    });
-  };
   
 
   return (
@@ -199,7 +211,7 @@ const Voting = () => {
               <VStack spacing={4}>
                 <Heading size="md">Ongoing Polls</Heading>
                 {/* Step 4: Display ongoing polls in the Ongoing Polls section. */}
-                {ongoingPollsOnly(ongoingPolls).map((poll, index) => (
+                {(ongoingPolls).map((poll, index) => (
                   <Box key={index} borderWidth={1} borderRadius="lg" p={4}>
                     <Text fontWeight="bold">{poll.name}</Text>
                     <Text>{poll.description}</Text>
@@ -275,7 +287,16 @@ const Voting = () => {
         </Tabs>
         <VStack>
           <Heading size="md">History</Heading>
-          {/* List completed votes and polls here */}
+          {completedPolls.map((poll, index) => (
+            <Box key={index} borderWidth={1} borderRadius="lg" p={4}>
+              <Text fontWeight="bold">{poll.name}</Text>
+              <Text>{poll.description}</Text>
+              <Text>{poll.execution}</Text>
+              <Text>Time: {}</Text>
+              <Text>Options: {}</Text>
+              <Text>Min Balance: {}</Text>
+            </Box>
+          ))}
         </VStack>
       </VStack>
     </Box>
