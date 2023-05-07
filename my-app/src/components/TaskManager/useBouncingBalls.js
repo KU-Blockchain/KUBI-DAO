@@ -36,7 +36,7 @@ const useBouncingBalls = (containerRef) => {
     let lastTime = 0;
 
     const updatePositions = (time) => {
-      if (time - lastTime > 1000 / 60) { // Throttle to 60fps
+      if (time - lastTime > 1000 / 15) { // Throttle to 60fps
         balls.current.forEach((ball) => updateBallPosition(ball, containerRect));
         setRender({}); // Trigger a re-render
         lastTime = time;
