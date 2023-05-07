@@ -24,7 +24,7 @@ import { useToast } from '@chakra-ui/react';
 
 const provider = new ethers.providers.JsonRpcProvider('https://rpc-mumbai.maticvigil.com/');
 const signer = new ethers.Wallet(process.env.NEXT_PUBLIC_PRIVATE_KEY, provider);
-const contract = new ethers.Contract('0xAc143CD035749dbFaA31A16dbDE8e0C78b4f0Ecc', KubixVotingABI.abi, signer);
+const contract = new ethers.Contract('0xA452AD1472112994Be60c3245582D907CB49c537', KubixVotingABI.abi, signer);
 
 const Voting = () => {
   const { findMinMaxKubixBalance } = useDataBaseContext();
@@ -40,7 +40,9 @@ const Voting = () => {
 
   const fetchOngoingPolls = async () => {
     try {
-      const pollCount = await contract.proposalsCount();
+      await contract.moveToCompleted();
+      const pollCount = await contract.activeProposalsCount();
+      console.log(pollCount)
       const polls = [];
 
       for (let i = 0; i < pollCount; i++) {

@@ -141,7 +141,7 @@ contract KubixVoting {
         return proposal.options[winningOptionIndex].optionName;
     }
 
-    function moveToCompleted() internal onlyDAO {
+    function moveToCompleted() public onlyDAO {
         uint256 i = 1; // Start from 1 because 0 is a dummy value
         while (i < activeProposalIndices.length) {
             uint256 proposalId = activeProposalIndices[i];
@@ -160,8 +160,7 @@ contract KubixVoting {
         }
     }
 
-    function activeProposalsCount() public returns (uint256) {
-        moveToCompleted();
+    function activeProposalsCount() public view returns (uint256) {
         return activeProposalIndices.length - 1; // Subtract 1 because of the dummy value
     }
 
