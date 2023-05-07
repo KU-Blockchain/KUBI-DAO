@@ -892,8 +892,8 @@
       ]
     },
     "/Users/hudsonheadley/Desktop/Code/DAO2/my-app/contracts/KUBIXvoting.sol": {
-      "lastModificationDate": 1683060009407,
-      "contentHash": "7e085bf36d82754641a1bde272b1a2d4",
+      "lastModificationDate": 1683495410412,
+      "contentHash": "53f45025b311c820c697f3b943fd2d71",
       "sourceName": "contracts/KUBIXvoting.sol",
       "solcConfig": {
         "version": "0.8.18",
@@ -919,13 +919,49 @@
         }
       },
       "imports": [
-        "@openzeppelin/contracts/token/ERC20/IERC20.sol"
+        "@openzeppelin/contracts/token/ERC20/IERC20.sol",
+        "@openzeppelin/contracts/utils/math/SafeMath.sol"
       ],
       "versionPragmas": [
         "^0.8.0"
       ],
       "artifacts": [
         "KubixVoting"
+      ]
+    },
+    "/Users/hudsonheadley/Desktop/Code/DAO2/my-app/node_modules/@openzeppelin/contracts/utils/math/SafeMath.sol": {
+      "lastModificationDate": 1681865361400,
+      "contentHash": "2337f0279507b5edf14a07067adf0d05",
+      "sourceName": "@openzeppelin/contracts/utils/math/SafeMath.sol",
+      "solcConfig": {
+        "version": "0.8.18",
+        "settings": {
+          "optimizer": {
+            "enabled": false,
+            "runs": 200
+          },
+          "outputSelection": {
+            "*": {
+              "*": [
+                "abi",
+                "evm.bytecode",
+                "evm.deployedBytecode",
+                "evm.methodIdentifiers",
+                "metadata"
+              ],
+              "": [
+                "ast"
+              ]
+            }
+          }
+        }
+      },
+      "imports": [],
+      "versionPragmas": [
+        "^0.8.0"
+      ],
+      "artifacts": [
+        "SafeMath"
       ]
     }
   }
