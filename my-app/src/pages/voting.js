@@ -15,6 +15,17 @@ import {
   Button,
   Collapse,
   Text,
+  Modal,
+  ModalOverlay,
+  ModalContent,
+  ModalHeader,
+  ModalCloseButton,
+  ModalBody,
+  ModalFooter,
+  useDisclosure,
+  Radio,
+  RadioGroup,
+  Stack,
 } from '@chakra-ui/react';
 import { ethers } from 'ethers';
 import KubixVotingABI from '../abi/KubixVoting.json';
@@ -37,8 +48,53 @@ const Voting = () => {
   const [blockTimestamp, setBlockTimestamp] = useState(0);
   const [completedPolls, setCompletedPolls] = useState([]);
 
+  const { isOpen, onOpen, onClose } = useDisclosure();
+  const [selectedPoll, setSelectedPoll] = useState(null);
+  const [selectedOption, setSelectedOption] = useState(null);
+
 
   const toast = useToast();
+
+  const handlePollClick = (poll) => {
+    setSelectedPoll(poll);
+    onOpen();
+  };
+
+  const handleVote = async () => {
+    if (selectedOption === null) {
+      toast({
+        title: 'Error',
+        description: 'Please select an option to vote',
+        status: 'error',
+        duration: 3000,
+        isClosable: true,
+      });
+      return;
+    }
+
+    try {
+      // Call the vote function from the contract
+      const tx = await contract.vote(selectedPoll.id, signer.address, selectedOption);
+      await tx.wait();
+      toast({
+        title: 'Vote submitted',
+        description: 'Your vote has been submitted successfully',
+        status: 'success',
+        duration: 3000,
+        isClosable: true,
+      });
+      onClose();
+    } catch (error) {
+      console.error(error);
+      toast({
+        title: 'Error',
+        description: 'There was an error submitting your vote. Please try again.',
+        status: 'error',
+        duration: 3000,
+        isClosable: true,
+      });
+    }
+  };
 
   const fetchCompletedPolls = async () => {
     try {
@@ -67,7 +123,8 @@ const Voting = () => {
       const polls = [];
   
       for (let i = 1; i <= pollCount; i++) {
-        const poll = await contract.activeProposals(i);
+        const activeProposalIndex = await contract.activeProposalIndices(i);
+        const poll = await contract.activeProposals(activeProposalIndex);
 
         polls.push(poll);
       }
@@ -205,6 +262,9 @@ const Voting = () => {
                   </Button>
                 </VStack>
               </Collapse>
+              <VStack>
+                <Heading mt={4} size="md">History</Heading>
+              </VStack>
             </TabPanel>
             <TabPanel>
               {/* Ongoing Polls */}
@@ -212,7 +272,7 @@ const Voting = () => {
                 <Heading size="md">Ongoing Polls</Heading>
                 {/* Step 4: Display ongoing polls in the Ongoing Polls section. */}
                 {(ongoingPolls).map((poll, index) => (
-                  <Box key={index} borderWidth={1} borderRadius="lg" p={4}>
+                  <Box key={index} borderWidth={1} borderRadius="lg" p={4} onClick={() => handlePollClick(poll)}>
                     <Text fontWeight="bold">{poll.name}</Text>
                     <Text>{poll.description}</Text>
                     <Text>{poll.execution}</Text>
@@ -282,25 +342,55 @@ const Voting = () => {
                   </Button>
                 </VStack>
               </Collapse>
+              <VStack>
+                <Heading mt={4} size="md">History</Heading>
+                {completedPolls.map((poll, index) => (
+                  <Box key={index} borderWidth={1} borderRadius="lg" p={4} >
+                    <Text fontWeight="bold">{poll.name}</Text>
+                    <Text>{poll.description}</Text>
+                    <Text>{poll.execution}</Text>
+                    <Text>Time: {}</Text>
+                    <Text>Options: {}</Text>
+                    <Text>Min Balance: {}</Text>
+                  </Box>
+                ))}
+              </VStack>
             </TabPanel>
           </TabPanels>
         </Tabs>
-        <VStack>
-          <Heading size="md">History</Heading>
-          {completedPolls.map((poll, index) => (
-            <Box key={index} borderWidth={1} borderRadius="lg" p={4}>
-              <Text fontWeight="bold">{poll.name}</Text>
-              <Text>{poll.description}</Text>
-              <Text>{poll.execution}</Text>
-              <Text>Time: {}</Text>
-              <Text>Options: {}</Text>
-              <Text>Min Balance: {}</Text>
-            </Box>
-          ))}
-        </VStack>
       </VStack>
+      <Modal isOpen={isOpen} onClose={onClose}>
+        <ModalOverlay />
+        <ModalContent>
+          <ModalHeader>{selectedPoll?.name}</ModalHeader>
+          <ModalCloseButton />
+          <ModalBody>
+            <Text>{selectedPoll?.description}</Text>
+            <Text>{selectedPoll?.execution}</Text>
+            <Text>Time: {}</Text>
+            <Text>Min Balance: {}</Text>
+            <Text>Max Balance: {}</Text>
+            <RadioGroup onChange={setSelectedOption} value={selectedOption}>
+              <Stack spacing={4}>
+              {selectedPoll?.options?.map((option, index) => (
+                <Radio key={index} value={index}>
+                  {option}
+                </Radio>
+              )) ?? null}
+              </Stack>
+            </RadioGroup>
+          </ModalBody>
+          <ModalFooter>
+            <Button colorScheme="blue" mr={3} onClick={handleVote}>
+              Vote
+            </Button>
+            <Button onClick={onClose}>Close</Button>
+          </ModalFooter>
+        </ModalContent>
+      </Modal>
     </Box>
-  );
+    );    
+  
 };
 
 export default Voting;
