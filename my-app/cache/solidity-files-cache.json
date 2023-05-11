@@ -927,8 +927,8 @@
       ]
     },
     "/Users/hudsonheadley/Desktop/Code/DAO2/my-app/contracts/KUBIXvoting.sol": {
-      "lastModificationDate": 1683496412546,
-      "contentHash": "126ac00ab8985be772eab01ad9163628",
+      "lastModificationDate": 1683770749084,
+      "contentHash": "2d7db803430df0fc4f4249fee5f5dc46",
       "sourceName": "contracts/KUBIXvoting.sol",
       "solcConfig": {
         "version": "0.8.18",
