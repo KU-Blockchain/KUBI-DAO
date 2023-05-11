@@ -178,22 +178,24 @@ const Voting = () => {
   };
 
   const createPoll = async () => {
-    //find max and min KUBIX balance
-
     const balances = await findMinMaxKubixBalance();
     console.log('proposal:', proposal);
     console.log('balances:', balances);
-
-    // Call createProposal function from the contract
-    const tx = await contract.createProposal(proposal.name, proposal.description, proposal.execution, balances.maxBalance, balances.minBalance, proposal.time, proposal.options);
+  
+    // Parse the options string into an array
+    const optionsArray = proposal.options.map(option => option.trim());
+  
+    const tx = await contract.createProposal(proposal.name, proposal.description, proposal.execution, balances.maxBalance, balances.minBalance, proposal.time, optionsArray);
     await tx.wait();
-    // Refresh proposal list or handle UI updates here
   };
-
+  
   const handleOptionsChange = (e) => {
+    // Split the input string by comma to get an array of options
     const options = e.target.value.split(', ');
     setProposal({ ...proposal, options });
   };
+  
+
   
   async function fetchBlockTimestamp() {
     const currentBlock = await provider.getBlock('latest');
@@ -328,6 +330,7 @@ const Voting = () => {
                     />
                   </FormControl>
                   <FormControl>
+                  <FormControl>
                     <FormLabel>Options</FormLabel>
                     <Textarea
                       name="options"
@@ -336,6 +339,7 @@ const Voting = () => {
                       placeholder="Option 1, Option 2, Option 3"
                       required
                     />
+                  </FormControl>
                   </FormControl>
                   <Button type="submit" colorScheme="teal">
                     Submit Poll
