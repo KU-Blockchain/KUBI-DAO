@@ -177,5 +177,11 @@ contract KubixVoting {
         PollOption storage option = proposal.options[_optionIndex];
         return (option.optionName, option.votes);
     }
+    
+    function getOptionsCount(uint256 _proposalId) public view returns (uint256) {
+        Proposal storage proposal = activeProposals[_proposalId];
+        return proposal.options.length;
+    }
+
 
 }

@@ -35,12 +35,12 @@ import { useToast } from '@chakra-ui/react';
 
 const provider = new ethers.providers.JsonRpcProvider('https://rpc-mumbai.maticvigil.com/');
 const signer = new ethers.Wallet(process.env.NEXT_PUBLIC_PRIVATE_KEY, provider);
-const contract = new ethers.Contract('0x031e7a971F5845D304512d3Df773b08bb856CdE2', KubixVotingABI.abi, signer);
+const contract = new ethers.Contract('0xAdbc94A86a7C36746Ec87aC9736c52a612d3009b', KubixVotingABI.abi, signer);
 
 const Voting = () => {
   const { findMinMaxKubixBalance } = useDataBaseContext();
 
-  const [proposal, setProposal] = useState({ name: '', description: '', execution: '', time: 0, options: [] });
+  const [proposal, setProposal] = useState({ name: '', description: '', execution: '', time: 0, options: [] ,id:0 });
   const [selectedTab, setSelectedTab] = useState(0);
   const [showCreateVote, setShowCreateVote] = useState(false);
   const [showCreatePoll, setShowCreatePoll] = useState(false);
@@ -74,7 +74,8 @@ const Voting = () => {
 
     try {
       // Call the vote function from the contract
-      const tx = await contract.vote(selectedPoll.id, signer.address, selectedOption);
+      console.log(selectedPoll.id, signer.address, selectedOption[0])
+      const tx = await contract.vote(selectedPoll.id, signer.address, selectedOption[0]);
       await tx.wait();
       toast({
         title: 'Vote submitted',
@@ -105,6 +106,8 @@ const Voting = () => {
         const completedProposalIndex = await contract.completedProposalIndices(i);
         const poll = await contract.activeProposals(completedProposalIndex);
         polls.push(poll);
+
+        console.log("completed polls")
       }
   
       setCompletedPolls(polls);
@@ -125,17 +128,33 @@ const Voting = () => {
       for (let i = 1; i <= pollCount; i++) {
         const activeProposalIndex = await contract.activeProposalIndices(i);
         const poll = await contract.activeProposals(activeProposalIndex);
-        const pollOptions = await contract.getOption(activeProposalIndex, 0);
+  
+        const optionsCount = await contract.getOptionsCount(activeProposalIndex);
+        const pollOptions = [];
+  
+        for (let j = 0; j < optionsCount; j++) {
+          const option = await contract.getOption(activeProposalIndex, j);
+          pollOptions.push(option);
+        }
+  
         console.log(pollOptions);
-
-        polls.push(poll);
+  
+        // Create a new object that includes all properties from `poll` and adds `options`
+        const pollWithOptions = { ...poll, options: pollOptions , id: activeProposalIndex};
+        polls.push(pollWithOptions);
       }
       console.log(polls)
       setOngoingPolls(polls);
+
+      for (let i = 0; i < polls.length; i++) {
+        console.log(polls[i].options[0].optionName);
+      }
     } catch (error) {
       console.error(error);
     }
   };
+  
+  
   
 
   useEffect(() => {
@@ -281,7 +300,7 @@ const Voting = () => {
                     <Text>{poll.description}</Text>
                     <Text>{poll.execution}</Text>
                     <Text>Time: {}</Text>
-                    <Text>Options: {}</Text>
+                    <Text>Options: {poll.options[0].optionName}</Text>
                     <Text>Min Balance: {}</Text>
                   </Box>
                 ))}
@@ -378,11 +397,11 @@ const Voting = () => {
             <Text>Max Balance: {}</Text>
             <RadioGroup onChange={setSelectedOption} value={selectedOption}>
               <Stack spacing={4}>
-              {selectedPoll?.options?.map((option, index) => (
-                <Radio key={index} value={index}>
-                  {option}
-                </Radio>
-              )) ?? null}
+                {selectedPoll?.options?.map((option, index) => (
+                  <Radio key={index} value={index}>
+                    {option.optionName}
+                  </Radio>
+                )) ?? null}
               </Stack>
             </RadioGroup>
           </ModalBody>
