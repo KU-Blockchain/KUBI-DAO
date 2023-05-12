@@ -1,32 +1,6 @@
 import React, { useState, useEffect } from 'react';
-import {
-  Box,
-  VStack,
-  Heading,
-  Tabs,
-  TabList,
-  TabPanels,
-  Tab,
-  TabPanel,
-  FormControl,
-  FormLabel,
-  Input,
-  Textarea,
-  Button,
-  Collapse,
-  Text,
-  Modal,
-  ModalOverlay,
-  ModalContent,
-  ModalHeader,
-  ModalCloseButton,
-  ModalBody,
-  ModalFooter,
-  useDisclosure,
-  Radio,
-  RadioGroup,
-  Stack,
-} from '@chakra-ui/react';
+import {Text, Box, useDisclosure, Flex, Grid, Container, Spacer, VStack, Heading, Tabs, TabList, Tab, TabPanels, TabPanel, Button, Collapse, FormControl, FormLabel, Input, Textarea, RadioGroup, Stack, Radio, Modal, ModalOverlay, ModalContent, ModalHeader, ModalCloseButton, ModalBody, ModalFooter } from '@chakra-ui/react';
+
 import { ethers } from 'ethers';
 import KubixVotingABI from '../abi/KubixVoting.json';
 import { useDataBaseContext } from '@/contexts/DataBaseContext';
@@ -105,16 +79,31 @@ const Voting = () => {
       for (let i = 0; i < completedPollsCount; i++) {
         const completedProposalIndex = await contract.completedProposalIndices(i);
         const poll = await contract.activeProposals(completedProposalIndex);
-        polls.push(poll);
+        const winner = await contract.getWinner(completedProposalIndex);
 
-        console.log("completed polls")
-      }
+        const optionsCount = await contract.getOptionsCount(completedProposalIndex);
+        const pollOptions = [];
+  
+        for (let j = 0; j < optionsCount; j++) {
+          const option = await contract.getOption(completedProposalIndex, j);
+          pollOptions.push(option);
+        }
+
+        const pollWithOptions = { ...poll, options: pollOptions , id: completedProposalIndex, winner};
+        polls.push(pollWithOptions);
+
+
+    }
+
+    
+
   
       setCompletedPolls(polls);
     } catch (error) {
       console.error(error);
     }
   };
+  
   
   
 
@@ -226,70 +215,52 @@ const Voting = () => {
   useEffect(() => {
     fetchBlockTimestamp();
   }, []);
+
+  const handleCreatePollClick = () => {
+    setShowCreatePoll(!showCreatePoll);
+  };
   
   
 
   return (
-    <Box>
-      <VStack spacing={8}>
+    <Container maxW="container.xl" py={12}>
+      <Flex align="center" mb={8}>
         <Heading size="xl">{selectedTab === 0 ? 'Democracy Voting (KUBI)' : 'Polling (KUBIX)'}</Heading>
-        <Tabs isFitted variant="enclosed" onChange={handleTabsChange}>
-          <TabList mb="1em">
-            <Tab>Votes</Tab>
-            <Tab>Polls</Tab>
-          </TabList>
-          <TabPanels>
-            <TabPanel>
+        <Spacer />
+        <Button onClick={handleCreatePollClick}>
+          {selectedTab === 0 ? (showCreateVote ? 'Hide Create Vote Form' : 'Create Vote') : (showCreatePoll ? 'Hide Create Poll Form' : 'Create Poll')}
+        </Button>
+      </Flex>
+  
+      <Tabs isFitted variant="enclosed" onChange={handleTabsChange} mb={8}>
+        <TabList mb="1em">
+          <Tab>Votes</Tab>
+          <Tab>Polls</Tab>
+        </TabList>
+        <TabPanels>
+          <TabPanel>
+            <Grid templateColumns={{ sm: "1fr", md: "repeat(2, 1fr)" }} gap={6}>
               {/* Ongoing Votes */}
               <VStack spacing={4}>
                 <Heading size="md">Ongoing Votes</Heading>
                 {/* List ongoing votes here */}
               </VStack>
-              <Button onClick={() => setShowCreateVote(!showCreateVote)} mt={4}>
-                {showCreateVote ? 'Hide Create Vote Form' : 'Create Vote'}
-              </Button>
-              <Collapse in={showCreateVote}>
-                {/* Create Vote Form */}
-                <VStack as="form" onSubmit={handleSubmit} spacing={4} mt={8} w="100%">
-                  <Heading size="md">Propose a Vote</Heading>
-                  <FormControl>
-                    <FormLabel>Name</FormLabel>
-                    <Input
-                      type="text"
-                      name="name"
-                      value={proposal.name}
-                      onChange={handleInputChange}
-                      required
-                    />
-                  </FormControl>
-                  <FormControl>
-                    <FormLabel>Description</FormLabel>
-                    <Textarea
-                      name="description"
-                      value={proposal.description}
-                      onChange={handleInputChange}
-                      required
-                    />
-                  </FormControl>
-                  <FormControl>
-                    <FormLabel>Execution</FormLabel>
-                    <Textarea
-                      name="execution"
-                      value={proposal.execution}
-                      onChange={handleInputChange}
-                      required
-                    />
-                  </FormControl>
-                  <Button type="submit" colorScheme="teal">
-                    Submit Proposal
-                  </Button>
-                </VStack>
-              </Collapse>
-              <VStack>
-                <Heading mt={4} size="md">History</Heading>
+  
+              {/* History */}
+              <VStack spacing={4}>
+                <Heading size="md">History</Heading>
+                {/* List historical votes here */}
               </VStack>
-            </TabPanel>
-            <TabPanel>
+            </Grid>
+  
+            {/* Create Vote Form */}
+            <Collapse in={showCreateVote}>
+              {/* Your form goes here */}
+            </Collapse>
+          </TabPanel>
+  
+          <TabPanel>
+            <Grid templateColumns={{ sm: "1fr", md: "repeat(2, 1fr)" }} gap={6}>
               {/* Ongoing Polls */}
               <VStack spacing={4}>
                 <Heading size="md">Ongoing Polls</Heading>
@@ -305,13 +276,34 @@ const Voting = () => {
                   </Box>
                 ))}
               </VStack>
-              <Button onClick={() => setShowCreatePoll(!showCreatePoll)} mt={4}>
-                {showCreatePoll ? 'Hide Create Poll Form' : 'Create Poll'}
-              </Button>
-              <Collapse in={showCreatePoll}>
-                {/* Create Poll Form */}
-                <VStack as="form" onSubmit={handleSubmit} spacing={4} mt={8} w="100%">
-                  <Heading size="md">Create a Poll</Heading>
+  
+              {/* History */}
+              <VStack>
+                <Heading mt={4} size="md">History</Heading>
+                {completedPolls.map((poll, index) => (
+                  <Box key={index} borderWidth={1} borderRadius="lg" p={4} >
+                    <Text fontWeight="bold">{poll.name}</Text>
+                    <Text>{poll.description}</Text>
+                    <Text>{poll.execution}</Text>
+                    <Text>Time: {}</Text>
+                    {poll?.options?.map((option, index) => (
+                      <Text key={index} value={index} >Option {index}: {option.optionName}</Text>
+                    ))}
+                    <Text>Winner: {poll.winner}</Text>
+                  </Box>
+                ))}
+              </VStack>
+            </Grid>
+  
+            {/* Create Poll Form */}
+            {console.log('showCreatePoll:', showCreatePoll)}
+            <Modal isOpen={showCreatePoll} onClose={handleCreatePollClick}>
+              <ModalOverlay />
+              <ModalContent>
+                <ModalHeader>Create a Poll</ModalHeader>
+                <ModalCloseButton />
+                <ModalBody>
+                  <VStack as="form" onSubmit={handleSubmit} spacing={4} mt={8} w="100%">
                   <FormControl>
                     <FormLabel>Name</FormLabel>
                     <Input
@@ -362,59 +354,54 @@ const Voting = () => {
                     />
                   </FormControl>
                   </FormControl>
+                  </VStack>
+                </ModalBody>
+                <ModalFooter>
                   <Button type="submit" colorScheme="teal">
                     Submit Poll
                   </Button>
-                </VStack>
-              </Collapse>
-              <VStack>
-                <Heading mt={4} size="md">History</Heading>
-                {completedPolls.map((poll, index) => (
-                  <Box key={index} borderWidth={1} borderRadius="lg" p={4} >
-                    <Text fontWeight="bold">{poll.name}</Text>
-                    <Text>{poll.description}</Text>
-                    <Text>{poll.execution}</Text>
-                    <Text>Time: {}</Text>
-                    <Text>Options: {}</Text>
-                    <Text>Min Balance: {}</Text>
-                  </Box>
-                ))}
-              </VStack>
-            </TabPanel>
-          </TabPanels>
-        </Tabs>
-      </VStack>
+                </ModalFooter>
+              </ModalContent>
+            </Modal>
+          </TabPanel>
+        </TabPanels>
+      </Tabs>
+  
+      {/* Modal */}
       <Modal isOpen={isOpen} onClose={onClose}>
-        <ModalOverlay />
-        <ModalContent>
-          <ModalHeader>{selectedPoll?.name}</ModalHeader>
-          <ModalCloseButton />
-          <ModalBody>
-            <Text>{selectedPoll?.description}</Text>
-            <Text>{selectedPoll?.execution}</Text>
-            <Text>Time: {}</Text>
-            <Text>Min Balance: {}</Text>
-            <Text>Max Balance: {}</Text>
-            <RadioGroup onChange={setSelectedOption} value={selectedOption}>
-              <Stack spacing={4}>
-                {selectedPoll?.options?.map((option, index) => (
-                  <Radio key={index} value={index}>
-                    {option.optionName} (Votes: {ethers.BigNumber.from(option.votes).toNumber()})
-                  </Radio>
-                )) ?? null}
-              </Stack>
-            </RadioGroup>
-          </ModalBody>
-          <ModalFooter>
-            <Button colorScheme="blue" mr={3} onClick={handleVote}>
-              Vote
-            </Button>
-            <Button onClick={onClose}>Close</Button>
-          </ModalFooter>
-        </ModalContent>
-      </Modal>
-    </Box>
-    );    
+  <ModalOverlay />
+  <ModalContent>
+    <ModalHeader>{selectedPoll?.name}</ModalHeader>
+    <ModalCloseButton />
+    <ModalBody>
+      <VStack spacing={4}>
+        <Text>{selectedPoll?.description}</Text>
+        <Text>{selectedPoll?.execution}</Text>
+        <Text>Time: {}</Text>
+        <Text>Min Balance: {}</Text>
+        <Text>Max Balance: {}</Text>
+        <RadioGroup onChange={setSelectedOption} value={selectedOption}>
+          <VStack spacing={4}>
+            {selectedPoll?.options?.map((option, index) => (
+              <Radio key={index} value={index}>
+                {option.optionName} (Votes: {ethers.BigNumber.from(option.votes).toNumber()})
+              </Radio>
+            ))}
+          </VStack>
+        </RadioGroup>
+      </VStack>
+    </ModalBody>
+    <ModalFooter>
+      <Button colorScheme="blue" onClick={handleVote} mr={3}>
+        Vote
+      </Button>
+      <Button variant="ghost" onClick={onClose}>Close</Button>
+    </ModalFooter>
+  </ModalContent>
+</Modal>
+</Container>
+);
+  
   
 };
 
