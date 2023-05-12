@@ -1,8 +1,10 @@
 pragma solidity ^0.8.0;
 
 import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
+import "@openzeppelin/contracts/utils/math/SafeMath.sol";
 
 contract KubixVoting {
+    using SafeMath for uint256;
     IERC20 public kubixToken;
     address public dao;
 
@@ -24,13 +26,16 @@ contract KubixVoting {
         PollOption[] options;
     }
 
-    Proposal[] public proposals;
+    Proposal[] public activeProposals;
+    uint256[] public activeProposalIndices;
+    uint256[] public completedProposalIndices;
 
     event NewProposal(uint256 indexed proposalId, string name);
 
     constructor(address _kubixToken, address _dao) {
         kubixToken = IERC20(_kubixToken);
         dao = _dao;
+        activeProposalIndices.push(0); // Initialize with a dummy value
     }
 
     modifier onlyDAO() {
@@ -39,8 +44,12 @@ contract KubixVoting {
     }
 
     modifier whenNotExpired(uint256 _proposalId) {
-        Proposal storage proposal = proposals[_proposalId];
-        require(block.timestamp <= proposal.creationTimestamp + proposal.timeInMinutes * 1 minutes, "Voting time expired");
+        Proposal storage proposal = activeProposals[_proposalId];
+        require(
+            block.timestamp <=
+                proposal.creationTimestamp + proposal.timeInMinutes * 1 minutes,
+            "Voting time expired"
+        );
         _;
     }
 
@@ -54,12 +63,16 @@ contract KubixVoting {
         string[] memory _options
     ) external onlyDAO {
         require(_minBalance > 0, "Min balance must be greater than 0");
-        require(_maxBalance > _minBalance, "Max balance must be greater than min balance");
+        require(
+            _maxBalance > _minBalance,
+            "Max balance must be greater than min balance"
+        );
 
-        uint256 newId = proposals.length;
+        uint256 newId = activeProposals.length;
 
-        proposals.push();
-        Proposal storage newProposal = proposals[newId];
+        activeProposalIndices.push(newId);
+        activeProposals.push();
+        Proposal storage newProposal = activeProposals[newId];
         newProposal.name = _name;
         newProposal.description = _description;
         newProposal.execution = _execution;
@@ -68,6 +81,7 @@ contract KubixVoting {
         newProposal.minBalance = _minBalance;
         newProposal.timeInMinutes = _timeInMinutes;
         newProposal.creationTimestamp = block.timestamp;
+    
 
         for (uint256 i = 0; i < _options.length; i++) {
             newProposal.options.push(PollOption(_options[i], 0));
@@ -76,8 +90,12 @@ contract KubixVoting {
         emit NewProposal(newId, _name);
     }
 
-    function vote(uint256 _proposalId, address _voter, uint256 _optionIndex) external whenNotExpired(_proposalId) {
-        Proposal storage proposal = proposals[_proposalId];
+    function vote(
+        uint256 _proposalId,
+        address _voter,
+        uint256 _optionIndex
+    ) external whenNotExpired(_proposalId) {
+        Proposal storage proposal = activeProposals[_proposalId];
         require(proposal.votes[_voter] == 0, "Already voted");
 
         uint256 balance = kubixToken.balanceOf(_voter);
@@ -95,16 +113,21 @@ contract KubixVoting {
     }
 
     function calculateVoteWeight(uint256 _proposalId, uint256 _balance) public view returns (uint256) {
-        Proposal storage proposal = proposals[_proposalId];
-        uint256 range = proposal.maxBalance - proposal.minBalance;
-        uint256 adjustedBalance = _balance - proposal.minBalance;
-        uint256 weight = ((adjustedBalance * (4 - 1)) / range) + 1;
+
+        Proposal storage proposal = activeProposals[_proposalId];
+        uint256 range = proposal.maxBalance.sub(proposal.minBalance);
+        uint256 adjustedBalance = _balance.sub(proposal.minBalance);
+        uint256 weight = adjustedBalance.mul(3).div(range).add(1);
+
         return weight;
     }
 
-    function getWinner(uint256 _proposalId) external view returns (string memory) {
-        Proposal storage proposal = proposals[_proposalId];
 
+
+    function getWinner(uint256 _completedProposalIndex) external view returns (string memory) {
+        uint256 _completedProposalId = completedProposalIndices[_completedProposalIndex];
+        Proposal storage proposal = activeProposals[_completedProposalId];
+        
         uint256 highestVotes = 0;
         uint256 winningOptionIndex;
 
@@ -118,8 +141,47 @@ contract KubixVoting {
         return proposal.options[winningOptionIndex].optionName;
     }
 
-    function proposalsCount() public view returns (uint256) {
-        return proposals.length;
+    function moveToCompleted() public onlyDAO {
+        uint256 i = 1; // Start from 1 because 0 is a dummy value
+        while (i < activeProposalIndices.length) {
+            uint256 proposalId = activeProposalIndices[i];
+            Proposal storage proposal = activeProposals[proposalId];
+            if (block.timestamp > proposal.creationTimestamp + proposal.timeInMinutes * 1 minutes) {
+                completedProposalIndices.push(proposalId); // Push the index instead of the proposal
+
+                // Remove the expired proposal index from the activeProposalIndices array by shifting the elements
+                for (uint256 j = i; j < activeProposalIndices.length - 1; j++) {
+                    activeProposalIndices[j] = activeProposalIndices[j + 1];
+                }
+                activeProposalIndices.pop();
+            } else {
+                i++;
+            }
+        }
     }
+
+    function activeProposalsCount() public view returns (uint256) {
+        return activeProposalIndices.length - 1; // Subtract 1 because of the dummy value
+    }
+
+    function completedProposalsCount() public view returns (uint256) {
+        return completedProposalIndices.length;
+    }
+
+    function getOption(uint256 _proposalId, uint256 _optionIndex)
+        public
+        view
+        returns (string memory optionName, uint256 votes)
+    {
+        Proposal storage proposal = activeProposals[_proposalId];
+        PollOption storage option = proposal.options[_optionIndex];
+        return (option.optionName, option.votes);
+    }
+    
+    function getOptionsCount(uint256 _proposalId) public view returns (uint256) {
+        Proposal storage proposal = activeProposals[_proposalId];
+        return proposal.options.length;
+    }
+
 
 }
