@@ -399,7 +399,7 @@ const Voting = () => {
               <Stack spacing={4}>
                 {selectedPoll?.options?.map((option, index) => (
                   <Radio key={index} value={index}>
-                    {option.optionName}
+                    {option.optionName} (Votes: {ethers.BigNumber.from(option.votes).toNumber()})
                   </Radio>
                 )) ?? null}
               </Stack>
