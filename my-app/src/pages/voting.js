@@ -1,9 +1,11 @@
 import React, { useState, useEffect } from 'react';
 import {Text, Box, useDisclosure, Flex, Grid, Container, Spacer, VStack, Heading, Tabs, TabList, Tab, TabPanels, TabPanel, Button, Collapse, FormControl, FormLabel, Input, Textarea, RadioGroup, Stack, Radio, Modal, ModalOverlay, ModalContent, ModalHeader, ModalCloseButton, ModalBody, ModalFooter } from '@chakra-ui/react';
 
+
 import { ethers } from 'ethers';
 import KubixVotingABI from '../abi/KubixVoting.json';
 import { useDataBaseContext } from '@/contexts/DataBaseContext';
+import { useWeb3Context } from '@/contexts/Web3Context';
 import { useToast } from '@chakra-ui/react';
 
 
@@ -13,6 +15,7 @@ const contract = new ethers.Contract('0xAdbc94A86a7C36746Ec87aC9736c52a612d3009b
 
 const Voting = () => {
   const { findMinMaxKubixBalance } = useDataBaseContext();
+  const { account } = useWeb3Context();
 
   const [proposal, setProposal] = useState({ name: '', description: '', execution: '', time: 0, options: [] ,id:0 });
   const [selectedTab, setSelectedTab] = useState(0);
@@ -30,6 +33,7 @@ const Voting = () => {
   const toast = useToast();
 
   const handlePollClick = (poll) => {
+    console.log(poll)
     setSelectedPoll(poll);
     onOpen();
   };
@@ -49,7 +53,7 @@ const Voting = () => {
     try {
       // Call the vote function from the contract
       console.log(selectedPoll.id, signer.address, selectedOption[0])
-      const tx = await contract.vote(selectedPoll.id, signer.address, selectedOption[0]);
+      const tx = await contract.vote(selectedPoll.id, account, selectedOption[0]);
       await tx.wait();
       toast({
         title: 'Vote submitted',
@@ -223,7 +227,8 @@ const Voting = () => {
   
 
   return (
-    <Container maxW="container.xl" py={12}>
+    <>
+    <Container maxW="container.xl" py={12} >
       <Flex align="center" mb={8}>
         <Heading size="xl">{selectedTab === 0 ? 'Democracy Voting (KUBI)' : 'Polling (KUBIX)'}</Heading>
         <Spacer />
@@ -269,10 +274,8 @@ const Voting = () => {
                   <Box key={index} borderWidth={1} borderRadius="lg" p={4} onClick={() => handlePollClick(poll)}>
                     <Text fontWeight="bold">{poll.name}</Text>
                     <Text>{poll.description}</Text>
-                    <Text>{poll.execution}</Text>
-                    <Text>Time: {}</Text>
+                    <Text>Time: {ethers.BigNumber.from(poll.timeInMinutes).toNumber()}</Text>
                     <Text>Options: {poll.options[0].optionName}</Text>
-                    <Text>Min Balance: {}</Text>
                   </Box>
                 ))}
               </VStack>
@@ -284,10 +287,10 @@ const Voting = () => {
                   <Box key={index} borderWidth={1} borderRadius="lg" p={4} >
                     <Text fontWeight="bold">{poll.name}</Text>
                     <Text>{poll.description}</Text>
-                    <Text>{poll.execution}</Text>
-                    <Text>Time: {}</Text>
+                    <Text>Total Minutes: {ethers.BigNumber.from(poll.timeInMinutes).toNumber()}</Text>
+
                     {poll?.options?.map((option, index) => (
-                      <Text key={index} value={index} >Option {index}: {option.optionName}</Text>
+                      <Text key={index} value={index} >Option {index+1}: {option.optionName}</Text>
                     ))}
                     <Text>Winner: {poll.winner}</Text>
                   </Box>
@@ -357,7 +360,7 @@ const Voting = () => {
                   </VStack>
                 </ModalBody>
                 <ModalFooter>
-                  <Button type="submit" colorScheme="teal">
+                  <Button type="submit" colorScheme="teal" onClick={handleSubmit}>
                     Submit Poll
                   </Button>
                 </ModalFooter>
@@ -376,10 +379,10 @@ const Voting = () => {
     <ModalBody>
       <VStack spacing={4}>
         <Text>{selectedPoll?.description}</Text>
-        <Text>{selectedPoll?.execution}</Text>
-        <Text>Time: {}</Text>
-        <Text>Min Balance: {}</Text>
-        <Text>Max Balance: {}</Text>
+        {console.log('selectedPoll:', selectedPoll)}
+        {/*console.log('selectedPoll?time:', ethers.BigNumber.from(selectedPoll?.timeInMinutes).toNumber()*/}
+        <Text>Total Minutes: {ethers.BigNumber.from(selectedPoll? selectedPoll.timeInMinutes: 0).toNumber()}</Text>
+        <Text>Creation Time: {ethers.BigNumber.from(selectedPoll? selectedPoll.creationTimestamp: 0).toNumber()}</Text>
         <RadioGroup onChange={setSelectedOption} value={selectedOption}>
           <VStack spacing={4}>
             {selectedPoll?.options?.map((option, index) => (
@@ -400,6 +403,7 @@ const Voting = () => {
   </ModalContent>
 </Modal>
 </Container>
+</>
 );
   
   
