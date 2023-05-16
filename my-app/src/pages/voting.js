@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import {Text, Box, useDisclosure, Flex, Grid, Container, Spacer, VStack, Heading, Tabs, TabList, Tab, TabPanels, TabPanel, Button, Collapse, FormControl, FormLabel, Input, Textarea, RadioGroup, Stack, Radio, Modal, ModalOverlay, ModalContent, ModalHeader, ModalCloseButton, ModalBody, ModalFooter } from '@chakra-ui/react';
 
+
 import { ethers } from 'ethers';
 import KubixVotingABI from '../abi/KubixVoting.json';
 import { useDataBaseContext } from '@/contexts/DataBaseContext';
@@ -223,7 +224,8 @@ const Voting = () => {
   
 
   return (
-    <Container maxW="container.xl" py={12}>
+    <>
+    <Container maxW="container.xl" py={12} >
       <Flex align="center" mb={8}>
         <Heading size="xl">{selectedTab === 0 ? 'Democracy Voting (KUBI)' : 'Polling (KUBIX)'}</Heading>
         <Spacer />
@@ -269,10 +271,8 @@ const Voting = () => {
                   <Box key={index} borderWidth={1} borderRadius="lg" p={4} onClick={() => handlePollClick(poll)}>
                     <Text fontWeight="bold">{poll.name}</Text>
                     <Text>{poll.description}</Text>
-                    <Text>{poll.execution}</Text>
-                    <Text>Time: {}</Text>
+                    <Text>Time: {ethers.BigNumber.from(poll.timeInMinutes).toNumber()}</Text>
                     <Text>Options: {poll.options[0].optionName}</Text>
-                    <Text>Min Balance: {}</Text>
                   </Box>
                 ))}
               </VStack>
@@ -284,10 +284,10 @@ const Voting = () => {
                   <Box key={index} borderWidth={1} borderRadius="lg" p={4} >
                     <Text fontWeight="bold">{poll.name}</Text>
                     <Text>{poll.description}</Text>
-                    <Text>{poll.execution}</Text>
-                    <Text>Time: {}</Text>
+                    <Text>Total Minutes: {ethers.BigNumber.from(poll.timeInMinutes).toNumber()}</Text>
+
                     {poll?.options?.map((option, index) => (
-                      <Text key={index} value={index} >Option {index}: {option.optionName}</Text>
+                      <Text key={index} value={index} >Option {index+1}: {option.optionName}</Text>
                     ))}
                     <Text>Winner: {poll.winner}</Text>
                   </Box>
@@ -357,7 +357,7 @@ const Voting = () => {
                   </VStack>
                 </ModalBody>
                 <ModalFooter>
-                  <Button type="submit" colorScheme="teal">
+                  <Button type="submit" colorScheme="teal" onClick={handleSubmit}>
                     Submit Poll
                   </Button>
                 </ModalFooter>
@@ -400,6 +400,7 @@ const Voting = () => {
   </ModalContent>
 </Modal>
 </Container>
+</>
 );
   
   
