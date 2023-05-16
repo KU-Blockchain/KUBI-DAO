@@ -5,6 +5,7 @@ import {Text, Box, useDisclosure, Flex, Grid, Container, Spacer, VStack, Heading
 import { ethers } from 'ethers';
 import KubixVotingABI from '../abi/KubixVoting.json';
 import { useDataBaseContext } from '@/contexts/DataBaseContext';
+import { useWeb3Context } from '@/contexts/Web3Context';
 import { useToast } from '@chakra-ui/react';
 
 
@@ -14,6 +15,7 @@ const contract = new ethers.Contract('0xAdbc94A86a7C36746Ec87aC9736c52a612d3009b
 
 const Voting = () => {
   const { findMinMaxKubixBalance } = useDataBaseContext();
+  const { account } = useWeb3Context();
 
   const [proposal, setProposal] = useState({ name: '', description: '', execution: '', time: 0, options: [] ,id:0 });
   const [selectedTab, setSelectedTab] = useState(0);
@@ -51,7 +53,7 @@ const Voting = () => {
     try {
       // Call the vote function from the contract
       console.log(selectedPoll.id, signer.address, selectedOption[0])
-      const tx = await contract.vote(selectedPoll.id, signer.address, selectedOption[0]);
+      const tx = await contract.vote(selectedPoll.id, account, selectedOption[0]);
       await tx.wait();
       toast({
         title: 'Vote submitted',
@@ -380,7 +382,7 @@ const Voting = () => {
         {console.log('selectedPoll:', selectedPoll)}
         {/*console.log('selectedPoll?time:', ethers.BigNumber.from(selectedPoll?.timeInMinutes).toNumber()*/}
         <Text>Total Minutes: {ethers.BigNumber.from(selectedPoll? selectedPoll.timeInMinutes: 0).toNumber()}</Text>
-        <Text>Time Remaining: {}</Text>
+        <Text>Creation Time: {ethers.BigNumber.from(selectedPoll? selectedPoll.creationTimestamp: 0).toNumber()}</Text>
         <RadioGroup onChange={setSelectedOption} value={selectedOption}>
           <VStack spacing={4}>
             {selectedPoll?.options?.map((option, index) => (
