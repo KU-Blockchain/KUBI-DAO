@@ -33,7 +33,6 @@ const Voting = () => {
   const toast = useToast();
 
   const handlePollClick = (poll) => {
-    console.log(poll)
     setSelectedPoll(poll);
     onOpen();
   };
@@ -299,7 +298,6 @@ const Voting = () => {
             </Grid>
   
             {/* Create Poll Form */}
-            {console.log('showCreatePoll:', showCreatePoll)}
             <Modal isOpen={showCreatePoll} onClose={handleCreatePollClick}>
               <ModalOverlay />
               <ModalContent>
@@ -379,8 +377,6 @@ const Voting = () => {
     <ModalBody>
       <VStack spacing={4}>
         <Text>{selectedPoll?.description}</Text>
-        {console.log('selectedPoll:', selectedPoll)}
-        {/*console.log('selectedPoll?time:', ethers.BigNumber.from(selectedPoll?.timeInMinutes).toNumber()*/}
         <Text>Total Minutes: {ethers.BigNumber.from(selectedPoll? selectedPoll.timeInMinutes: 0).toNumber()}</Text>
         <Text>Creation Time: {ethers.BigNumber.from(selectedPoll? selectedPoll.creationTimestamp: 0).toNumber()}</Text>
         <RadioGroup onChange={setSelectedOption} value={selectedOption}>
