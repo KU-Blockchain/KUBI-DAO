@@ -59,11 +59,27 @@ const EditTaskModal = ({ isOpen, onClose, onEditTask, onDeleteTask, task }) => {
           <FormControl mt={4}>
             <FormLabel>Estimated Hours</FormLabel>
             <Input
-              type="number"
-              min="1"
-              value={estHours}
-              onChange={(e) => setEstimatedHours(Math.round(parseFloat(e.target.value)))}
-            />
+                type="number"
+                min="0.5"
+                step="0.5"
+                value={estHours}
+                onChange={(e) => {
+                  const val = parseFloat(e.target.value);
+                  if (isNaN(val)) {
+                    setEstimatedHours(0.5);
+                  } else {
+                    setEstimatedHours(val);
+                  }
+                }}
+                onBlur={(e) => {
+                  const val = parseFloat(e.target.value);
+                  if (val <= 0.5) {
+                    setEstimatedHours(0.5);
+                  } else {
+                    setEstimatedHours(Math.round(val * 2) / 2);
+                  }
+                }}
+              />
           </FormControl>
         </ModalBody>
         <ModalFooter>

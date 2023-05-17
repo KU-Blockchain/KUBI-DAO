@@ -101,11 +101,14 @@ contract KubixVoting {
         uint256 balance = kubixToken.balanceOf(_voter);
         require(balance > 0, "No KUBIX tokens");
 
-        if (balance > proposal.maxBalance) {
-            balance = proposal.maxBalance;
+        uint256 balanceConverted = balance / 10**18;
+
+
+        if (balanceConverted > proposal.maxBalance) {
+            balanceConverted = proposal.maxBalance;
         }
 
-        uint256 voteWeight = calculateVoteWeight(_proposalId, balance);
+        uint256 voteWeight = calculateVoteWeight(_proposalId, balanceConverted);
 
         proposal.totalVotes += voteWeight;
         proposal.votes[_voter] = voteWeight;

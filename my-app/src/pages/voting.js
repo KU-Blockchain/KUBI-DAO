@@ -51,7 +51,8 @@ const Voting = () => {
 
     try {
       // Call the vote function from the contract
-      console.log(selectedPoll.id, signer.address, selectedOption[0])
+      console.log(selectedPoll.id, account, selectedOption[0])
+      console.log(account)
       const tx = await contract.vote(selectedPoll.id, account, selectedOption[0]);
       await tx.wait();
       toast({
@@ -377,8 +378,25 @@ const Voting = () => {
     <ModalBody>
       <VStack spacing={4}>
         <Text>{selectedPoll?.description}</Text>
-        <Text>Total Minutes: {ethers.BigNumber.from(selectedPoll? selectedPoll.timeInMinutes: 0).toNumber()}</Text>
-        <Text>Creation Time: {ethers.BigNumber.from(selectedPoll? selectedPoll.creationTimestamp: 0).toNumber()}</Text>
+        <Text>Total Minutes: {ethers.BigNumber.from(selectedPoll?.timeInMinutes || 0).toNumber()}</Text>
+        <Text>Creation Time: {new Date(ethers.BigNumber.from(selectedPoll?.creationTimestamp || 0).toNumber() * 1000).toLocaleString()}</Text>
+        <Text>
+          Remaining Time: <br/>
+          {(() => {
+            const now = Math.floor(Date.now() / 1000);
+            const creationTime = ethers.BigNumber.from(selectedPoll?.creationTimestamp || 0).toNumber();
+            const totalTime = ethers.BigNumber.from(selectedPoll?.timeInMinutes || 0).toNumber() * 60;
+            const elapsedTime = now - creationTime;
+            const remainingTime = totalTime - elapsedTime;
+
+            const remainingDays = Math.floor(remainingTime / (60 * 60 * 24));
+            const remainingHours = Math.floor((remainingTime % (60 * 60 * 24)) / (60 * 60));
+            const remainingMinutes = Math.floor((remainingTime % (60 * 60)) / 60);
+            const remainingSeconds = remainingTime % 60;
+
+            return remainingTime > 0 ? `${remainingDays} days, ${remainingHours} hours, ${remainingMinutes} minutes, and ${remainingSeconds} seconds` : 'Poll has ended';
+          })()}
+        </Text>
         <RadioGroup onChange={setSelectedOption} value={selectedOption}>
           <VStack spacing={4}>
             {selectedPoll?.options?.map((option, index) => (
@@ -390,6 +408,8 @@ const Voting = () => {
         </RadioGroup>
       </VStack>
     </ModalBody>
+
+
     <ModalFooter>
       <Button colorScheme="blue" onClick={handleVote} mr={3}>
         Vote
