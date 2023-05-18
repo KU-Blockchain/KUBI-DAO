@@ -75,85 +75,64 @@ const Voting = () => {
     }
   };
 
-  const fetchCompletedPolls = async () => {
-    try {
-      const completedPollsCount = await contract.completedProposalsCount();
-      const polls = [];
-  
-      for (let i = 0; i < completedPollsCount; i++) {
-        const completedProposalIndex = await contract.completedProposalIndices(i);
-        const poll = await contract.activeProposals(completedProposalIndex);
-        const winner = await contract.getWinner(completedProposalIndex);
-
-        const optionsCount = await contract.getOptionsCount(completedProposalIndex);
-        const pollOptions = [];
-  
-        for (let j = 0; j < optionsCount; j++) {
-          const option = await contract.getOption(completedProposalIndex, j);
-          pollOptions.push(option);
-        }
-
-        const pollWithOptions = { ...poll, options: pollOptions , id: completedProposalIndex, winner};
-        polls.push(pollWithOptions);
-
-
-    }
-
-    
-
-  
-      setCompletedPolls(polls);
-    } catch (error) {
-      console.error(error);
-    }
-  };
-  
-  
-  
-
-  const fetchOngoingPolls = async () => {
-    try {
-      await contract.moveToCompleted();
-      const pollCount = await contract.activeProposalsCount();
-      console.log(pollCount);
-      const polls = [];
-  
-      for (let i = 1; i <= pollCount; i++) {
-        const activeProposalIndex = await contract.activeProposalIndices(i);
-        const poll = await contract.activeProposals(activeProposalIndex);
-  
-        const optionsCount = await contract.getOptionsCount(activeProposalIndex);
-        const pollOptions = [];
-  
-        for (let j = 0; j < optionsCount; j++) {
-          const option = await contract.getOption(activeProposalIndex, j);
-          pollOptions.push(option);
-        }
-  
-        console.log(pollOptions);
-  
-        // Create a new object that includes all properties from `poll` and adds `options`
-        const pollWithOptions = { ...poll, options: pollOptions , id: activeProposalIndex};
-        polls.push(pollWithOptions);
-      }
-      console.log(polls)
-      setOngoingPolls(polls);
-
-      for (let i = 0; i < polls.length; i++) {
-        console.log(polls[i].options[0].optionName);
-      }
-    } catch (error) {
-      console.error(error);
-    }
-  };
-  
-  
-  
-
   useEffect(() => {
-    fetchOngoingPolls();
-    fetchCompletedPolls();
+    const fetchPolls = async () => {
+      try {
+        await contract.moveToCompleted();
+  
+        const [ongoingPollsCount, completedPollsCount] = await Promise.all([
+          contract.activeProposalsCount(),
+          contract.completedProposalsCount()
+        ]);
+  
+        const [ongoingPolls, completedPolls] = await Promise.all([
+          fetchPollsData(ongoingPollsCount, contract.activeProposalIndices, contract.activeProposals, contract.getOptionsCount, contract.getOption, false),
+          fetchPollsData(completedPollsCount, contract.completedProposalIndices, contract.activeProposals, contract.getOptionsCount, contract.getOption, true)
+        ]);
+  
+        setOngoingPolls(ongoingPolls);
+        setCompletedPolls(completedPolls);
+      } catch (error) {
+        console.error(error);
+      }
+    };
+  
+
+  
+    fetchPolls();
   }, []);
+  
+  const fetchPollsData = async (pollsCount, indicesMethod, proposalsMethod, optionsCountMethod, optionMethod, completed) => {
+    const pollsData = [];
+
+    for (let i = 0; i < pollsCount; i++) {
+      const index = await indicesMethod(i);
+      const poll = await proposalsMethod(index);
+
+      const optionsCount = await optionsCountMethod(index);
+      const pollOptions = [];
+      for (let j = 0; j < optionsCount; j++) {
+        const option = await optionMethod(index, j);
+        pollOptions.push(option);
+      }
+
+      if(completed){
+        const winner = await contract.getWinner(index);
+        console.log(winner)
+        
+        let pollWithOptions = { ...poll, options: pollOptions , id: index, winner};
+        pollsData.push(pollWithOptions);
+      }
+      else{
+        let pollWithOptions = { ...poll, options: pollOptions , id: index};
+        pollsData.push(pollWithOptions);
+      }
+
+
+    }
+
+    return pollsData;
+  };
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
