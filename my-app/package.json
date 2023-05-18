@@ -19,6 +19,7 @@
     "@mui/material": "^5.11.16",
     "@openzeppelin/contracts": "^4.8.2",
     "@walletconnect/web3-provider": "^1.8.0",
+    "abdk-libraries-solidity": "^3.2.0",
     "dotenv": "^16.0.3",
     "ethers": "5.7.2",
     "framer-motion": "^10.12.4",

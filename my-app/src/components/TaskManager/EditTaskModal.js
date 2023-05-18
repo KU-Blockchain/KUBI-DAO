@@ -20,9 +20,7 @@ const EditTaskModal = ({ isOpen, onClose, onEditTask, onDeleteTask, task }) => {
   
   const [difficulty, setDifficulty] = useState(task.difficulty);
   const [estHours, setEstimatedHours] = useState(task.estHours);
-
-  
-  
+ 
 
   const handleEditTask = () => {
     
