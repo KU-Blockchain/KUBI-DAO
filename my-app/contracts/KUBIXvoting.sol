@@ -2,6 +2,7 @@ pragma solidity ^0.8.0;
 
 import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 import "@openzeppelin/contracts/utils/math/SafeMath.sol";
+import "abdk-libraries-solidity/ABDKMath64x64.sol";
 
 contract KubixVoting {
     using SafeMath for uint256;
@@ -100,12 +101,14 @@ contract KubixVoting {
 
         uint256 balance = kubixToken.balanceOf(_voter);
         require(balance > 0, "No KUBIX tokens");
+        uint256 balanceConverted = balance / 10**18;
 
-        if (balance > proposal.maxBalance) {
-            balance = proposal.maxBalance;
+
+        if (balanceConverted > proposal.maxBalance) {
+            balanceConverted = proposal.maxBalance;
         }
 
-        uint256 voteWeight = calculateVoteWeight(_proposalId, balance);
+        uint256 voteWeight = calculateVoteWeight(_proposalId, balanceConverted);
 
         proposal.totalVotes += voteWeight;
         proposal.votes[_voter] = voteWeight;
@@ -113,11 +116,29 @@ contract KubixVoting {
     }
 
     function calculateVoteWeight(uint256 _proposalId, uint256 _balance) public view returns (uint256) {
-
         Proposal storage proposal = activeProposals[_proposalId];
         uint256 range = proposal.maxBalance.sub(proposal.minBalance);
-        uint256 adjustedBalance = _balance.sub(proposal.minBalance);
-        uint256 weight = adjustedBalance.mul(3).div(range).add(1);
+        uint256 adjustedBalance = (_balance.sub(proposal.minBalance)).add(1);
+        
+        // Convert the numbers to the fixed point format used by the library
+        int128 fixedRange = ABDKMath64x64.fromUInt(range);
+        int128 fixedAdjustedBalance = ABDKMath64x64.fromUInt(adjustedBalance);
+        
+        // Calculate the square roots for range and adjustedBalance
+        int128 sqrtFixedRange = ABDKMath64x64.sqrt(fixedRange);
+        int128 sqrtFixedAdjustedBalance = ABDKMath64x64.sqrt(fixedAdjustedBalance);
+
+        // Use the new formula, you should convert 9 to fixed point format as well
+        int128 fixedWeight = ABDKMath64x64.add(
+            ABDKMath64x64.mul(
+                ABDKMath64x64.div(ABDKMath64x64.fromUInt(9), sqrtFixedRange),
+                sqrtFixedAdjustedBalance
+            ),
+            ABDKMath64x64.fromUInt(1)
+        );
+
+        // Convert back to uint256 before returning
+        uint256 weight = ABDKMath64x64.toUInt(fixedWeight);
 
         return weight;
     }

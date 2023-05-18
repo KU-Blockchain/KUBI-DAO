@@ -13,7 +13,8 @@ import {
   ModalFooter,
   VStack,
   Select,
-  Textarea
+  Textarea,
+  useToast,
 } from '@chakra-ui/react';
 
 const AddTaskModal = ({ isOpen, onClose, onAddTask }) => {
@@ -22,11 +23,20 @@ const AddTaskModal = ({ isOpen, onClose, onAddTask }) => {
   const [difficulty, setDifficulty] = useState('easy');
   const [estHours, setEstHours] = useState(.5);
 
-
-  
+  const toast = useToast();
 
   const handleSubmit = () => {
-    onAddTask({ name, description, difficulty,estHours });
+    onAddTask({ name, description, difficulty, estHours });
+
+    // Show a toast notification when a task is successfully added
+    toast({
+      title: "Task added.",
+      description: "Your task was successfully added.",
+      status: "success",
+      duration: 3000,
+      isClosable: true,
+    });
+
     setDescription('');
     setName('');
     setDifficulty('easy');

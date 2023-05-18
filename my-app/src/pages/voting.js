@@ -11,7 +11,7 @@ import { useToast } from '@chakra-ui/react';
 
 const provider = new ethers.providers.JsonRpcProvider('https://rpc-mumbai.maticvigil.com/');
 const signer = new ethers.Wallet(process.env.NEXT_PUBLIC_PRIVATE_KEY, provider);
-const contract = new ethers.Contract('0xAdbc94A86a7C36746Ec87aC9736c52a612d3009b', KubixVotingABI.abi, signer);
+const contract = new ethers.Contract('0x4B99866ecE2Fe4b57882EA4715380921EEd2242c', KubixVotingABI.abi, signer);
 
 const Voting = () => {
   const { findMinMaxKubixBalance } = useDataBaseContext();
@@ -33,7 +33,6 @@ const Voting = () => {
   const toast = useToast();
 
   const handlePollClick = (poll) => {
-    console.log(poll)
     setSelectedPoll(poll);
     onOpen();
   };
@@ -52,7 +51,8 @@ const Voting = () => {
 
     try {
       // Call the vote function from the contract
-      console.log(selectedPoll.id, signer.address, selectedOption[0])
+      console.log(selectedPoll.id, account, selectedOption[0])
+      console.log(account)
       const tx = await contract.vote(selectedPoll.id, account, selectedOption[0]);
       await tx.wait();
       toast({
@@ -299,7 +299,6 @@ const Voting = () => {
             </Grid>
   
             {/* Create Poll Form */}
-            {console.log('showCreatePoll:', showCreatePoll)}
             <Modal isOpen={showCreatePoll} onClose={handleCreatePollClick}>
               <ModalOverlay />
               <ModalContent>
@@ -379,10 +378,25 @@ const Voting = () => {
     <ModalBody>
       <VStack spacing={4}>
         <Text>{selectedPoll?.description}</Text>
-        {console.log('selectedPoll:', selectedPoll)}
-        {/*console.log('selectedPoll?time:', ethers.BigNumber.from(selectedPoll?.timeInMinutes).toNumber()*/}
-        <Text>Total Minutes: {ethers.BigNumber.from(selectedPoll? selectedPoll.timeInMinutes: 0).toNumber()}</Text>
-        <Text>Creation Time: {ethers.BigNumber.from(selectedPoll? selectedPoll.creationTimestamp: 0).toNumber()}</Text>
+        <Text>Total Minutes: {ethers.BigNumber.from(selectedPoll?.timeInMinutes || 0).toNumber()}</Text>
+        <Text>Creation Time: {new Date(ethers.BigNumber.from(selectedPoll?.creationTimestamp || 0).toNumber() * 1000).toLocaleString()}</Text>
+        <Text>
+          Remaining Time: <br/>
+          {(() => {
+            const now = Math.floor(Date.now() / 1000);
+            const creationTime = ethers.BigNumber.from(selectedPoll?.creationTimestamp || 0).toNumber();
+            const totalTime = ethers.BigNumber.from(selectedPoll?.timeInMinutes || 0).toNumber() * 60;
+            const elapsedTime = now - creationTime;
+            const remainingTime = totalTime - elapsedTime;
+
+            const remainingDays = Math.floor(remainingTime / (60 * 60 * 24));
+            const remainingHours = Math.floor((remainingTime % (60 * 60 * 24)) / (60 * 60));
+            const remainingMinutes = Math.floor((remainingTime % (60 * 60)) / 60);
+            const remainingSeconds = remainingTime % 60;
+
+            return remainingTime > 0 ? `${remainingDays} days, ${remainingHours} hours, ${remainingMinutes} minutes, and ${remainingSeconds} seconds` : 'Poll has ended';
+          })()}
+        </Text>
         <RadioGroup onChange={setSelectedOption} value={selectedOption}>
           <VStack spacing={4}>
             {selectedPoll?.options?.map((option, index) => (
@@ -394,6 +408,8 @@ const Voting = () => {
         </RadioGroup>
       </VStack>
     </ModalBody>
+
+
     <ModalFooter>
       <Button colorScheme="blue" onClick={handleVote} mr={3}>
         Vote
