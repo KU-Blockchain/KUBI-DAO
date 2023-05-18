@@ -1,8 +1,5 @@
 import React, { useState, useEffect } from "react";
 import KUBIMembershipNFTArtifact from "../abi/KUBIMembershipNFT.json";
-import ProjectManagerArtifact from "../abi/ProjectManager.json";
-import ExecNFTArtifiact from "../abi/KUBIExecutiveNFT.json";
-import KUBIXArtifact from "../abi/KUBIX.json";
 import { useDataBaseContext } from "@/contexts/DataBaseContext";
 import { useWeb3Context } from "@/contexts/Web3Context";
 import { ethers } from "ethers";
@@ -46,10 +43,6 @@ const User = () => {
   const [name, setName] = useState("");
   const[showMetaMaskMessage, setShowMetaMaskMessage]=useState(false);
 
-  //move deploys to deploy menu component
-  const [deployedPMContract, setDeployedPMContract] = useState(null);
-  const [deployedKUBIContract, setDeployedKUBIContract] = useState(null);
-  const [deployedKUBIXContract, setDeployedKUBIXContract] = useState(null);
 
 
   const [isConnected, setIsConnected] = useState(false);
@@ -57,12 +50,10 @@ const User = () => {
 
 
 
-  const [projectHashesInput, setProjectHashesInput] = useState([]);
-  const [dataHashInput, setDataHashInput] = useState("");
   const [phrase,setPhrase]=useState("Join");
 
-  const { userDetails, fetchUserDetails, addUserData, clearData, pushProjectHashes } = useDataBaseContext();
-  const{hasMemberNFT, execNftBalance,balance,nftBalance, fetchBalance,web3, account,kubiMembershipNFTContract, contract,KUBIXbalance,KUBIXcontract,  kubiMembershipNFTAddress}=useWeb3Context();
+  const { userDetails, fetchUserDetails, addUserData } = useDataBaseContext();
+  const{hasMemberNFT, execNftBalance,balance,nftBalance, fetchBalance,web3, account,kubiMembershipNFTContract, contract,KUBIXbalance, kubiMembershipNFTAddress}=useWeb3Context();
 
 
   

@@ -1,4 +1,5 @@
 import * as React from "react";
+import { useRouter } from 'next/router'; // Import useRouter
 import { useEffect } from "react";
 import { ChakraProvider, extendTheme, Flex, Box } from "@chakra-ui/react";
 import NavBar from "../components/NavBar";
@@ -8,12 +9,15 @@ import { TaskBoardProvider } from "@/contexts/TaskBoardContext";
 
 const theme = extendTheme({
   config: {
-    initialColorMode: "light",
-    useSystemColorMode: false,
+    brand: {
+      100: "#6495ED",
+    }
   },
 });
 
 function MyApp({ Component, pageProps }) {
+  const router = useRouter(); // Get the router object
+
   useEffect(() => {
     document.title = 'KUBI DAO';
   }, []);
@@ -21,7 +25,11 @@ function MyApp({ Component, pageProps }) {
     <DataBaseProvider>
       <Web3Provider>
         <ChakraProvider theme={theme}>
-          <Flex direction="column" minH="100vh">
+          <Flex 
+            direction="column" 
+            minH="100vh" 
+            bg={router.pathname === "/tasks" ? "clear" : "cornflowerblue"} // Set the background based on the current route
+          >
             <Box as="header">
               <NavBar />
             </Box>

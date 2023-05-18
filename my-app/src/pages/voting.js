@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import {Text, Box, useDisclosure, Flex, Grid, Container, Spacer, VStack, Heading, Tabs, TabList, Tab, TabPanels, TabPanel, Button, Collapse, FormControl, FormLabel, Input, Textarea, RadioGroup, Stack, Radio, Modal, ModalOverlay, ModalContent, ModalHeader, ModalCloseButton, ModalBody, ModalFooter } from '@chakra-ui/react';
+import {CSSReset,extendTheme, ChakraProvider, Text, Box, useDisclosure, Flex, Grid, Container, Spacer, VStack, Heading, Tabs, TabList, Tab, TabPanels, TabPanel, Button, Collapse, FormControl, FormLabel, Input, Textarea, RadioGroup, Stack, Radio, Modal, ModalOverlay, ModalContent, ModalHeader, ModalCloseButton, ModalBody, ModalFooter } from '@chakra-ui/react';
 
 
 import { ethers } from 'ethers';
@@ -7,6 +7,16 @@ import KubixVotingABI from '../abi/KubixVoting.json';
 import { useDataBaseContext } from '@/contexts/DataBaseContext';
 import { useWeb3Context } from '@/contexts/Web3Context';
 import { useToast } from '@chakra-ui/react';
+
+const glassLayerStyle = {
+  position: "absolute",
+  height: "100%",
+  width: "100%",
+  zIndex: -1,
+  borderRadius: "inherit",
+  backdropFilter: "blur(20px)",
+  backgroundColor: "rgba(0, 0, 0, .6)",
+};
 
 
 const provider = new ethers.providers.JsonRpcProvider('https://rpc-mumbai.maticvigil.com/');
@@ -208,18 +218,47 @@ const Voting = () => {
   return (
     <>
     <Container maxW="container.xl" py={12} >
-      <Flex align="center" mb={8}>
-        <Heading size="xl">{selectedTab === 0 ? 'Democracy Voting (KUBI)' : 'Polling (KUBIX)'}</Heading>
+      <Flex align="center" mb={8}
+                flexDirection="column"
+                alignItems="center"
+                justifyContent="center"
+                borderRadius="lg"
+                boxShadow="lg"
+                p="2%"
+                w="100%"
+                
+                bg="transparent"
+                position="relative"
+                display="flex"
+                zIndex={0}
+                >
+      <div className="glass" style={glassLayerStyle} />
+        <Heading color= "ghostwhite"size="xl">{selectedTab === 0 ? 'Democracy Voting (KUBI)' : 'Polling (KUBIX)'}</Heading>
         <Spacer />
-        <Button onClick={handleCreatePollClick}>
+        <Button bg="green.300" mt="2%" onClick={handleCreatePollClick}>
           {selectedTab === 0 ? (showCreateVote ? 'Hide Create Vote Form' : 'Create Vote') : (showCreatePoll ? 'Hide Create Poll Form' : 'Create Poll')}
         </Button>
       </Flex>
   
       <Tabs isFitted variant="enclosed" onChange={handleTabsChange} mb={8}>
-        <TabList mb="1em">
-          <Tab>Votes</Tab>
-          <Tab>Polls</Tab>
+        
+        <TabList          
+          alignItems="center"
+          justifyContent="center"
+          borderRadius="lg"
+          boxShadow="lg"
+          p={6}
+          w="100%"
+          bg="transparent"
+          position="relative"
+          display="flex"
+          zIndex={0}
+          color= "ghostwhite"
+          
+        >
+          <div className="glass" style={glassLayerStyle} />
+          <Tab fontSize="2xl" fontWeight="extrabold" >Votes</Tab>
+          <Tab fontSize="2xl"fontWeight="extrabold">Polls</Tab>
         </TabList>
         <TabPanels>
           <TabPanel>
@@ -247,7 +286,7 @@ const Voting = () => {
             <Grid templateColumns={{ sm: "1fr", md: "repeat(2, 1fr)" }} gap={6}>
               {/* Ongoing Polls */}
               <VStack spacing={4}>
-                <Heading size="md">Ongoing Polls</Heading>
+                <Heading color="ghostwhite" mt="4"mb="6"size="lg">Ongoing Polls</Heading>
                 {/* Step 4: Display ongoing polls in the Ongoing Polls section. */}
                 {(ongoingPolls).map((poll, index) => (
                   <Box key={index} borderWidth={1} borderRadius="lg" p={4} onClick={() => handlePollClick(poll)}>
@@ -261,10 +300,26 @@ const Voting = () => {
   
               {/* History */}
               <VStack>
-                <Heading mt={4} size="md">History</Heading>
+                <Heading color="ghostwhite" mt="4"mb="6"size="lg">History</Heading>
                 {completedPolls.map((poll, index) => (
-                  <Box key={index} borderWidth={1} borderRadius="lg" p={4} >
-                    <Text fontWeight="bold">{poll.name}</Text>
+                  <Box key={index}           
+                  flexDirection="column"
+                  alignItems="center"
+                  justifyContent="center"
+                  borderRadius="lg"
+                  boxShadow="lg"
+                  display="flex"
+                  w="100%"
+                  maxWidth="600px"
+                  bg="transparent"
+                  position="relative"
+                  mr={6}
+                  p={4}
+                  zIndex={1}
+                  mt={4} 
+                  color= "ghostwhite">
+                    <div className="glass" style={glassLayerStyle} />
+                    <Text fontSize={"2xl"} fontWeight="extrabold">{poll.name}</Text>
                     <Text>{poll.description}</Text>
                     <Text>Total Minutes: {ethers.BigNumber.from(poll.timeInMinutes).toNumber()}</Text>
 
@@ -355,6 +410,7 @@ const Voting = () => {
     <ModalHeader>{selectedPoll?.name}</ModalHeader>
     <ModalCloseButton />
     <ModalBody>
+    <div className="glass" style={glassLayerStyle} />
       <VStack spacing={4}>
         <Text>{selectedPoll?.description}</Text>
         <Text>Total Minutes: {ethers.BigNumber.from(selectedPoll?.timeInMinutes || 0).toNumber()}</Text>
