@@ -20,6 +20,7 @@
     "@openzeppelin/contracts": "^4.8.2",
     "@walletconnect/web3-provider": "^1.8.0",
     "abdk-libraries-solidity": "^3.2.0",
+    "chart.js": "^4.3.0",
     "dotenv": "^16.0.3",
     "ethers": "5.7.2",
     "framer-motion": "^10.12.4",
@@ -32,10 +33,13 @@
     "next-transpile-modules": "^10.0.0",
     "react": "18.2.0",
     "react-beautiful-dnd": "^13.1.1",
+    "react-chartjs-2": "^5.2.0",
+    "react-chartjs-3": "^2.7.7",
     "react-dnd": "^16.0.1",
     "react-dnd-html5-backend": "^16.0.1",
     "react-dom": "18.2.0",
     "react-particles-js": "^3.6.0",
+    "recharts": "^2.6.2",
     "web3": "^1.9.0"
   }
 }

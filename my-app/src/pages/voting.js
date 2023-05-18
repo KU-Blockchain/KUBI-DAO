@@ -7,6 +7,7 @@ import KubixVotingABI from '../abi/KubixVoting.json';
 import { useDataBaseContext } from '@/contexts/DataBaseContext';
 import { useWeb3Context } from '@/contexts/Web3Context';
 import { useToast } from '@chakra-ui/react';
+import { BarChart, Bar, XAxis, YAxis, Tooltip, CartesianGrid } from 'recharts';
 
 const glassLayerStyle = {
   position: "absolute",
@@ -85,27 +86,29 @@ const Voting = () => {
     }
   };
 
+  const fetchPolls = async () => {
+    try {
+      await contract.moveToCompleted();
+
+      const [ongoingPollsCount, completedPollsCount] = await Promise.all([
+        contract.activeProposalsCount(),
+        contract.completedProposalsCount()
+      ]);
+
+      const [ongoingPolls, completedPolls] = await Promise.all([
+        fetchPollsData(ongoingPollsCount, contract.activeProposalIndices, contract.activeProposals, contract.getOptionsCount, contract.getOption, false),
+        fetchPollsData(completedPollsCount, contract.completedProposalIndices, contract.activeProposals, contract.getOptionsCount, contract.getOption, true)
+      ]);
+
+      setOngoingPolls(ongoingPolls);
+      setCompletedPolls(completedPolls);
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
   useEffect(() => {
-    const fetchPolls = async () => {
-      try {
-        await contract.moveToCompleted();
-  
-        const [ongoingPollsCount, completedPollsCount] = await Promise.all([
-          contract.activeProposalsCount(),
-          contract.completedProposalsCount()
-        ]);
-  
-        const [ongoingPolls, completedPolls] = await Promise.all([
-          fetchPollsData(ongoingPollsCount, contract.activeProposalIndices, contract.activeProposals, contract.getOptionsCount, contract.getOption, false),
-          fetchPollsData(completedPollsCount, contract.completedProposalIndices, contract.activeProposals, contract.getOptionsCount, contract.getOption, true)
-        ]);
-  
-        setOngoingPolls(ongoingPolls);
-        setCompletedPolls(completedPolls);
-      } catch (error) {
-        console.error(error);
-      }
-    };
+
   
 
   
@@ -164,6 +167,8 @@ const Voting = () => {
       // Reset the form
       setProposal({ name: '', description: '', execution: '', time: 0, options: [] });
       setShowCreatePoll(false);
+      fetchPolls();
+//bugs: modal card dispalying last vote, glass modal overlay bad, ongoing votes doesnt have glass properly applied
     } catch (error) {
       console.error(error);
       toast({
@@ -212,17 +217,20 @@ const Voting = () => {
   const handleCreatePollClick = () => {
     setShowCreatePoll(!showCreatePoll);
   };
+
+
+
   
   
 
   return (
     <>
-    <Container maxW="container.xl" py={12} >
+    <Container maxW="container.xl" py={8} >
       <Flex align="center" mb={8}
                 flexDirection="column"
                 alignItems="center"
                 justifyContent="center"
-                borderRadius="lg"
+                borderRadius="3xl"
                 boxShadow="lg"
                 p="2%"
                 w="100%"
@@ -235,7 +243,7 @@ const Voting = () => {
       <div className="glass" style={glassLayerStyle} />
         <Heading color= "ghostwhite"size="xl">{selectedTab === 0 ? 'Democracy Voting (KUBI)' : 'Polling (KUBIX)'}</Heading>
         <Spacer />
-        <Button bg="green.300" mt="2%" onClick={handleCreatePollClick}>
+        <Button fontWeight="black" p="2%" w="20%"bg="green.300" mt="2%" onClick={handleCreatePollClick}>
           {selectedTab === 0 ? (showCreateVote ? 'Hide Create Vote Form' : 'Create Vote') : (showCreatePoll ? 'Hide Create Poll Form' : 'Create Poll')}
         </Button>
       </Flex>
@@ -245,7 +253,7 @@ const Voting = () => {
         <TabList          
           alignItems="center"
           justifyContent="center"
-          borderRadius="lg"
+          borderRadius="3xl"
           boxShadow="lg"
           p={6}
           w="100%"
@@ -299,39 +307,48 @@ const Voting = () => {
               </VStack>
   
               {/* History */}
-              <VStack>
-                <Heading color="ghostwhite" mt="4"mb="6"size="lg">History</Heading>
-                {completedPolls.map((poll, index) => (
-                  <Box key={index}           
-                  flexDirection="column"
+              <VStack spacing={4}>
+                <Heading color="ghostwhite" mt="4"mb="4"size="lg">History</Heading>
+                {completedPolls.map((poll, index) => {
+                const totalVotes = poll.options.reduce((total, option) => total + ethers.BigNumber.from(option.votes).toNumber(), 0);
+                const data = [{ name: 'Options', values: poll.options.map(option => ({
+                  value: (ethers.BigNumber.from(option.votes).toNumber() / totalVotes) * 100,
+                  color: `rgba(${Math.random() * 255}, ${Math.random() * 255}, ${Math.random() * 255}, 1)`
+                })) }];
+
+                return (
+                  <Box key={index} flexDirection="column"
                   alignItems="center"
                   justifyContent="center"
-                  borderRadius="lg"
+                  borderRadius="3xl"
                   boxShadow="lg"
                   display="flex"
                   w="100%"
-                  maxWidth="600px"
+                  maxWidth="90%"
                   bg="transparent"
                   position="relative"
-                  mr={6}
                   p={4}
                   zIndex={1}
                   mt={4} 
                   color= "ghostwhite">
                     <div className="glass" style={glassLayerStyle} />
-                    <Text fontSize={"2xl"} fontWeight="extrabold">{poll.name}</Text>
-                    <Text>{poll.description}</Text>
-                    <Text>Total Minutes: {ethers.BigNumber.from(poll.timeInMinutes).toNumber()}</Text>
+                    <Text mb ="2" fontSize={"2xl"} fontWeight="extrabold">{poll.name}</Text>
+                    <Text mb ="4">{poll.description}</Text>
+                    <BarChart width={500} height={75} layout="vertical" data={data}>
+                      
+                      <XAxis type="number" />
+                      <YAxis type="category"  />
 
-                    {poll?.options?.map((option, index) => (
-                      <Text key={index} value={index} >Option {index+1}: {option.optionName}</Text>
-                    ))}
-                    <Text>Winner: {poll.winner}</Text>
+                      {data[0].values.map((option, index) => (
+                        <Bar key={index} dataKey={`values[${index}].value`} stackId="a" fill={option.color} />
+                      ))}
+                    </BarChart>
+                    <Text /* ... */>Winner: {poll.winner}</Text>
                   </Box>
-                ))}
+                );
+              })}
               </VStack>
             </Grid>
-  
             {/* Create Poll Form */}
             <Modal isOpen={showCreatePoll} onClose={handleCreatePollClick}>
               <ModalOverlay />
