@@ -334,16 +334,18 @@ const Voting = () => {
                     <div className="glass" style={glassLayerStyle} />
                     <Text mb ="2" fontSize={"2xl"} fontWeight="extrabold">{poll.name}</Text>
                     <Text mb ="4">{poll.description}</Text>
-                    <BarChart width={500} height={75} layout="vertical" data={data}>
-                      
-                      <XAxis type="number" />
-                      <YAxis type="category"  />
-
+                    <Flex  justifyContent="center">
+                      <BarChart  width={400} height={50} layout="vertical" data={data}>
+                        <XAxis type="number" hide="true" />
+                        <YAxis type="category" dataKey="name" hide="true" />
                       {data[0].values.map((option, index) => (
                         <Bar key={index} dataKey={`values[${index}].value`} stackId="a" fill={option.color} />
                       ))}
                     </BarChart>
-                    <Text /* ... */>Winner: {poll.winner}</Text>
+
+                    </Flex>
+
+                    <Text fontSize="2xl" fontWeight="extrabold">Winner: {poll.winner}</Text>
                   </Box>
                 );
               })}
