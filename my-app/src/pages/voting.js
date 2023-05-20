@@ -310,11 +310,17 @@ const Voting = () => {
               <VStack spacing={4}>
                 <Heading color="ghostwhite" mt="4"mb="4"size="lg">History</Heading>
                 {completedPolls.map((poll, index) => {
-                const totalVotes = poll.options.reduce((total, option) => total + ethers.BigNumber.from(option.votes).toNumber(), 0);
-                const data = [{ name: 'Options', values: poll.options.map(option => ({
-                  value: (ethers.BigNumber.from(option.votes).toNumber() / totalVotes) * 100,
-                  color: `rgba(${Math.random() * 255}, ${Math.random() * 255}, ${Math.random() * 255}, 1)`
-                })) }];
+                  const totalVotes = poll.options.reduce((total, option) => total + ethers.BigNumber.from(option.votes).toNumber(), 0);
+                  
+                  const predefinedColors = ['red', 'darkblue', 'yellow', 'purple'];
+                  
+                  const data = [{ name: 'Options', values: poll.options.map((option, index) => {
+                    const color = index < predefinedColors.length ? predefinedColors[index] : `rgba(${Math.random() * 255}, ${Math.random() * 255}, ${Math.random() * 255}, 1)`;
+                    return {
+                      value: (ethers.BigNumber.from(option.votes).toNumber() / totalVotes) * 100,
+                      color: color
+                    };
+                  }) }];
 
                 return (
                   <Box key={index} flexDirection="column"
