@@ -88,64 +88,53 @@ const Voting = () => {
 
   const fetchPolls = async () => {
     try {
-      await contract.moveToCompleted();
+        await contract.moveToCompleted();
 
-      const [ongoingPollsCount, completedPollsCount] = await Promise.all([
-        contract.activeProposalsCount(),
-        contract.completedProposalsCount()
-      ]);
+        const ongoingPollsCount = await contract.activeProposalsCount();
+        const completedPollsCount = await contract.completedProposalsCount();
 
-      const [ongoingPolls, completedPolls] = await Promise.all([
-        fetchPollsData(ongoingPollsCount, contract.activeProposalIndices, contract.activeProposals, contract.getOptionsCount, contract.getOption, false),
-        fetchPollsData(completedPollsCount, contract.completedProposalIndices, contract.activeProposals, contract.getOptionsCount, contract.getOption, true)
-      ]);
+        const ongoingPolls = await fetchPollsData(ongoingPollsCount, false);
+        const completedPolls = await fetchPollsData(completedPollsCount, true);
 
-      setOngoingPolls(ongoingPolls);
-      setCompletedPolls(completedPolls);
+        setOngoingPolls(ongoingPolls);
+        setCompletedPolls(completedPolls);
     } catch (error) {
-      console.error(error);
+        console.error(error);
     }
-  };
+};
 
-  useEffect(() => {
-
-  
-
-  
+useEffect(() => {
     fetchPolls();
-  }, []);
-  
-  const fetchPollsData = async (pollsCount, indicesMethod, proposalsMethod, optionsCountMethod, optionMethod, completed) => {
+}, []);
+
+const fetchPollsData = async (pollsCount, completed) => {
     const pollsData = [];
 
     for (let i = 0; i < pollsCount; i++) {
-      const index = await indicesMethod(i);
-      const poll = await proposalsMethod(index);
+        const proposalId = completed ? await contract.completedProposalIndices(i) : await contract.activeProposalIndices(i+1);
+        const proposal = await contract.activeProposals(proposalId);
 
-      const optionsCount = await optionsCountMethod(index);
-      const pollOptions = [];
-      for (let j = 0; j < optionsCount; j++) {
-        const option = await optionMethod(index, j);
-        pollOptions.push(option);
-      }
+        const optionsCount = await contract.getOptionsCount(proposalId);
+        const pollOptions = [];
 
-      if(completed){
-        const winner = await contract.getWinner(index);
-        console.log(winner)
-        
-        let pollWithOptions = { ...poll, options: pollOptions , id: index, winner};
+        for (let j = 0; j < optionsCount; j++) {
+            const option = await contract.getOption(proposalId, j);
+            pollOptions.push(option);
+        }
+
+        let pollWithOptions = { ...proposal, options: pollOptions, id: proposalId };
+
+        if (completed) {
+            const winner = await contract.getWinner(i);
+            pollWithOptions = { ...pollWithOptions, winner };
+        }
+
         pollsData.push(pollWithOptions);
-      }
-      else{
-        let pollWithOptions = { ...poll, options: pollOptions , id: index};
-        pollsData.push(pollWithOptions);
-      }
-
-
     }
 
     return pollsData;
-  };
+};
+
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
@@ -431,11 +420,26 @@ const Voting = () => {
       {/* Modal */}
       <Modal isOpen={isOpen} onClose={onClose}>
   <ModalOverlay />
-  <ModalContent>
-    <ModalHeader>{selectedPoll?.name}</ModalHeader>
+  <ModalContent
+      alignItems="center"
+      justifyContent="center"
+      borderRadius="3xl"
+      boxShadow="lg"
+      display="flex"
+      w="100%"
+      maxWidth="40%"
+      bg="transparent"
+      position="relative"
+      p={4}
+      zIndex={1}
+      mt="10%"
+      color="ghostwhite"
+  >
+    <div className="glass" style={glassLayerStyle} />
+    <ModalHeader >{selectedPoll?.name}</ModalHeader>
     <ModalCloseButton />
     <ModalBody>
-    <div className="glass" style={glassLayerStyle} />
+
       <VStack spacing={4}>
         <Text>{selectedPoll?.description}</Text>
         <Text>Total Minutes: {ethers.BigNumber.from(selectedPoll?.timeInMinutes || 0).toNumber()}</Text>
@@ -474,7 +478,6 @@ const Voting = () => {
       <Button colorScheme="blue" onClick={handleVote} mr={3}>
         Vote
       </Button>
-      <Button variant="ghost" onClick={onClose}>Close</Button>
     </ModalFooter>
   </ModalContent>
 </Modal>
