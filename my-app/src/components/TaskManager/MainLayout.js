@@ -30,7 +30,7 @@ const MainLayout = () => {
 
   return (
     <Flex direction="column" w="100%" minH="90vh">
-      <Box bg={"cornflowerblue"} p={4} boxShadow="md">
+      <Box bg={"#2d86fff7"} p={4} boxShadow="md">
         <Heading mr={"300px"}color={'white'} size="md">KUBI Task Manager</Heading>
       </Box>
       <Flex w="100%" flex="1">

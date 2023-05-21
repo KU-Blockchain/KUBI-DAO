@@ -2,6 +2,8 @@ import React from 'react';
 import '../styles/TaskColumn.module.css';
 import { Box, Flex, Heading, Text, Button, VStack, Container, Image, Link } from '@chakra-ui/react';
 import Link2 from 'next/link';
+import Typist from 'react-typist';
+import { stubFalse } from 'lodash';
 
 const glassLayerStyle = {
   position: 'absolute',
@@ -22,9 +24,22 @@ const waveBackgroundStyle = {
   zIndex: 0,
 };
 
+const ballStyle = {
+  position: "relative",
+  width: "70%",
+  height: "500px",
+  borderRadius: "0%",
+  marginTop: "5%",
+  marginBottom: "5%",
+  boxShadow: "inset 0 0 70px #fff, inset 20px 0 400px #ff0000, inset -20px 0 100px #fff, inset 20px 0 200px #ff0000, inset -10px 0 150px #166, 0 0 50px #fff, -10px 0 80px #fff, 10px 0 70px #fff",
+}
+
+
+
 const Home = () => {
   return (
-    <VStack spacing={20} style={{ position: 'relative' }}>
+    
+    <VStack spacing={10} style={{ position: 'relative' }}>
       
     <Box style={waveBackgroundStyle}>
       <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1440 320">
@@ -47,9 +62,10 @@ const Home = () => {
       </svg>
     </Box>
     
+    
+    
       <Box
         w="60%"
-        mt="10%"
         borderRadius="2xl"
         display="flex"
         flexDirection="column"
@@ -105,7 +121,15 @@ const Home = () => {
             </Text>
         </Container>
         </Box>
+        <div style={ballStyle} className="div2">
+          <div style={{ position: "absolute", top: "50%", left: "50%", transform: "translate(-50%, -50%)", color: "#fff", fontSize: "8em",fontWeight:"bolder", textAlign: "center" }}>
+          <Typist cursor= {{show: false}} stdTypingDelay={300} avgTypingDelay={200}>
+            KUBI DAO
+          </Typist>
+          </div>
+        </div>
     </VStack>
+   
 
   );
 };

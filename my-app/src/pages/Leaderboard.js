@@ -113,7 +113,7 @@ const Leaderboard = () => {
   };
 
   return (
-    <Box position="relative" w="100%" minH="100vh" p={4} bg="cornflowerblue">
+    <Box position="relative" w="100%" minH="100vh" p={4} bg="#2d86fff7">
       <VStack spacing={4}>
         <Heading as="h1">Leaderboard</Heading>
         <HStack spacing={4}>
