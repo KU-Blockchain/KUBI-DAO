@@ -283,12 +283,28 @@ const fetchPollsData = async (pollsCount, completed) => {
             <Grid templateColumns={{ sm: "1fr", md: "repeat(2, 1fr)" }} gap={6}>
               {/* Ongoing Polls */}
               <VStack spacing={4}>
-                <Heading color="ghostwhite" mt="4"mb="6"size="lg">Ongoing Polls</Heading>
+              
+                <Heading color="ghostwhite" mt="4"mb="4"size="lg">Ongoing Polls</Heading>
                 {/* Step 4: Display ongoing polls in the Ongoing Polls section. */}
                 {(ongoingPolls).map((poll, index) => (
-                  <Box key={index} borderWidth={1} borderRadius="lg" p={4} onClick={() => handlePollClick(poll)}>
-                    <Text fontWeight="bold">{poll.name}</Text>
-                    <Text>{poll.description}</Text>
+                  <Box key={index} flexDirection="column"
+                  alignItems="center"
+                  justifyContent="center"
+                  borderRadius="3xl"
+                  boxShadow="lg"
+                  display="flex"
+                  w="100%"
+                  maxWidth="90%"
+                  bg="transparent"
+                  position="relative"
+                  p={4}
+                  zIndex={1}
+                  mt={4} 
+                  color= "ghostwhite"  onClick={() => handlePollClick(poll)
+                  }>
+                    <div className="glass" style={glassLayerStyle} />
+                    <Text mb ="2" fontSize="2xl" fontWeight="extrabold">{poll.name}</Text>
+                    <Text mb="4">{poll.description}</Text>
                     <Text>Time: {ethers.BigNumber.from(poll.timeInMinutes).toNumber()}</Text>
                     <Text>Options: {poll.options[0].optionName}</Text>
                   </Box>
