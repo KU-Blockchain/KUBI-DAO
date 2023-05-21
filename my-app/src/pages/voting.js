@@ -7,7 +7,8 @@ import KubixVotingABI from '../abi/KubixVoting.json';
 import { useDataBaseContext } from '@/contexts/DataBaseContext';
 import { useWeb3Context } from '@/contexts/Web3Context';
 import { useToast } from '@chakra-ui/react';
-import { BarChart, Bar, XAxis, YAxis, Tooltip, CartesianGrid } from 'recharts';
+import { BarChart, Bar, XAxis, YAxis} from 'recharts';
+import CountDown from '@/components/voting/countDown';
 
 const glassLayerStyle = {
   position: "absolute",
@@ -122,7 +123,7 @@ const fetchPollsData = async (pollsCount, completed) => {
             pollOptions.push(option);
         }
 
-        let pollWithOptions = { ...proposal, options: pollOptions, id: proposalId };
+        let pollWithOptions = { ...proposal, options: pollOptions, id: proposalId, remainingTime: proposal.timeInMinutes * 60 - (Math.floor(Date.now() / 1000) - proposal.creationTimestamp) };
 
         if (completed) {
             const winner = await contract.getWinner(i);
@@ -283,11 +284,9 @@ const fetchPollsData = async (pollsCount, completed) => {
             <Grid templateColumns={{ sm: "1fr", md: "repeat(2, 1fr)" }} gap={6}>
               {/* Ongoing Polls */}
               <VStack spacing={4}>
-              
-                <Heading color="ghostwhite" mt="4"mb="4"size="lg">Ongoing Polls</Heading>
-                {/* Step 4: Display ongoing polls in the Ongoing Polls section. */}
-                {(ongoingPolls).map((poll, index) => (
-                  <Box key={index} flexDirection="column"
+              <Heading color="ghostwhite" mt="4"mb="4"size="lg">Ongoing Polls</Heading>
+              {(ongoingPolls).map((poll, index) => (
+                <Box key={index} flexDirection="column"
                   alignItems="center"
                   justifyContent="center"
                   borderRadius="3xl"
@@ -300,16 +299,22 @@ const fetchPollsData = async (pollsCount, completed) => {
                   p={4}
                   zIndex={1}
                   mt={4} 
-                  color= "ghostwhite"  onClick={() => handlePollClick(poll)
-                  }>
-                    <div className="glass" style={glassLayerStyle} />
-                    <Text mb ="2" fontSize="2xl" fontWeight="extrabold">{poll.name}</Text>
-                    <Text mb="4">{poll.description}</Text>
-                    <Text>Time: {ethers.BigNumber.from(poll.timeInMinutes).toNumber()}</Text>
-                    <Text>Options: {poll.options[0].optionName}</Text>
-                  </Box>
-                ))}
-              </VStack>
+                  color= "ghostwhite"  
+                  _hover={{ bg: "black", boxShadow: "md", transform: "scale(1.05)"}}
+                  onClick={() => handlePollClick(poll)}>
+                  <div className="glass" style={glassLayerStyle} />
+                  <Text mb ="2" fontSize="2xl" fontWeight="extrabold">{poll.name}</Text>
+                  <Text mb="4">{poll.description}</Text>
+                  <CountDown duration={poll.remainingTime} />
+                  <Text mt="4">Options:</Text>
+                  <VStack spacing={2}>
+                    {poll.options.map((option, index) => (
+                      <Text key={index}>{option.optionName}</Text>
+                    ))}
+                  </VStack>
+                </Box>
+              ))}
+            </VStack>
   
               {/* History */}
               <VStack spacing={4}>
@@ -460,23 +465,8 @@ const fetchPollsData = async (pollsCount, completed) => {
         <Text>{selectedPoll?.description}</Text>
         <Text>Total Minutes: {ethers.BigNumber.from(selectedPoll?.timeInMinutes || 0).toNumber()}</Text>
         <Text>Creation Time: {new Date(ethers.BigNumber.from(selectedPoll?.creationTimestamp || 0).toNumber() * 1000).toLocaleString()}</Text>
-        <Text>
-          Remaining Time: <br/>
-          {(() => {
-            const now = Math.floor(Date.now() / 1000);
-            const creationTime = ethers.BigNumber.from(selectedPoll?.creationTimestamp || 0).toNumber();
-            const totalTime = ethers.BigNumber.from(selectedPoll?.timeInMinutes || 0).toNumber() * 60;
-            const elapsedTime = now - creationTime;
-            const remainingTime = totalTime - elapsedTime;
-
-            const remainingDays = Math.floor(remainingTime / (60 * 60 * 24));
-            const remainingHours = Math.floor((remainingTime % (60 * 60 * 24)) / (60 * 60));
-            const remainingMinutes = Math.floor((remainingTime % (60 * 60)) / 60);
-            const remainingSeconds = remainingTime % 60;
-
-            return remainingTime > 0 ? `${remainingDays} days, ${remainingHours} hours, ${remainingMinutes} minutes, and ${remainingSeconds} seconds` : 'Poll has ended';
-          })()}
-        </Text>
+        <Text fontWeight="bold" fontSize="xl">Remaining Time: </Text>
+        <CountDown duration={selectedPoll?.remainingTime} />
         <RadioGroup onChange={setSelectedOption} value={selectedOption}>
           <VStack spacing={4}>
             {selectedPoll?.options?.map((option, index) => (
