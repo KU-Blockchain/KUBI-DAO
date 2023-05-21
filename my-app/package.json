@@ -40,6 +40,7 @@
     "react-dnd-html5-backend": "^16.0.1",
     "react-dom": "18.2.0",
     "react-particles-js": "^3.6.0",
+    "react-typist": "^2.0.5",
     "recharts": "^2.6.2",
     "web3": "^1.9.0"
   }

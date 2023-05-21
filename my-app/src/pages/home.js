@@ -2,6 +2,8 @@ import React from 'react';
 import '../styles/TaskColumn.module.css';
 import { Box, Flex, Heading, Text, Button, VStack, Container, Image, Link } from '@chakra-ui/react';
 import Link2 from 'next/link';
+import Typist from 'react-typist';
+import { stubFalse } from 'lodash';
 
 const glassLayerStyle = {
   position: 'absolute',
@@ -121,7 +123,9 @@ const Home = () => {
         </Box>
         <div style={ballStyle} className="div2">
           <div style={{ position: "absolute", top: "50%", left: "50%", transform: "translate(-50%, -50%)", color: "#fff", fontSize: "8em",fontWeight:"bolder", textAlign: "center" }}>
+          <Typist cursor= {{show: false}} stdTypingDelay={300} avgTypingDelay={200}>
             KUBI DAO
+          </Typist>
           </div>
         </div>
     </VStack>
