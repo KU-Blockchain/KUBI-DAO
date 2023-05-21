@@ -416,7 +416,7 @@ const User = () => {
       p={8}
       w="100%"
       h="100%"
-      bg="cornflowerblue"
+      bg="#1285ff"
       minH="100vh"
     >
       {renderMetamaskMessage()}

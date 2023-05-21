@@ -28,7 +28,7 @@ function MyApp({ Component, pageProps }) {
           <Flex 
             direction="column" 
             minH="100vh" 
-            bg={router.pathname === "/tasks" ? "clear" : "cornflowerblue"} // Set the background based on the current route
+            bg={router.pathname === "/tasks" ? "clear" : "#1285ff"} // Set the background based on the current route
           >
             <Box as="header">
               <NavBar />

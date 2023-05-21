@@ -22,8 +22,21 @@ const waveBackgroundStyle = {
   zIndex: 0,
 };
 
+const ballStyle = {
+  position: "relative",
+  width: "350px",
+  height: "350px",
+  borderRadius: "50%",
+  marginTop: "10%",
+  marginBottom: "5%",
+  boxShadow: "inset 0 0 60px #666, inset 20px 0 100px #e13232, inset -20px 0 80px #166, inset 20px 0 100px #e13232, inset -10px 0 150px #166, 0 0 50px #666, -10px 0 80px #616, 10px 0 80px #166",
+}
+
+
+
 const Home = () => {
   return (
+    
     <VStack spacing={20} style={{ position: 'relative' }}>
       
     <Box style={waveBackgroundStyle}>
@@ -46,6 +59,8 @@ const Home = () => {
         <path fill="url(#waveGradient)" d="M0,96L48,117.3C96,139,192,181,288,192C384,203,480,181,576,176C672,171,768,181,864,170.7C960,160,1056,128,1152,133.3C1248,139,1344,181,1392,202.7L1440,224V320H1392C1344,320,1248,320,1152,320C1056,320,960,320,864,320C768,320,672,320,576,320C480,320,384,320,288,320C192,320,96,320,48,320H0Z" />
       </svg>
     </Box>
+    
+    
     
       <Box
         w="60%"
@@ -105,7 +120,9 @@ const Home = () => {
             </Text>
         </Container>
         </Box>
+        <div style={ballStyle} className="div2"></div>
     </VStack>
+   
 
   );
 };

@@ -114,7 +114,7 @@ const ProjectSidebar = ({ projects,selectedProject, onSelectProject, onCreatePro
           disabled={showInput && !newProjectName.trim()}
           ml="5%"
           width="90%" // Set width to 100%
-          _hover={{ bg: "cornflowerblue", boxShadow: "md", transform: "scale(1.05)"}}
+          _hover={{ bg: "#2d86fff7", boxShadow: "md", transform: "scale(1.05)"}}
           mb="4"
           color={'ghostwhite'}
         >
