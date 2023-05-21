@@ -27,7 +27,7 @@ const ballStyle = {
   width: "350px",
   height: "350px",
   borderRadius: "50%",
-  marginTop: "10%",
+  marginTop: "7%",
   marginBottom: "5%",
   boxShadow: "inset 0 0 60px #666, inset 20px 0 100px #e13232, inset -20px 0 80px #166, inset 20px 0 100px #e13232, inset -10px 0 150px #166, 0 0 50px #666, -10px 0 80px #616, 10px 0 80px #166",
 }
