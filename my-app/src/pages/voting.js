@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import {Text, Box, useDisclosure, Flex, Grid, Container, Spacer, VStack, Heading, Tabs, TabList, Tab, TabPanels, TabPanel, Button, Collapse, FormControl, FormLabel, Input, Textarea, RadioGroup, Stack, Radio, Modal, ModalOverlay, ModalContent, ModalHeader, ModalCloseButton, ModalBody, ModalFooter } from '@chakra-ui/react';
+import {CSSReset,extendTheme, ChakraProvider, Text, Box, useDisclosure, Flex, Grid, Container, Spacer, VStack, Heading, Tabs, TabList, Tab, TabPanels, TabPanel, Button, Collapse, FormControl, FormLabel, Input, Textarea, RadioGroup, Stack, Radio, Modal, ModalOverlay, ModalContent, ModalHeader, ModalCloseButton, ModalBody, ModalFooter } from '@chakra-ui/react';
 
 
 import { ethers } from 'ethers';
@@ -7,6 +7,18 @@ import KubixVotingABI from '../abi/KubixVoting.json';
 import { useDataBaseContext } from '@/contexts/DataBaseContext';
 import { useWeb3Context } from '@/contexts/Web3Context';
 import { useToast } from '@chakra-ui/react';
+import { BarChart, Bar, XAxis, YAxis} from 'recharts';
+import CountDown from '@/components/voting/countDown';
+
+const glassLayerStyle = {
+  position: "absolute",
+  height: "100%",
+  width: "100%",
+  zIndex: -1,
+  borderRadius: "inherit",
+  backdropFilter: "blur(20px)",
+  backgroundColor: "rgba(0, 0, 0, .6)",
+};
 
 
 const provider = new ethers.providers.JsonRpcProvider('https://rpc-mumbai.maticvigil.com/');
@@ -75,85 +87,55 @@ const Voting = () => {
     }
   };
 
-  const fetchCompletedPolls = async () => {
+  const fetchPolls = async () => {
     try {
-      const completedPollsCount = await contract.completedProposalsCount();
-      const polls = [];
-  
-      for (let i = 0; i < completedPollsCount; i++) {
-        const completedProposalIndex = await contract.completedProposalIndices(i);
-        const poll = await contract.activeProposals(completedProposalIndex);
-        const winner = await contract.getWinner(completedProposalIndex);
+        await contract.moveToCompleted();
 
-        const optionsCount = await contract.getOptionsCount(completedProposalIndex);
+        const ongoingPollsCount = await contract.activeProposalsCount();
+        const completedPollsCount = await contract.completedProposalsCount();
+
+        const ongoingPolls = await fetchPollsData(ongoingPollsCount, false);
+        const completedPolls = await fetchPollsData(completedPollsCount, true);
+
+        setOngoingPolls(ongoingPolls);
+        setCompletedPolls(completedPolls);
+    } catch (error) {
+        console.error(error);
+    }
+};
+
+useEffect(() => {
+    fetchPolls();
+}, []);
+
+const fetchPollsData = async (pollsCount, completed) => {
+    const pollsData = [];
+
+    for (let i = 0; i < pollsCount; i++) {
+        const proposalId = completed ? await contract.completedProposalIndices(i) : await contract.activeProposalIndices(i+1);
+        const proposal = await contract.activeProposals(proposalId);
+
+        const optionsCount = await contract.getOptionsCount(proposalId);
         const pollOptions = [];
-  
+
         for (let j = 0; j < optionsCount; j++) {
-          const option = await contract.getOption(completedProposalIndex, j);
-          pollOptions.push(option);
+            const option = await contract.getOption(proposalId, j);
+            pollOptions.push(option);
         }
 
-        const pollWithOptions = { ...poll, options: pollOptions , id: completedProposalIndex, winner};
-        polls.push(pollWithOptions);
+        let pollWithOptions = { ...proposal, options: pollOptions, id: proposalId, remainingTime: proposal.timeInMinutes * 60 - (Math.floor(Date.now() / 1000) - proposal.creationTimestamp) };
 
-
-    }
-
-    
-
-  
-      setCompletedPolls(polls);
-    } catch (error) {
-      console.error(error);
-    }
-  };
-  
-  
-  
-
-  const fetchOngoingPolls = async () => {
-    try {
-      await contract.moveToCompleted();
-      const pollCount = await contract.activeProposalsCount();
-      console.log(pollCount);
-      const polls = [];
-  
-      for (let i = 1; i <= pollCount; i++) {
-        const activeProposalIndex = await contract.activeProposalIndices(i);
-        const poll = await contract.activeProposals(activeProposalIndex);
-  
-        const optionsCount = await contract.getOptionsCount(activeProposalIndex);
-        const pollOptions = [];
-  
-        for (let j = 0; j < optionsCount; j++) {
-          const option = await contract.getOption(activeProposalIndex, j);
-          pollOptions.push(option);
+        if (completed) {
+            const winner = await contract.getWinner(i);
+            pollWithOptions = { ...pollWithOptions, winner };
         }
-  
-        console.log(pollOptions);
-  
-        // Create a new object that includes all properties from `poll` and adds `options`
-        const pollWithOptions = { ...poll, options: pollOptions , id: activeProposalIndex};
-        polls.push(pollWithOptions);
-      }
-      console.log(polls)
-      setOngoingPolls(polls);
 
-      for (let i = 0; i < polls.length; i++) {
-        console.log(polls[i].options[0].optionName);
-      }
-    } catch (error) {
-      console.error(error);
+        pollsData.push(pollWithOptions);
     }
-  };
-  
-  
-  
 
-  useEffect(() => {
-    fetchOngoingPolls();
-    fetchCompletedPolls();
-  }, []);
+    return pollsData;
+};
+
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
@@ -175,6 +157,8 @@ const Voting = () => {
       // Reset the form
       setProposal({ name: '', description: '', execution: '', time: 0, options: [] });
       setShowCreatePoll(false);
+      fetchPolls();
+//bugs: modal card dispalying last vote, glass modal overlay bad, ongoing votes doesnt have glass properly applied
     } catch (error) {
       console.error(error);
       toast({
@@ -223,24 +207,56 @@ const Voting = () => {
   const handleCreatePollClick = () => {
     setShowCreatePoll(!showCreatePoll);
   };
+
+
+
   
   
 
   return (
     <>
-    <Container maxW="container.xl" py={12} >
-      <Flex align="center" mb={8}>
-        <Heading size="xl">{selectedTab === 0 ? 'Democracy Voting (KUBI)' : 'Polling (KUBIX)'}</Heading>
+    <Container maxW="container.xl" py={8} >
+      <Flex align="center" mb={8}
+                flexDirection="column"
+                alignItems="center"
+                justifyContent="center"
+                borderRadius="3xl"
+                boxShadow="lg"
+                p="2%"
+                w="100%"
+                
+                bg="transparent"
+                position="relative"
+                display="flex"
+                zIndex={0}
+                >
+      <div className="glass" style={glassLayerStyle} />
+        <Heading color= "ghostwhite"size="xl">{selectedTab === 0 ? 'Democracy Voting (KUBI)' : 'Polling (KUBIX)'}</Heading>
         <Spacer />
-        <Button onClick={handleCreatePollClick}>
+        <Button fontWeight="black" p="2%" w="20%"bg="green.300" mt="2%" onClick={handleCreatePollClick}>
           {selectedTab === 0 ? (showCreateVote ? 'Hide Create Vote Form' : 'Create Vote') : (showCreatePoll ? 'Hide Create Poll Form' : 'Create Poll')}
         </Button>
       </Flex>
   
       <Tabs isFitted variant="enclosed" onChange={handleTabsChange} mb={8}>
-        <TabList mb="1em">
-          <Tab>Votes</Tab>
-          <Tab>Polls</Tab>
+        
+        <TabList          
+          alignItems="center"
+          justifyContent="center"
+          borderRadius="3xl"
+          boxShadow="lg"
+          p={6}
+          w="100%"
+          bg="transparent"
+          position="relative"
+          display="flex"
+          zIndex={0}
+          color= "ghostwhite"
+          
+        >
+          <div className="glass" style={glassLayerStyle} />
+          <Tab fontSize="2xl" fontWeight="extrabold" >Votes</Tab>
+          <Tab fontSize="2xl"fontWeight="extrabold">Polls</Tab>
         </TabList>
         <TabPanels>
           <TabPanel>
@@ -268,36 +284,89 @@ const Voting = () => {
             <Grid templateColumns={{ sm: "1fr", md: "repeat(2, 1fr)" }} gap={6}>
               {/* Ongoing Polls */}
               <VStack spacing={4}>
-                <Heading size="md">Ongoing Polls</Heading>
-                {/* Step 4: Display ongoing polls in the Ongoing Polls section. */}
-                {(ongoingPolls).map((poll, index) => (
-                  <Box key={index} borderWidth={1} borderRadius="lg" p={4} onClick={() => handlePollClick(poll)}>
-                    <Text fontWeight="bold">{poll.name}</Text>
-                    <Text>{poll.description}</Text>
-                    <Text>Time: {ethers.BigNumber.from(poll.timeInMinutes).toNumber()}</Text>
-                    <Text>Options: {poll.options[0].optionName}</Text>
-                  </Box>
-                ))}
-              </VStack>
+              <Heading color="ghostwhite" mt="4"mb="4"size="lg">Ongoing Polls</Heading>
+              {(ongoingPolls).map((poll, index) => (
+                <Box key={index} flexDirection="column"
+                  alignItems="center"
+                  justifyContent="center"
+                  borderRadius="3xl"
+                  boxShadow="lg"
+                  display="flex"
+                  w="100%"
+                  maxWidth="90%"
+                  bg="transparent"
+                  position="relative"
+                  p={4}
+                  zIndex={1}
+                  mt={4} 
+                  color= "ghostwhite"  
+                  _hover={{ bg: "black", boxShadow: "md", transform: "scale(1.05)"}}
+                  onClick={() => handlePollClick(poll)}>
+                  <div className="glass" style={glassLayerStyle} />
+                  <Text mb ="2" fontSize="2xl" fontWeight="extrabold">{poll.name}</Text>
+                  <Text mb="4">{poll.description}</Text>
+                  <CountDown duration={poll.remainingTime} />
+                  <Text mt="4">Options:</Text>
+                  <VStack spacing={2}>
+                    {poll.options.map((option, index) => (
+                      <Text key={index}>{option.optionName}</Text>
+                    ))}
+                  </VStack>
+                </Box>
+              ))}
+            </VStack>
   
               {/* History */}
-              <VStack>
-                <Heading mt={4} size="md">History</Heading>
-                {completedPolls.map((poll, index) => (
-                  <Box key={index} borderWidth={1} borderRadius="lg" p={4} >
-                    <Text fontWeight="bold">{poll.name}</Text>
-                    <Text>{poll.description}</Text>
-                    <Text>Total Minutes: {ethers.BigNumber.from(poll.timeInMinutes).toNumber()}</Text>
+              <VStack spacing={4}>
+                <Heading color="ghostwhite" mt="4"mb="4"size="lg">History</Heading>
+                {completedPolls.map((poll, index) => {
+                  const totalVotes = poll.options.reduce((total, option) => total + ethers.BigNumber.from(option.votes).toNumber(), 0);
+                  
+                  const predefinedColors = ['red', 'darkblue', 'yellow', 'purple'];
+                  
+                  const data = [{ name: 'Options', values: poll.options.map((option, index) => {
+                    const color = index < predefinedColors.length ? predefinedColors[index] : `rgba(${Math.random() * 255}, ${Math.random() * 255}, ${Math.random() * 255}, 1)`;
+                    return {
+                      value: (ethers.BigNumber.from(option.votes).toNumber() / totalVotes) * 100,
+                      color: color
+                    };
+                  }) }];
 
-                    {poll?.options?.map((option, index) => (
-                      <Text key={index} value={index} >Option {index+1}: {option.optionName}</Text>
-                    ))}
-                    <Text>Winner: {poll.winner}</Text>
+                return (
+                  <Box key={index} flexDirection="column"
+                  alignItems="center"
+                  justifyContent="center"
+                  borderRadius="3xl"
+                  boxShadow="lg"
+                  display="flex"
+                  w="100%"
+                  maxWidth="90%"
+                  bg="transparent"
+                  position="relative"
+                  p={4}
+                  zIndex={1}
+                  mt={4} 
+                  color= "ghostwhite">
+                    <div className="glass" style={glassLayerStyle} />
+                    <Text mb ="2" fontSize={"2xl"} fontWeight="extrabold">{poll.name}</Text>
+                    <Text mb ="4">{poll.description}</Text>
+                    <Flex  justifyContent="center">
+                      <BarChart  width={400} height={50} layout="vertical" data={data}>
+                        <XAxis type="number" hide="true" />
+                        <YAxis type="category" dataKey="name" hide="true" />
+                      {data[0].values.map((option, index) => (
+                        <Bar key={index} dataKey={`values[${index}].value`} stackId="a" fill={option.color} />
+                      ))}
+                    </BarChart>
+
+                    </Flex>
+
+                    <Text fontSize="2xl" fontWeight="extrabold">Winner: {poll.winner}</Text>
                   </Box>
-                ))}
+                );
+              })}
               </VStack>
             </Grid>
-  
             {/* Create Poll Form */}
             <Modal isOpen={showCreatePoll} onClose={handleCreatePollClick}>
               <ModalOverlay />
@@ -372,31 +441,32 @@ const Voting = () => {
       {/* Modal */}
       <Modal isOpen={isOpen} onClose={onClose}>
   <ModalOverlay />
-  <ModalContent>
-    <ModalHeader>{selectedPoll?.name}</ModalHeader>
+  <ModalContent
+      alignItems="center"
+      justifyContent="center"
+      borderRadius="3xl"
+      boxShadow="lg"
+      display="flex"
+      w="100%"
+      maxWidth="40%"
+      bg="transparent"
+      position="relative"
+      p={4}
+      zIndex={1}
+      mt="10%"
+      color="ghostwhite"
+  >
+    <div className="glass" style={glassLayerStyle} />
+    <ModalHeader >{selectedPoll?.name}</ModalHeader>
     <ModalCloseButton />
     <ModalBody>
+
       <VStack spacing={4}>
         <Text>{selectedPoll?.description}</Text>
         <Text>Total Minutes: {ethers.BigNumber.from(selectedPoll?.timeInMinutes || 0).toNumber()}</Text>
         <Text>Creation Time: {new Date(ethers.BigNumber.from(selectedPoll?.creationTimestamp || 0).toNumber() * 1000).toLocaleString()}</Text>
-        <Text>
-          Remaining Time: <br/>
-          {(() => {
-            const now = Math.floor(Date.now() / 1000);
-            const creationTime = ethers.BigNumber.from(selectedPoll?.creationTimestamp || 0).toNumber();
-            const totalTime = ethers.BigNumber.from(selectedPoll?.timeInMinutes || 0).toNumber() * 60;
-            const elapsedTime = now - creationTime;
-            const remainingTime = totalTime - elapsedTime;
-
-            const remainingDays = Math.floor(remainingTime / (60 * 60 * 24));
-            const remainingHours = Math.floor((remainingTime % (60 * 60 * 24)) / (60 * 60));
-            const remainingMinutes = Math.floor((remainingTime % (60 * 60)) / 60);
-            const remainingSeconds = remainingTime % 60;
-
-            return remainingTime > 0 ? `${remainingDays} days, ${remainingHours} hours, ${remainingMinutes} minutes, and ${remainingSeconds} seconds` : 'Poll has ended';
-          })()}
-        </Text>
+        <Text fontWeight="bold" fontSize="xl">Remaining Time: </Text>
+        <CountDown duration={selectedPoll?.remainingTime} />
         <RadioGroup onChange={setSelectedOption} value={selectedOption}>
           <VStack spacing={4}>
             {selectedPoll?.options?.map((option, index) => (
@@ -414,7 +484,6 @@ const Voting = () => {
       <Button colorScheme="blue" onClick={handleVote} mr={3}>
         Vote
       </Button>
-      <Button variant="ghost" onClick={onClose}>Close</Button>
     </ModalFooter>
   </ModalContent>
 </Modal>
