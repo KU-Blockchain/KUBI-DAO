@@ -24,12 +24,12 @@ const waveBackgroundStyle = {
 
 const ballStyle = {
   position: "relative",
-  width: "350px",
-  height: "350px",
-  borderRadius: "50%",
-  marginTop: "7%",
+  width: "70%",
+  height: "500px",
+  borderRadius: "0%",
+  marginTop: "5%",
   marginBottom: "5%",
-  boxShadow: "inset 0 0 60px #666, inset 20px 0 100px #e13232, inset -20px 0 80px #166, inset 20px 0 100px #e13232, inset -10px 0 150px #166, 0 0 50px #666, -10px 0 80px #616, 10px 0 80px #166",
+  boxShadow: "inset 0 0 70px #fff, inset 20px 0 400px #ff0000, inset -20px 0 100px #fff, inset 20px 0 200px #ff0000, inset -10px 0 150px #166, 0 0 50px #fff, -10px 0 80px #fff, 10px 0 70px #fff",
 }
 
 
@@ -37,7 +37,7 @@ const ballStyle = {
 const Home = () => {
   return (
     
-    <VStack spacing={20} style={{ position: 'relative' }}>
+    <VStack spacing={10} style={{ position: 'relative' }}>
       
     <Box style={waveBackgroundStyle}>
       <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1440 320">
@@ -64,7 +64,6 @@ const Home = () => {
     
       <Box
         w="60%"
-        mt="10%"
         borderRadius="2xl"
         display="flex"
         flexDirection="column"
@@ -120,7 +119,11 @@ const Home = () => {
             </Text>
         </Container>
         </Box>
-        <div style={ballStyle} className="div2"></div>
+        <div style={ballStyle} className="div2">
+          <div style={{ position: "absolute", top: "50%", left: "50%", transform: "translate(-50%, -50%)", color: "#fff", fontSize: "8em",fontWeight:"bolder", textAlign: "center" }}>
+            KUBI DAO
+          </div>
+        </div>
     </VStack>
    
 
