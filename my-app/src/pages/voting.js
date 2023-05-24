@@ -41,6 +41,8 @@ const Voting = () => {
   const [selectedPoll, setSelectedPoll] = useState(null);
   const [selectedOption, setSelectedOption] = useState(null);
 
+  const [loadingSubmit, setLoadingSubmit] = useState(false)
+
 
   const toast = useToast();
 
@@ -144,6 +146,7 @@ const fetchPollsData = async (pollsCount, completed) => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    setLoadingSubmit(true)
     try {
 
       await createPoll();
@@ -169,6 +172,8 @@ const fetchPollsData = async (pollsCount, completed) => {
         isClosable: true,
       });
     }
+
+    setLoadingSubmit(false)
   };
 
   const handleTabsChange = (index) => {
@@ -428,7 +433,9 @@ const fetchPollsData = async (pollsCount, completed) => {
                   </VStack>
                 </ModalBody>
                 <ModalFooter>
-                  <Button type="submit" colorScheme="teal" onClick={handleSubmit}>
+                  <Button type="submit" colorScheme="teal" onClick={handleSubmit}
+                  isLoading={loadingSubmit}
+                  loadingText="Handling Process">
                     Submit Poll
                   </Button>
                 </ModalFooter>
