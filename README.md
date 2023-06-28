@@ -10,11 +10,11 @@ This README outlines the key features of the DAO, the hybrid tokenomics model, a
 
 1. **Task Manager:** The task manager allows members to claim and complete tasks while storing the data on IPFS. Upon completion of tasks, members are automatically rewarded with KUBIX participation tokens. 
 2. **NFT Gating:** NFTs are used to manage membership and grant privileges such as claiming tasks, creating tasks, and reviewing completed tasks. There are two types of NFTs: Membership NFTs and Executive NFTs.
-3. **KUBI Direct Democracy Coin:** The DAO includes a voting mechanism using the KUBI Direct Democracy Coin, but the voting features have not been set up yet.
+3. **KUBI Direct Democracy Coin:** The DAO includes a voting mechanism using the KUBI Direct Democracy Coin
 4. **KUBIX Participation Coin:** KUBIX is rewarded for completing tasks
 5. **Leaderboard:** A leaderboard displays user rankings based on their total KUBIX tokens and the number of tasks completed.
 6. **User Page:** The user page allows people with a valid KU email address to join the DAO and displays user information, including KUBIX balance and tasks completed.
-7. Fetaures not mentioned here are pending like the voting, and full implementation of the hybrid tokenomics model
+
 
 ## Hybrid Tokenomics Model
 
