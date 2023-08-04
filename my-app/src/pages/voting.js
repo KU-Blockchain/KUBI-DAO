@@ -326,8 +326,53 @@ const fetchPollsData = async (pollsCount, completed) => {
   
               {/* History */}
               <VStack spacing={4}>
-                <Heading size="md">History</Heading>
-                {/* List historical votes here */}
+                <Heading color="ghostwhite" mt="4"mb="4"size="lg">History</Heading>
+                {completedPolls.map((poll, index) => {
+                  const totalVotes = poll.options.reduce((total, option) => total + ethers.BigNumber.from(option.votes).toNumber(), 0);
+                  
+                  const predefinedColors = ['red', 'darkblue', 'yellow', 'purple'];
+                  
+                  const data = [{ name: 'Options', values: poll.options.map((option, index) => {
+                    const color = index < predefinedColors.length ? predefinedColors[index] : `rgba(${Math.random() * 255}, ${Math.random() * 255}, ${Math.random() * 255}, 1)`;
+                    return {
+                      value: (ethers.BigNumber.from(option.votes).toNumber() / totalVotes) * 100,
+                      color: color
+                    };
+                  }) }];
+
+                return (
+                  <Box key={index} flexDirection="column"
+                  alignItems="center"
+                  justifyContent="center"
+                  borderRadius="3xl"
+                  boxShadow="lg"
+                  display="flex"
+                  w="100%"
+                  maxWidth="90%"
+                  bg="transparent"
+                  position="relative"
+                  p={4}
+                  zIndex={1}
+                  mt={4} 
+                  color= "ghostwhite">
+                    <div className="glass" style={glassLayerStyle} />
+                    <Text mb ="2" fontSize={"2xl"} fontWeight="extrabold">{poll.name}</Text>
+                    <Text mb ="4">{poll.description}</Text>
+                    <Flex  justifyContent="center">
+                      <BarChart  width={400} height={50} layout="vertical" data={data}>
+                        <XAxis type="number" hide="true" />
+                        <YAxis type="category" dataKey="name" hide="true" />
+                      {data[0].values.map((option, index) => (
+                        <Bar key={index} dataKey={`values[${index}].value`} stackId="a" fill={option.color} />
+                      ))}
+                    </BarChart>
+
+                    </Flex>
+
+                    <Text fontSize="2xl" fontWeight="extrabold">Winner: {poll.winner}</Text>
+                  </Box>
+                );
+              })}
               </VStack>
             </Grid>
   
