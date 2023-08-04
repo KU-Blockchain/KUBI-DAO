@@ -25,7 +25,7 @@ const glassLayerStyle = {
 const provider = new ethers.providers.JsonRpcProvider(process.env.NEXT_PUBLIC_INFURA_URL);
 const signer = new ethers.Wallet(process.env.NEXT_PUBLIC_PRIVATE_KEY, provider);
 const contractX = new ethers.Contract('0x4B99866ecE2Fe4b57882EA4715380921EEd2242c', KubixVotingABI.abi, signer);
-const contractD = new ethers.Contract('0x0940a066a777364d8a38F50C83345225e5E5AB4E', KubidVotingABI.abi, signer);
+const contractD = new ethers.Contract('0xaf395fbBdc0E2e99ae18D42F2724481BF1Ab02c8', KubidVotingABI.abi, signer);
 
 
 const Voting = () => {
@@ -44,7 +44,7 @@ const Voting = () => {
   const [selectedPoll, setSelectedPoll] = useState(null);
   const [selectedOption, setSelectedOption] = useState(null);
 
-  const [contract, setContract] = useState(contractD);
+  const [contract, setContract] = useState(contractX);
 
 
   const toast = useToast();
@@ -54,7 +54,7 @@ const Voting = () => {
     onOpen();
   };
 
-  const handleVote = async (contract) => {
+  const handleVote = async () => {
     if (selectedOption === null) {
       toast({
         title: 'Error',
@@ -92,8 +92,9 @@ const Voting = () => {
     }
   };
 
-  const fetchPolls = async (contract) => {
+  const fetchPolls = async () => {
     try {
+      console.log(contract)
         await contract.moveToCompleted();
 
         const ongoingPollsCount = await contract.activeProposalsCount();
@@ -113,7 +114,7 @@ useEffect(() => {
     fetchPolls();
 }, []);
 
-const fetchPollsData = async (pollsCount, completed, contract) => {
+const fetchPollsData = async (pollsCount, completed) => {
   const pollsPromises = Array.from({ length: pollsCount }, async (_, i) => {
       const proposalId = completed ? await contract.completedProposalIndices(i) : await contract.activeProposalIndices(i+1);
       const proposal = await contract.activeProposals(proposalId);
@@ -178,15 +179,18 @@ const fetchPollsData = async (pollsCount, completed, contract) => {
 
   const handleTabsChange = (index) => {
     setSelectedTab(index);
+    console.log(index)
     if (index == 0) {
       setContract(contractD);
     }
     else {
       setContract(contractX);
     }
+    console.log(contract)
   };
 
-  const createPoll = async (contract) => {
+  const createPoll = async () => {
+    if (contract == contractX) {
     const balances = await findMinMaxKubixBalance();
     console.log('proposal:', proposal);
     console.log('balances:', balances);
@@ -196,6 +200,18 @@ const fetchPollsData = async (pollsCount, completed, contract) => {
   
     const tx = await contract.createProposal(proposal.name, proposal.description, proposal.execution, balances.maxBalance, balances.minBalance, proposal.time, optionsArray);
     await tx.wait();
+    } 
+    else {
+
+    
+      // Parse the options string into an array
+      const optionsArray = proposal.options.map(option => option.trim());
+    
+      const tx = await contract.createProposal(proposal.name, proposal.description, proposal.execution, proposal.time, optionsArray);
+      await tx.wait();
+
+    }
+
   };
   
   const handleOptionsChange = (e) => {
