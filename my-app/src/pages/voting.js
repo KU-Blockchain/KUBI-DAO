@@ -4,6 +4,7 @@ import {CSSReset,extendTheme, ChakraProvider, Text, Box, useDisclosure, Flex, Gr
 
 import { ethers } from 'ethers';
 import KubixVotingABI from '../abi/KubixVoting.json';
+import KubidVotingABI from '../abi/KubidVoting.json';
 import { useDataBaseContext } from '@/contexts/DataBaseContext';
 import { useWeb3Context } from '@/contexts/Web3Context';
 import { useToast } from '@chakra-ui/react';
@@ -23,7 +24,9 @@ const glassLayerStyle = {
 
 const provider = new ethers.providers.JsonRpcProvider(process.env.NEXT_PUBLIC_INFURA_URL);
 const signer = new ethers.Wallet(process.env.NEXT_PUBLIC_PRIVATE_KEY, provider);
-const contract = new ethers.Contract('0x4B99866ecE2Fe4b57882EA4715380921EEd2242c', KubixVotingABI.abi, signer);
+const contractX = new ethers.Contract('0x4B99866ecE2Fe4b57882EA4715380921EEd2242c', KubixVotingABI.abi, signer);
+const contractD = new ethers.Contract('0x0940a066a777364d8a38F50C83345225e5E5AB4E', KubidVotingABI.abi, signer);
+
 
 const Voting = () => {
   const { findMinMaxKubixBalance } = useDataBaseContext();
@@ -41,6 +44,8 @@ const Voting = () => {
   const [selectedPoll, setSelectedPoll] = useState(null);
   const [selectedOption, setSelectedOption] = useState(null);
 
+  const [contract, setContract] = useState(contractD);
+
 
   const toast = useToast();
 
@@ -49,7 +54,7 @@ const Voting = () => {
     onOpen();
   };
 
-  const handleVote = async () => {
+  const handleVote = async (contract) => {
     if (selectedOption === null) {
       toast({
         title: 'Error',
@@ -87,7 +92,7 @@ const Voting = () => {
     }
   };
 
-  const fetchPolls = async () => {
+  const fetchPolls = async (contract) => {
     try {
         await contract.moveToCompleted();
 
@@ -108,7 +113,7 @@ useEffect(() => {
     fetchPolls();
 }, []);
 
-const fetchPollsData = async (pollsCount, completed) => {
+const fetchPollsData = async (pollsCount, completed, contract) => {
   const pollsPromises = Array.from({ length: pollsCount }, async (_, i) => {
       const proposalId = completed ? await contract.completedProposalIndices(i) : await contract.activeProposalIndices(i+1);
       const proposal = await contract.activeProposals(proposalId);
@@ -173,9 +178,15 @@ const fetchPollsData = async (pollsCount, completed) => {
 
   const handleTabsChange = (index) => {
     setSelectedTab(index);
+    if (index == 0) {
+      setContract(contractD);
+    }
+    else {
+      setContract(contractX);
+    }
   };
 
-  const createPoll = async () => {
+  const createPoll = async (contract) => {
     const balances = await findMinMaxKubixBalance();
     console.log('proposal:', proposal);
     console.log('balances:', balances);
