@@ -21,7 +21,7 @@ const glassLayerStyle = {
 };
 
 
-const provider = new ethers.providers.JsonRpcProvider('https://rpc-mumbai.maticvigil.com/');
+const provider = new ethers.providers.JsonRpcProvider(process.env.NEXT_PUBLIC_INFURA_URL);
 const signer = new ethers.Wallet(process.env.NEXT_PUBLIC_PRIVATE_KEY, provider);
 const contract = new ethers.Contract('0x4B99866ecE2Fe4b57882EA4715380921EEd2242c', KubixVotingABI.abi, signer);
 
@@ -109,32 +109,32 @@ useEffect(() => {
 }, []);
 
 const fetchPollsData = async (pollsCount, completed) => {
-    const pollsData = [];
+  const pollsPromises = Array.from({ length: pollsCount }, async (_, i) => {
+      const proposalId = completed ? await contract.completedProposalIndices(i) : await contract.activeProposalIndices(i+1);
+      const proposal = await contract.activeProposals(proposalId);
 
-    for (let i = 0; i < pollsCount; i++) {
-        const proposalId = completed ? await contract.completedProposalIndices(i) : await contract.activeProposalIndices(i+1);
-        const proposal = await contract.activeProposals(proposalId);
+      const optionsCount = await contract.getOptionsCount(proposalId);
+      const pollOptionsPromises = Array.from({ length: optionsCount }, async (_, j) => {
+          const option = await contract.getOption(proposalId, j);
+          return option;
+      });
 
-        const optionsCount = await contract.getOptionsCount(proposalId);
-        const pollOptions = [];
+      const pollOptions = await Promise.all(pollOptionsPromises);
 
-        for (let j = 0; j < optionsCount; j++) {
-            const option = await contract.getOption(proposalId, j);
-            pollOptions.push(option);
-        }
+      let pollWithOptions = { ...proposal, options: pollOptions, id: proposalId, remainingTime: proposal.timeInMinutes * 60 - (Math.floor(Date.now() / 1000) - proposal.creationTimestamp) };
 
-        let pollWithOptions = { ...proposal, options: pollOptions, id: proposalId, remainingTime: proposal.timeInMinutes * 60 - (Math.floor(Date.now() / 1000) - proposal.creationTimestamp) };
+      if (completed) {
+          const winner = await contract.getWinner(i);
+          pollWithOptions = { ...pollWithOptions, winner };
+      }
 
-        if (completed) {
-            const winner = await contract.getWinner(i);
-            pollWithOptions = { ...pollWithOptions, winner };
-        }
+      return pollWithOptions;
+  });
 
-        pollsData.push(pollWithOptions);
-    }
-
-    return pollsData;
+  const pollsData = await Promise.all(pollsPromises);
+  return pollsData;
 };
+
 
 
   const handleInputChange = (e) => {
