@@ -290,9 +290,39 @@ const fetchPollsData = async (pollsCount, completed) => {
             <Grid templateColumns={{ sm: "1fr", md: "repeat(2, 1fr)" }} gap={6}>
               {/* Ongoing Votes */}
               <VStack spacing={4}>
-                <Heading size="md">Ongoing Votes</Heading>
+              <Heading color="ghostwhite" mt="4"mb="4"size="lg">Ongoing Polls</Heading>
+              {(ongoingPolls).map((poll, index) => (
+                <Box key={index} flexDirection="column"
+                  alignItems="center"
+                  justifyContent="center"
+                  borderRadius="3xl"
+                  boxShadow="lg"
+                  display="flex"
+                  w="100%"
+                  maxWidth="90%"
+                  bg="transparent"
+                  position="relative"
+                  p={4}
+                  zIndex={1}
+                  mt={4} 
+                  color= "ghostwhite"  
+                  _hover={{ bg: "black", boxShadow: "md", transform: "scale(1.05)"}}
+                  onClick={() => handlePollClick(poll)}>
+                  <div className="glass" style={glassLayerStyle} />
+                  <Text mb ="2" fontSize="2xl" fontWeight="extrabold">{poll.name}</Text>
+                  <Text mb="4">{poll.description}</Text>
+                  <CountDown duration={poll.remainingTime} />
+                  <Text mt="4">Options:</Text>
+                  <VStack spacing={2}>
+                    {poll.options.map((option, index) => (
+                      <Text key={index}>{option.optionName}</Text>
+                    ))}
+                  </VStack>
+                </Box>
+              ))}
+            </VStack>
                 {/* List ongoing votes here */}
-              </VStack>
+              
   
               {/* History */}
               <VStack spacing={4}>
