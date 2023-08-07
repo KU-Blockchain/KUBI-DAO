@@ -2,8 +2,15 @@ import React from 'react';
 import { Box, useDisclosure } from '@chakra-ui/react';
 import { useDrag } from 'react-dnd';
 import TaskCardModal from './TaskCardModal';
+import { useRouter } from 'next/router';
 
 const TaskCard = ({ id, name, description, difficulty, estHours, index, columnId, submission,claimedBy,claimerUsername, onEditTask, moveTask, }) => {
+  const router = useRouter();
+
+  const openTask = () => {
+    router.push({pathname: '/tasks', query: { task: id } });
+  };
+
   const calculateKubixPayout = (difficulty, estimatedHours) => {
     
     const difficulties = {
@@ -51,7 +58,7 @@ const TaskCard = ({ id, name, description, difficulty, estHours, index, columnId
         mb={4}
         cursor="grab"
         style={cardStyle}
-        onClick={onOpen}
+        onClick={openTask}
       >
         <Box fontWeight="900">{name}</Box>
         <Box fontSize="xs">{truncateDescription(description, 40)}</Box>

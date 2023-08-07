@@ -19,22 +19,35 @@ import {
   Spacer,
   Toast,
   useToast,
-  Textarea
+  Textarea, 
+  useDisclosure
 } from '@chakra-ui/react';
 import { CheckIcon } from '@chakra-ui/icons';
 import EditTaskModal from './EditTaskModal';
 import { useTaskBoard } from '../../contexts/TaskBoardContext';
 import { useWeb3Context } from '../../contexts/Web3Context';
 import { useDataBaseContext } from '@/contexts/DataBaseContext';
+import { useRouter } from 'next/router';
 
-const TaskCardModal = ({ isOpen, onClose, task, columnId, onEditTask }) => {
+const TaskCardModal = ({task, columnId, onEditTask }) => {
   const [submission, setSubmission] = useState('');
   const { moveTask, deleteTask} = useTaskBoard();
   const { hasExecNFT,hasMemberNFT, account, mintKUBIX} = useWeb3Context();
 
   const { getUsernameByAddress } = useDataBaseContext();
-  
 
+  const router = useRouter();
+  
+  const { isOpen, onOpen, onClose } = useDisclosure();
+
+  useEffect(()=>{
+    if(router.query.task){
+      onOpen();
+    } else {
+      onClose();
+    }
+  },[router.query.task]);
+  
 
 
 
