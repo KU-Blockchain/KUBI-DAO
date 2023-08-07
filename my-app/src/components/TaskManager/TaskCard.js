@@ -8,7 +8,10 @@ const TaskCard = ({ id, name, description, difficulty, estHours, index, columnId
   const router = useRouter();
 
   const openTask = () => {
-    router.push({pathname: '/tasks', query: { task: id } });
+    router.push({
+      pathname: '/tasks',
+      query: { task: id },
+    }, undefined, { shallow: true });
   };
 
   const calculateKubixPayout = (difficulty, estimatedHours) => {

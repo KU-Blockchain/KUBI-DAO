@@ -41,14 +41,17 @@ const TaskCardModal = ({task, columnId, onEditTask }) => {
   const { isOpen, onOpen, onClose } = useDisclosure();
 
   useEffect(()=>{
-    if(router.query.task){
+    if(router.query.task === task.id){
       onOpen();
     } else {
       onClose();
     }
-  },[router.query.task]);
+  },[router.query.task, task.id]);
   
-
+  const handleCloseModal = () => {
+    onClose();
+      router.push({ pathname: '/tasks' }, undefined, { shallow: true });
+  };
 
 
   const toast= useToast();
@@ -140,7 +143,7 @@ const TaskCardModal = ({task, columnId, onEditTask }) => {
 
   return  task ? (
     <>
-      <Modal isOpen={isOpen} onClose={onClose} size="2xl">
+      <Modal isOpen={isOpen} onClose={handleCloseModal} size="2xl">
       <ModalOverlay />
       <ModalContent>
         <Flex alignItems="center" justifyContent="space-between">
