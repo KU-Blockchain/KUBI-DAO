@@ -110,9 +110,6 @@ const Voting = () => {
     }
 };
 
-useEffect(() => {
-    fetchPolls();
-}, []);
 
 const fetchPollsData = async (pollsCount, completed) => {
   const pollsPromises = Array.from({ length: pollsCount }, async (_, i) => {
@@ -179,15 +176,16 @@ const fetchPollsData = async (pollsCount, completed) => {
 
   const handleTabsChange = (index) => {
     setSelectedTab(index);
-    console.log(index)
     if (index == 0) {
       setContract(contractD);
-    }
-    else {
+    } else {
       setContract(contractX);
-    }
-    console.log(contract)
+      }
   };
+
+  useEffect(() => {
+      fetchPolls();
+  }, [contract]);
 
   const createPoll = async () => {
     if (contract == contractX) {
