@@ -36,9 +36,8 @@ const Voting = () => {
   const [selectedTab, setSelectedTab] = useState(0);
   const [showCreateVote, setShowCreateVote] = useState(false);
   const [showCreatePoll, setShowCreatePoll] = useState(false);
-  const [ongoingPolls, setOngoingPolls] = useState([]);
   const [blockTimestamp, setBlockTimestamp] = useState(0);
-  const [completedPolls, setCompletedPolls] = useState([]);
+
 
   const { isOpen, onOpen, onClose } = useDisclosure();
   const [selectedPoll, setSelectedPoll] = useState(null);
@@ -99,10 +98,12 @@ const Voting = () => {
 
   const fetchPolls = async (selectedContract, setOngoingPollsFunc, setCompletedPollsFunc) => {
     try {
-        await contract.moveToCompleted();
-
+        await selectedContract.moveToCompleted();
+        console.log("test")
         const ongoingPollsCount = await selectedContract.activeProposalsCount();
+        console.log("test1")
         const completedPollsCount = await selectedContract.completedProposalsCount();
+        console.log("test2")
 
         const ongoingPolls = await fetchPollsData(selectedContract,ongoingPollsCount, false);
         const completedPolls = await fetchPollsData(selectedContract,completedPollsCount, true);
@@ -117,7 +118,7 @@ const Voting = () => {
 
 const fetchPollsData = async (selectedContract,pollsCount, completed) => {
   const pollsPromises = Array.from({ length: pollsCount }, async (_, i) => {
-      const proposalId = completed ? await contract.completedProposalIndices(i) : await contract.activeProposalIndices(i+1);
+      const proposalId = completed ? await selectedContract.completedProposalIndices(i) : await selectedContract.activeProposalIndices(i+1);
       const proposal = await selectedContract.activeProposals(proposalId);
 
       const optionsCount = await selectedContract.getOptionsCount(proposalId);
@@ -131,7 +132,7 @@ const fetchPollsData = async (selectedContract,pollsCount, completed) => {
       let pollWithOptions = { ...proposal, options: pollOptions, id: proposalId, remainingTime: proposal.timeInMinutes * 60 - (Math.floor(Date.now() / 1000) - proposal.creationTimestamp) };
 
       if (completed) {
-          const winner = await contract.getWinner(i);
+          const winner = await selectedContract.getWinner(i);
           pollWithOptions = { ...pollWithOptions, winner };
       }
 
