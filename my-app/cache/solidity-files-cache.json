@@ -926,6 +926,41 @@
         "SafeMath"
       ]
     },
+    "/Users/hudsonheadley/Desktop/Code/DAO2/my-app/node_modules/abdk-libraries-solidity/ABDKMath64x64.sol": {
+      "lastModificationDate": 1684368888320,
+      "contentHash": "18553fed418e0bd7841bc4fa99522ded",
+      "sourceName": "abdk-libraries-solidity/ABDKMath64x64.sol",
+      "solcConfig": {
+        "version": "0.8.18",
+        "settings": {
+          "optimizer": {
+            "enabled": false,
+            "runs": 200
+          },
+          "outputSelection": {
+            "*": {
+              "*": [
+                "abi",
+                "evm.bytecode",
+                "evm.deployedBytecode",
+                "evm.methodIdentifiers",
+                "metadata"
+              ],
+              "": [
+                "ast"
+              ]
+            }
+          }
+        }
+      },
+      "imports": [],
+      "versionPragmas": [
+        "^0.8.0"
+      ],
+      "artifacts": [
+        "ABDKMath64x64"
+      ]
+    },
     "/Users/hudsonheadley/Desktop/Code/DAO2/my-app/contracts/KUBIXvoting.sol": {
       "lastModificationDate": 1684368854153,
       "contentHash": "c4f049cc88ae8537199db9eef9c4fd8e",
@@ -965,10 +1000,10 @@
         "KubixVoting"
       ]
     },
-    "/Users/hudsonheadley/Desktop/Code/DAO2/my-app/node_modules/abdk-libraries-solidity/ABDKMath64x64.sol": {
-      "lastModificationDate": 1684368888320,
-      "contentHash": "18553fed418e0bd7841bc4fa99522ded",
-      "sourceName": "abdk-libraries-solidity/ABDKMath64x64.sol",
+    "/Users/hudsonheadley/Desktop/Code/DAO2/my-app/contracts/KUBIDvoting.sol": {
+      "lastModificationDate": 1691175490370,
+      "contentHash": "0ac98d828566faf04420bcb2005900c9",
+      "sourceName": "contracts/KUBIDvoting.sol",
       "solcConfig": {
         "version": "0.8.18",
         "settings": {
@@ -992,12 +1027,15 @@
           }
         }
       },
-      "imports": [],
+      "imports": [
+        "@openzeppelin/contracts/token/ERC20/IERC20.sol",
+        "@openzeppelin/contracts/utils/math/SafeMath.sol"
+      ],
       "versionPragmas": [
         "^0.8.0"
       ],
       "artifacts": [
-        "ABDKMath64x64"
+        "KubidVoting"
       ]
     }
   }
