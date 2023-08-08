@@ -11,7 +11,7 @@ const AddMumbaiNetworkButton = () => {
       const chainId = '0x13881'; 
       const network = {
         chainId,
-        chainName: 'Mumbai Testnet',
+        chainName: 'Mumbai',
         nativeCurrency: {
           name: 'MATIC',
           symbol: 'MATIC',

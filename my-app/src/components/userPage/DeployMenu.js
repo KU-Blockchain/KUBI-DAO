@@ -9,6 +9,7 @@ import ProjectManagerArtifact from "../../abi/ProjectManager.json";
 import ExecNFTArtifiact from "../../abi/KUBIExecutiveNFT.json";
 import KUBIXArtifact from "../../abi/KUBIX.json";
 import KubixVotingArtifact from "../../abi/KubixVoting.json";
+import KubidVotingArtifact from "../../abi/KubidVoting.json";
 //add in deployed contract adress pop up
 const DeployMenu = () => {
   const [showDeployMenu, setShowDeployMenu] = useState(false);
@@ -18,6 +19,7 @@ const DeployMenu = () => {
   const [deployedKubixVotingContract, setDeployedKubixVotingContract] = useState(null);
 
   const KUBIXcontractAddress = "0x894158b1f988602b228E39a633C7A2458A82028A"
+  const KUBIDcontractAddress = "0x9B5AE4442654281438aFD95c54C212e1eb5cEB2c"
 
   const { web3, account } = useWeb3Context();
 
@@ -93,6 +95,24 @@ const DeployMenu = () => {
       console.error("Error deploying contract:", error);
     }
   };
+
+  const deployKubidVotingContract = async () => {
+    if (!web3 || !account) return;
+  
+    const kubidVotingContract = new web3.eth.Contract(KubidVotingArtifact.abi);
+    const deployOptions = {
+      data: KubidVotingArtifact.bytecode,
+      arguments: [KUBIDcontractAddress, account],
+    };
+  
+    try {
+      const instance = await kubidVotingContract.deploy(deployOptions).send({ from: account });
+      setDeployedKubixVotingContract(instance);
+      console.log("Contract deployed at address:", instance.options.address);
+    } catch (error) {
+      console.error("Error deploying contract:", error);
+    }
+  };
   
 
   return (
@@ -121,6 +141,17 @@ const DeployMenu = () => {
             }}
           >
             Deploy KubixVoting Contract
+          </Button>
+          <Button
+            colorScheme="teal"
+            onClick={deployKubidVotingContract}
+            _hover={{
+              bg: "teal.600",
+              boxShadow: "md",
+              transform: "scale(1.05)",
+            }}
+          >
+            Deploy KubidVoting Contract
           </Button>
 
         </>

@@ -4,6 +4,7 @@ import {CSSReset,extendTheme, ChakraProvider, Text, Box, useDisclosure, Flex, Gr
 
 import { ethers } from 'ethers';
 import KubixVotingABI from '../abi/KubixVoting.json';
+import KubidVotingABI from '../abi/KubidVoting.json';
 import { useDataBaseContext } from '@/contexts/DataBaseContext';
 import { useWeb3Context } from '@/contexts/Web3Context';
 import { useToast } from '@chakra-ui/react';
@@ -21,9 +22,11 @@ const glassLayerStyle = {
 };
 
 
-const provider = new ethers.providers.JsonRpcProvider('https://rpc-mumbai.maticvigil.com/');
+const provider = new ethers.providers.JsonRpcProvider(process.env.NEXT_PUBLIC_INFURA_URL);
 const signer = new ethers.Wallet(process.env.NEXT_PUBLIC_PRIVATE_KEY, provider);
-const contract = new ethers.Contract('0x4B99866ecE2Fe4b57882EA4715380921EEd2242c', KubixVotingABI.abi, signer);
+const contractX = new ethers.Contract('0x4B99866ecE2Fe4b57882EA4715380921EEd2242c', KubixVotingABI.abi, signer);
+const contractD = new ethers.Contract('0xaf395fbBdc0E2e99ae18D42F2724481BF1Ab02c8', KubidVotingABI.abi, signer);
+
 
 const Voting = () => {
   const { findMinMaxKubixBalance } = useDataBaseContext();
@@ -33,17 +36,25 @@ const Voting = () => {
   const [selectedTab, setSelectedTab] = useState(0);
   const [showCreateVote, setShowCreateVote] = useState(false);
   const [showCreatePoll, setShowCreatePoll] = useState(false);
-  const [ongoingPolls, setOngoingPolls] = useState([]);
   const [blockTimestamp, setBlockTimestamp] = useState(0);
-  const [completedPolls, setCompletedPolls] = useState([]);
+
 
   const { isOpen, onOpen, onClose } = useDisclosure();
   const [selectedPoll, setSelectedPoll] = useState(null);
   const [selectedOption, setSelectedOption] = useState(null);
 
+
   const [loadingSubmit, setLoadingSubmit] = useState(false)
 
   const [loadingVote, setLoadingVote] = useState(false)
+
+  const [contract, setContract] = useState(contractX);
+
+  const [ongoingPollsKubix, setOngoingPollsKubix] = useState([]);
+  const [completedPollsKubix, setCompletedPollsKubix] = useState([]);
+  const [ongoingPollsKubid, setOngoingPollsKubid] = useState([]);
+  const [completedPollsKubid, setCompletedPollsKubid] = useState([]);
+
 
 
   const toast = useToast();
@@ -96,54 +107,53 @@ const Voting = () => {
     setLoadingVote(false)
   };
 
-  const fetchPolls = async () => {
+  const fetchPolls = async (selectedContract, setOngoingPollsFunc, setCompletedPollsFunc) => {
     try {
-        await contract.moveToCompleted();
+        await selectedContract.moveToCompleted();
+        console.log("test")
+        const ongoingPollsCount = await selectedContract.activeProposalsCount();
+        console.log("test1")
+        const completedPollsCount = await selectedContract.completedProposalsCount();
+        console.log("test2")
 
-        const ongoingPollsCount = await contract.activeProposalsCount();
-        const completedPollsCount = await contract.completedProposalsCount();
+        const ongoingPolls = await fetchPollsData(selectedContract,ongoingPollsCount, false);
+        const completedPolls = await fetchPollsData(selectedContract,completedPollsCount, true);
 
-        const ongoingPolls = await fetchPollsData(ongoingPollsCount, false);
-        const completedPolls = await fetchPollsData(completedPollsCount, true);
-
-        setOngoingPolls(ongoingPolls);
-        setCompletedPolls(completedPolls);
+        setOngoingPollsFunc(ongoingPolls);
+        setCompletedPollsFunc(completedPolls);
     } catch (error) {
         console.error(error);
     }
 };
 
-useEffect(() => {
-    fetchPolls();
-}, []);
 
-const fetchPollsData = async (pollsCount, completed) => {
-    const pollsData = [];
+const fetchPollsData = async (selectedContract,pollsCount, completed) => {
+  const pollsPromises = Array.from({ length: pollsCount }, async (_, i) => {
+      const proposalId = completed ? await selectedContract.completedProposalIndices(i) : await selectedContract.activeProposalIndices(i+1);
+      const proposal = await selectedContract.activeProposals(proposalId);
 
-    for (let i = 0; i < pollsCount; i++) {
-        const proposalId = completed ? await contract.completedProposalIndices(i) : await contract.activeProposalIndices(i+1);
-        const proposal = await contract.activeProposals(proposalId);
+      const optionsCount = await selectedContract.getOptionsCount(proposalId);
+      const pollOptionsPromises = Array.from({ length: optionsCount }, async (_, j) => {
+          const option = await selectedContract.getOption(proposalId, j);
+          return option;
+      });
 
-        const optionsCount = await contract.getOptionsCount(proposalId);
-        const pollOptions = [];
+      const pollOptions = await Promise.all(pollOptionsPromises);
 
-        for (let j = 0; j < optionsCount; j++) {
-            const option = await contract.getOption(proposalId, j);
-            pollOptions.push(option);
-        }
+      let pollWithOptions = { ...proposal, options: pollOptions, id: proposalId, remainingTime: proposal.timeInMinutes * 60 - (Math.floor(Date.now() / 1000) - proposal.creationTimestamp) };
 
-        let pollWithOptions = { ...proposal, options: pollOptions, id: proposalId, remainingTime: proposal.timeInMinutes * 60 - (Math.floor(Date.now() / 1000) - proposal.creationTimestamp) };
+      if (completed) {
+          const winner = await selectedContract.getWinner(i);
+          pollWithOptions = { ...pollWithOptions, winner };
+      }
 
-        if (completed) {
-            const winner = await contract.getWinner(i);
-            pollWithOptions = { ...pollWithOptions, winner };
-        }
+      return pollWithOptions;
+  });
 
-        pollsData.push(pollWithOptions);
-    }
-
-    return pollsData;
+  const pollsData = await Promise.all(pollsPromises);
+  return pollsData;
 };
+
 
 
   const handleInputChange = (e) => {
@@ -185,9 +195,20 @@ const fetchPollsData = async (pollsCount, completed) => {
 
   const handleTabsChange = (index) => {
     setSelectedTab(index);
+    if (index == 0) {
+      setContract(contractD);
+    } else {
+      setContract(contractX);
+    }
   };
 
+  useEffect(() => {
+    fetchPolls(contractX, setOngoingPollsKubix, setCompletedPollsKubix);
+    fetchPolls(contractD, setOngoingPollsKubid, setCompletedPollsKubid);
+  }, []);
+
   const createPoll = async () => {
+    if (contract == contractX) {
     const balances = await findMinMaxKubixBalance();
     console.log('proposal:', proposal);
     console.log('balances:', balances);
@@ -197,6 +218,18 @@ const fetchPollsData = async (pollsCount, completed) => {
   
     const tx = await contract.createProposal(proposal.name, proposal.description, proposal.execution, balances.maxBalance, balances.minBalance, proposal.time, optionsArray);
     await tx.wait();
+    } 
+    else {
+
+    
+      // Parse the options string into an array
+      const optionsArray = proposal.options.map(option => option.trim());
+    
+      const tx = await contract.createProposal(proposal.name, proposal.description, proposal.execution, proposal.time, optionsArray);
+      await tx.wait();
+
+    }
+
   };
   
   const handleOptionsChange = (e) => {
@@ -275,14 +308,89 @@ const fetchPollsData = async (pollsCount, completed) => {
             <Grid templateColumns={{ sm: "1fr", md: "repeat(2, 1fr)" }} gap={6}>
               {/* Ongoing Votes */}
               <VStack spacing={4}>
-                <Heading size="md">Ongoing Votes</Heading>
+              <Heading color="ghostwhite" mt="4"mb="4"size="lg">Ongoing Polls</Heading>
+              {(ongoingPollsKubid).map((poll, index) => (
+                <Box key={index} flexDirection="column"
+                  alignItems="center"
+                  justifyContent="center"
+                  borderRadius="3xl"
+                  boxShadow="lg"
+                  display="flex"
+                  w="100%"
+                  maxWidth="90%"
+                  bg="transparent"
+                  position="relative"
+                  p={4}
+                  zIndex={1}
+                  mt={4} 
+                  color= "ghostwhite"  
+                  _hover={{ bg: "black", boxShadow: "md", transform: "scale(1.05)"}}
+                  onClick={() => handlePollClick(poll)}>
+                  <div className="glass" style={glassLayerStyle} />
+                  <Text mb ="2" fontSize="2xl" fontWeight="extrabold">{poll.name}</Text>
+                  <Text mb="4">{poll.description}</Text>
+                  <CountDown duration={poll.remainingTime} />
+                  <Text mt="4">Options:</Text>
+                  <VStack spacing={2}>
+                    {poll.options.map((option, index) => (
+                      <Text key={index}>{option.optionName}</Text>
+                    ))}
+                  </VStack>
+                </Box>
+              ))}
+            </VStack>
                 {/* List ongoing votes here */}
-              </VStack>
+              
   
               {/* History */}
               <VStack spacing={4}>
-                <Heading size="md">History</Heading>
-                {/* List historical votes here */}
+                <Heading color="ghostwhite" mt="4"mb="4"size="lg">History</Heading>
+                {completedPollsKubid.map((poll, index) => {
+                  const totalVotes = poll.options.reduce((total, option) => total + ethers.BigNumber.from(option.votes).toNumber(), 0);
+                  
+                  const predefinedColors = ['red', 'darkblue', 'yellow', 'purple'];
+                  
+                  const data = [{ name: 'Options', values: poll.options.map((option, index) => {
+                    const color = index < predefinedColors.length ? predefinedColors[index] : `rgba(${Math.random() * 255}, ${Math.random() * 255}, ${Math.random() * 255}, 1)`;
+                    return {
+                      value: (ethers.BigNumber.from(option.votes).toNumber() / totalVotes) * 100,
+                      color: color
+                    };
+                  }) }];
+
+                return (
+                  <Box key={index} flexDirection="column"
+                  alignItems="center"
+                  justifyContent="center"
+                  borderRadius="3xl"
+                  boxShadow="lg"
+                  display="flex"
+                  w="100%"
+                  maxWidth="90%"
+                  bg="transparent"
+                  position="relative"
+                  p={4}
+                  zIndex={1}
+                  mt={4} 
+                  color= "ghostwhite">
+                    <div className="glass" style={glassLayerStyle} />
+                    <Text mb ="2" fontSize={"2xl"} fontWeight="extrabold">{poll.name}</Text>
+                    <Text mb ="4">{poll.description}</Text>
+                    <Flex  justifyContent="center">
+                      <BarChart  width={400} height={50} layout="vertical" data={data}>
+                        <XAxis type="number" hide="true" />
+                        <YAxis type="category" dataKey="name" hide="true" />
+                      {data[0].values.map((option, index) => (
+                        <Bar key={index} dataKey={`values[${index}].value`} stackId="a" fill={option.color} />
+                      ))}
+                    </BarChart>
+
+                    </Flex>
+
+                    <Text fontSize="2xl" fontWeight="extrabold">Winner: {poll.winner}</Text>
+                  </Box>
+                );
+              })}
               </VStack>
             </Grid>
   
@@ -297,7 +405,7 @@ const fetchPollsData = async (pollsCount, completed) => {
               {/* Ongoing Polls */}
               <VStack spacing={4}>
               <Heading color="ghostwhite" mt="4"mb="4"size="lg">Ongoing Polls</Heading>
-              {(ongoingPolls).map((poll, index) => (
+              {(ongoingPollsKubix).map((poll, index) => (
                 <Box key={index} flexDirection="column"
                   alignItems="center"
                   justifyContent="center"
@@ -331,7 +439,7 @@ const fetchPollsData = async (pollsCount, completed) => {
               {/* History */}
               <VStack spacing={4}>
                 <Heading color="ghostwhite" mt="4"mb="4"size="lg">History</Heading>
-                {completedPolls.map((poll, index) => {
+                {completedPollsKubix.map((poll, index) => {
                   const totalVotes = poll.options.reduce((total, option) => total + ethers.BigNumber.from(option.votes).toNumber(), 0);
                   
                   const predefinedColors = ['red', 'darkblue', 'yellow', 'purple'];

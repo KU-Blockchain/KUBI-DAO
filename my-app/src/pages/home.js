@@ -32,6 +32,7 @@ const ballStyle = {
   marginTop: "5%",
   marginBottom: "5%",
   boxShadow: "inset 0 0 70px #fff, inset 20px 0 400px #ff0000, inset -20px 0 100px #fff, inset 20px 0 200px #ff0000, inset -10px 0 150px #166, 0 0 50px #fff, -10px 0 80px #fff, 10px 0 70px #fff",
+
 }
 
 
@@ -39,8 +40,9 @@ const ballStyle = {
 const Home = () => {
   return (
     
-    
-    <VStack spacing={10} style={{ position: 'relative' }}>
+
+    <VStack spacing={20} style={{ position: 'relative' }}>
+
       
     <Box style={waveBackgroundStyle}>
       <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1440 320">
