@@ -39,28 +39,40 @@ export const DataBaseProvider = ({ children }) => {
       const projectResults = await Promise.all(batchRequests);
 
       
-
-      const projectsData = await Promise.all(
-        projectResults.map(async (projectData, i) => {
-          const projectId = i + 1;
-          const projectIpfsHash = projectData.ipfsHash;
-          const projectDataFromIPFS = JSON.parse(
-            await (await fetch(`https://ipfs.io/ipfs/${projectIpfsHash}`)).text()
-          );
-          const projectName = projectDataFromIPFS.name;
-          const projectColumns = projectDataFromIPFS.columns;
-
-          return {
-            id: projectId,
-            name: projectName,
-            columns: projectColumns,
-          };
-        })
-      );
-
-      setProjects(projectsData);
-      setSelectedProject(projectsData[0]);
+      try {
+        const projectsData = await Promise.all(
+          projectResults.map(async (projectData, i) => {
+            const projectId = i + 1;
+            const projectIpfsHash = projectData.ipfsHash;
+      
+            const response = await fetch(`https://ipfs.io/ipfs/${projectIpfsHash}`);
+            
+            // Check if the response status is not in the range 200-299
+            if (!response.ok) {
+              throw new Error(`HTTP error! Status: ${response.status}, URL: ${response.url}`);
+            }
+      
+            const projectDataFromIPFS = JSON.parse(await response.text());
+      
+            const projectName = projectDataFromIPFS.name;
+            const projectColumns = projectDataFromIPFS.columns;
+      
+            return {
+              id: projectId,
+              name: projectName,
+              columns: projectColumns,
+            };
+          })
+        );
+      
+        setProjects(projectsData);
+        setSelectedProject(projectsData[0]);
+      } catch (error) {
+        console.error("Error fetching project data from IPFS:", error);
+      }
+      
     };
+    
 
     loadInitialProject();
   }, []);

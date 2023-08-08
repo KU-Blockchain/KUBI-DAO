@@ -3,7 +3,7 @@ import { useState, useEffect, useRef } from 'react';
 const useBouncingBalls = (containerRef) => {
   const balls = useRef([
     { position: { x: 200, y: 200 }, velocity: { x: 0.25, y: 0.5 }, bounds: { x: 100, y: 100 } },
-    { position: { x: 600, y: 300 }, velocity: { x: -0.4, y: 0.55 }, bounds: { x: 100, y: 100 } },
+    { position: { x: 500, y: 300 }, velocity: { x: -0.4, y: -0.55 }, bounds: { x: 100, y: 100 } },
     { position: { x: 700, y: 100 }, velocity: { x: 0.3, y: -0.55 }, bounds: { x: 100, y: 100 } },
     { position: { x: 400, y: 100 }, velocity: { x: -0.4, y: -0.5 }, bounds: { x: 100, y: 100 } },
   ]);

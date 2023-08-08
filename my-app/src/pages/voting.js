@@ -613,7 +613,6 @@ const fetchPollsData = async (selectedContract,pollsCount, completed) => {
 </>
 );
   
-  
 };
 
 export default Voting;

@@ -2,8 +2,8 @@ import React from 'react';
 import { Box, Text } from '@chakra-ui/react';
 import { useDrop } from 'react-dnd';
 
-const TrashBin = ({ onDeleteProject }) => {
-  const [{ canDrop, isOver }, drop] = useDrop(() => ({
+const TrashBin = ({}) => {
+  const [{ canDrop }, drop] = useDrop(() => ({
     accept: 'project',
     drop: () => ({ name: 'TrashBin' }),
     collect: (monitor) => ({
