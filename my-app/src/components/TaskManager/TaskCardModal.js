@@ -145,7 +145,7 @@ const TaskCardModal = ({task, columnId, onEditTask }) => {
     <>
       <Modal isOpen={isOpen} onClose={handleCloseModal} size="2xl">
       <ModalOverlay />
-      <ModalContent>
+      <ModalContent >
         <Flex alignItems="center" justifyContent="space-between">
           <Box as="h2" fontWeight="bold" ml="4" mt="2" fontSize="2xl">
             {task.name}
