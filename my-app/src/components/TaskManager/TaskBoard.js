@@ -2,7 +2,7 @@ import { useEffect } from 'react';
 import { Flex, Box } from '@chakra-ui/react';
 import { DndProvider } from 'react-dnd';
 import { HTML5Backend } from 'react-dnd-html5-backend';
-import { TaskBoardProvider, useTaskBoard } from '../../contexts/TaskBoardContext';
+import { useTaskBoard } from '../../contexts/TaskBoardContext';
 import TaskColumn from './TaskColumn';
 import '../../styles/TaskColumn.module.css';
 

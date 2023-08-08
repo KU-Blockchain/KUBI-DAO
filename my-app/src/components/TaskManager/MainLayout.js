@@ -3,8 +3,8 @@ import { Flex, Box, Heading,} from '@chakra-ui/react';
 import ProjectSidebar from './ProjectSidebar';
 import TaskBoard from './TaskBoard';
 import { TaskBoardProvider } from '../../contexts/TaskBoardContext';
-import { useDataBaseContext, DataBaseProvider } from '../../contexts/DataBaseContext';
-import { useWeb3Context, Web3Provider } from '../../contexts/Web3Context';
+import { useDataBaseContext} from '../../contexts/DataBaseContext';
+import { useWeb3Context } from '../../contexts/Web3Context';
 
 
 const MainLayout = () => {
