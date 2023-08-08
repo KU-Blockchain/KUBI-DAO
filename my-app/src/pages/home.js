@@ -40,7 +40,9 @@ const ballStyle = {
 const Home = () => {
   return (
     
+
     <VStack spacing={20} style={{ position: 'relative' }}>
+
       
     <Box style={waveBackgroundStyle}>
       <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1440 320">
