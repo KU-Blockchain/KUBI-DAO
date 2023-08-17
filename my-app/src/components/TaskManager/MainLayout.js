@@ -40,8 +40,8 @@ const MainLayout = () => {
 
   return (
     <Flex direction="column" w="100%" minH="85vh">
-    <Box bg={"cornflowerblue"} p={4} boxShadow="md">
-        <Heading mr={"300px"} color={'white'} size="md">{projectName}</Heading>
+    <Flex bg={"cornflowerblue"} p={4} boxShadow="md" alignItems="left">
+        <Heading color={'white'} size="lg" flexGrow={1}>{projectName}</Heading>
         <Button 
             textColor={activeTab ? 'black' : 'white'}
             _hover={{bg:"red.400"}}
@@ -50,7 +50,7 @@ const MainLayout = () => {
         >
             {activeTab ? 'Project Description' : 'Task Board'}
         </Button>
-    </Box>
+    </Flex>
 
       
        <Flex w="100%" flex="1">
