@@ -139,6 +139,31 @@ const TaskCardModal = ({task, columnId, onEditTask }) => {
   const handleCloseEditTaskModal = () => {
     setIsEditTaskModalOpen(false);
   };
+
+  const copyLinkToClipboard = () => {
+    // You can construct the link based on your application's routing structure.
+    // Here, I'm assuming that the link structure is /tasks/[task-id]
+    const link = `${window.location.origin}/tasks/?task=${task.id}`;
+    navigator.clipboard.writeText(link).then(() => {
+      toast({
+        title: "Link copied",
+        description: "Task link copied to clipboard.",
+        status: "success",
+        duration: 3000,
+        isClosable: true
+      });
+    }).catch(err => {
+      toast({
+        title: "Failed to copy",
+        description: "There was an issue copying the link.",
+        status: "error",
+        duration: 3000,
+        isClosable: true
+      });
+      console.error('Failed to copy link: ', err);
+    });
+  }
+  
   
 
   return  task ? (
@@ -194,6 +219,9 @@ const TaskCardModal = ({task, columnId, onEditTask }) => {
               </Text>
             </Box>
             <Box>
+              <Button variant="outline" onClick={copyLinkToClipboard} mr={2}>
+                Share
+              </Button>
               {columnId === 'open' && (
                 <Button variant="outline" onClick={handleOpenEditTaskModal} mr={2}>
                   Edit
