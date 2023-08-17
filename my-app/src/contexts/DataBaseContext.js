@@ -48,11 +48,13 @@ export const DataBaseProvider = ({ children }) => {
           );
           const projectName = projectDataFromIPFS.name;
           const projectColumns = projectDataFromIPFS.columns;
+          const projectDescription = projectDataFromIPFS.description
 
           return {
             id: projectId,
             name: projectName,
             columns: projectColumns,
+            description: projectDescription
           };
         })
       );
@@ -99,6 +101,7 @@ export const DataBaseProvider = ({ children }) => {
         const projectDataToUpdate = {
         name: selectedProject.name,
         columns: mergedColumns,
+        description: selectedProject.description
         };
         const ipfsResult = await ipfs.add(JSON.stringify(projectDataToUpdate));
         const newIpfsHash = ipfsResult.path;

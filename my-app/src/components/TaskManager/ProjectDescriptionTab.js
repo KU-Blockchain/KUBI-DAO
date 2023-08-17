@@ -1,18 +1,19 @@
-import { useState, useEffect } from "react";
 import React from "react";
 
+import { useDataBaseContext } from "@/contexts/DataBaseContext";
 
 
+const ProjectDescriptionTab = () => {
 
 
-const ProjectDescriptionTab = (project) => {
-
-  
+  const {
+    selectedProject,
+  } = useDataBaseContext();
 
 
   return(
     <>
-      {theprojectDescription}
+      {selectedProject.description}
     </>
   );
 };
