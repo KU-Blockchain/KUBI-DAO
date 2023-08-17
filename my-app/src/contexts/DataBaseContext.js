@@ -45,8 +45,7 @@ export const DataBaseProvider = ({ children }) => {
             const projectId = i + 1;
             const projectIpfsHash = projectData.ipfsHash;
       
-            const response = await fetch(`https://ipfs.io/ipfs/${projectIpfsHash}`);
-            
+            const response = await fetch(`https://kubidao.infura-ipfs.io/ipfs/${projectIpfsHash}`);
             // Check if the response status is not in the range 200-299
             if (!response.ok) {
               throw new Error(`HTTP error! Status: ${response.status}, URL: ${response.url}`);
@@ -86,7 +85,7 @@ export const DataBaseProvider = ({ children }) => {
     // Fetch the latest version of the project data from IPFS and the smart contract
     const projectData = await contract.projects(selectedProject.id);
     const projectIpfsHash = projectData.ipfsHash;
-    const latestProjectData = JSON.parse(await (await fetch(`https://ipfs.io/ipfs/${projectIpfsHash}`)).text());
+    const latestProjectData = JSON.parse(await (await fetch(`https://kubidao.infura-ipfs.io/ipfs/${projectIpfsHash}`)).text());
         console.log("checked for changes")
         // Merge the latest version of the project data with the new columns
         console.log('Latest project data:', latestProjectData.columns);
@@ -162,7 +161,7 @@ export const DataBaseProvider = ({ children }) => {
       
           // If the IPFS hash is not empty, fetch the JSON data
           if (accountsDataIpfsHash !== '') {
-            const accountsDataJson = await (await fetch(`https://ipfs.io/ipfs/${accountsDataIpfsHash}`)).json();
+            const accountsDataJson = await (await fetch(`https://kubidao.infura-ipfs.io/ipfs/${accountsDataIpfsHash}`)).json();
             if (accountsDataJson[account]) {
               setUserDetails(accountsDataJson[account]);
             }
@@ -179,7 +178,7 @@ export const DataBaseProvider = ({ children }) => {
       
         // If the IPFS hash is not empty, fetch the JSON data
         if (accountsDataIpfsHash !== '') {
-          accountsDataJson = await (await fetch(`https://ipfs.io/ipfs/${accountsDataIpfsHash}`)).json();
+          accountsDataJson = await (await fetch(`https://kubidao.infura-ipfs.io/ipfs/${accountsDataIpfsHash}`)).json();
         }
       
         // Check if the username is already claimed
@@ -216,7 +215,7 @@ export const DataBaseProvider = ({ children }) => {
       
           // If the IPFS hash is not empty, fetch the JSON data
           if (accountsDataIpfsHash !== '') {
-            accountsDataJson = await (await fetch(`https://ipfs.io/ipfs/${accountsDataIpfsHash}`)).json();
+            accountsDataJson = await (await fetch(`https://kubidao.infura-ipfs.io/ipfs/${accountsDataIpfsHash}`)).json();
           }
       
           // Check if the wallet address exists in the accounts data JSON and return the associated username
@@ -319,7 +318,7 @@ export const DataBaseProvider = ({ children }) => {
       
         // If the IPFS hash is not empty, fetch the JSON data
         if (accountsDataIpfsHash !== '') {
-          accountsDataJson = await (await fetch(`https://ipfs.io/ipfs/${accountsDataIpfsHash}`)).json();
+          accountsDataJson = await (await fetch(`https://kubidao.infura-ipfs.io/ipfs/${accountsDataIpfsHash}`)).json();
         }
       
         // Initialize variables to store the min and max balances

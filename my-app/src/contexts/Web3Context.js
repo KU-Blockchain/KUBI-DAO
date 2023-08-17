@@ -165,7 +165,7 @@ export const Web3Provider = ({ children }) => {
       console.log("checking accountsDataIpfsHash")
       // If the IPFS hash is not empty, fetch the JSON data
       if (accountsDataIpfsHash !== '') {
-        accountsDataJson = await (await fetch(`https://ipfs.io/ipfs/${accountsDataIpfsHash}`)).json();
+        accountsDataJson = await (await fetch(`https://kubidao.infura-ipfs.io/ipfs/${accountsDataIpfsHash}`)).json();
       }
   
       // Add the Kubix wallet balance and task completed data point to the account data
