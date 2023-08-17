@@ -20,22 +20,11 @@ const MainLayout = () => {
   } = useDataBaseContext();
 
   const {account}= useWeb3Context()
-  const [projectName,setProjectName]=useState('No Project Selected');
+  const [projectName,setProjectName]=useState('DAO');
 
   const [activeTab,setActiveTab]=useState(true)
   
-  React.useEffect(() => {
-    console.log("Mounted")
-    setTimeout(()=>{
-      try {
-        
-        setProjectName(selectedProject.name)
-      } catch (error) {
-        
-      }
-    },2000)
-    return ()=>{console.log("UnMounted")}
-  }, []);
+
   
   
   
@@ -51,19 +40,18 @@ const MainLayout = () => {
 
   return (
     <Flex direction="column" w="100%" minH="85vh">
-      <Box bg={"cornflowerblue"} p={4} boxShadow="md">
-        <Heading mr={"300px"}color={'white'} size="md">{projectName}</Heading>
+    <Box bg={"cornflowerblue"} p={4} boxShadow="md">
+        <Heading mr={"300px"} color={'white'} size="md">{projectName}</Heading>
         <Button 
-        textColor={(activeTab ? 'white' : 'black')}
-        _hover={{bg:"red.400"}}
-        bg={activeTab ? 'red' : 'ghostwhite'}
-        onClick={()=>setActiveTab(true)}>Task Board</Button>
-        <Button
-        textColor={(!activeTab ? 'white' : 'black')}
-        _hover={{bg:"red.400"}}
-        bg={(!activeTab) ? 'red' : 'ghostwhite'}
-        onClick={()=>setActiveTab(false)}>Project Description</Button>
-      </Box>
+            textColor={activeTab ? 'black' : 'white'}
+            _hover={{bg:"red.400"}}
+            bg={activeTab ? 'ghostwhite' : 'red'}
+            onClick={()=>setActiveTab(!activeTab)}
+        >
+            {activeTab ? 'Project Description' : 'Task Board'}
+        </Button>
+    </Box>
+
       
        <Flex w="100%" flex="1">
         <ProjectSidebar
