@@ -21,7 +21,7 @@ import { useWeb3Context } from '../contexts/Web3Context';
 
 import '../styles/TaskColumn.module.css';
 
-const provider = new ethers.providers.JsonRpcProvider('https://rpc-mumbai.maticvigil.com/');
+const provider = new ethers.providers.JsonRpcProvider(process.env. NEXT_PUBLIC_INFURA_URL);
 const signer = new ethers.Wallet(process.env.NEXT_PUBLIC_PRIVATE_KEY, provider);
 
 const glassLayerStyle = {
@@ -35,6 +35,7 @@ const glassLayerStyle = {
 };
 
 const Leaderboard = () => {
+  const [loaded, setLoaded] = useState(false);
   const { KUBIXbalance } = useWeb3Context();
   const [timeframe, setTimeframe] = useState('semester');
   const [sortField, setSortField] = useState('kubix');
@@ -44,7 +45,9 @@ const Leaderboard = () => {
 
   const PMContract = "0x6a55a93CA73DFC950430aAeDdB902377fE51a8FA";
 
-  const fetchLeaderboardData = useCallback(async () => {
+  const fetchLeaderboardData = async () => {
+    console.log("loading leaderboard")
+    console.log(loaded)
     if (provider && signer) {
       const contractPM = new ethers.Contract(PMContract, ProjectManagerArtifact.abi, signer);
 
@@ -54,7 +57,7 @@ const Leaderboard = () => {
 
       // If the IPFS hash is not empty, fetch the JSON data
       if (accountsDataIpfsHash !== '') {
-        accountsDataJson = await (await fetch(`https://ipfs.io/ipfs/${accountsDataIpfsHash}`)).json();
+        accountsDataJson = await (await fetch(`https://kubidao.infura-ipfs.io/ipfs/${accountsDataIpfsHash}`)).json();
       }
 
       // Format data for the leaderboard
@@ -74,11 +77,17 @@ const Leaderboard = () => {
 
       setData(sortedData);
     }
-  }, [provider, signer, KUBIXbalance]);
+  };
 
   useEffect(() => {
-    fetchLeaderboardData();
-  }, [provider, signer, KUBIXbalance]);
+    if (!loaded) {
+      fetchLeaderboardData();
+      setLoaded(true);
+    }
+  }, [loaded]);
+
+
+  
 
   const handleTimeframeChange = (newTimeframe) => {
     setTimeframe(newTimeframe);
