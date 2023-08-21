@@ -18,11 +18,11 @@ import {
 import { TriangleDownIcon } from '@chakra-ui/icons';
 import ProjectManagerArtifact from '../abi/ProjectManager.json';
 import { useWeb3Context } from '../contexts/Web3Context';
+import { useLeaderboard } from '../contexts/leaderboardContext';
 
 import '../styles/TaskColumn.module.css';
 
-const provider = new ethers.providers.JsonRpcProvider(process.env. NEXT_PUBLIC_INFURA_URL);
-const signer = new ethers.Wallet(process.env.NEXT_PUBLIC_PRIVATE_KEY, provider);
+
 
 const glassLayerStyle = {
   position: 'absolute',
@@ -35,56 +35,11 @@ const glassLayerStyle = {
 };
 
 const Leaderboard = () => {
-  const [loaded, setLoaded] = useState(false);
+
+  const { data, setSortField, sortOrder, setSortOrder } = useLeaderboard();
   const { KUBIXbalance } = useWeb3Context();
   const [timeframe, setTimeframe] = useState('semester');
-  const [sortField, setSortField] = useState('kubix');
-  const [sortOrder, setSortOrder] = useState('desc');
 
-  const [data, setData] = useState([]);
-
-  const PMContract = "0x6a55a93CA73DFC950430aAeDdB902377fE51a8FA";
-
-  const fetchLeaderboardData = async () => {
-    console.log("loading leaderboard")
-    console.log(loaded)
-    if (provider && signer) {
-      const contractPM = new ethers.Contract(PMContract, ProjectManagerArtifact.abi, signer);
-
-      // Fetch the accountsData IPFS hash from the smart contract
-      const accountsDataIpfsHash = await contractPM.accountsDataIpfsHash();
-      let accountsDataJson = {};
-
-      // If the IPFS hash is not empty, fetch the JSON data
-      if (accountsDataIpfsHash !== '') {
-        accountsDataJson = await (await fetch(`https://kubidao.infura-ipfs.io/ipfs/${accountsDataIpfsHash}`)).json();
-      }
-
-      // Format data for the leaderboard
-      const leaderboardData = Object.entries(accountsDataJson).map(([address, data]) => ({
-        id: address,
-        name: data.username || 'Anonymous',
-        kubix: data.kubixBalance || 0,
-        tasks: data.tasksCompleted || 0,
-      }));
-
-      // Sort data initially by kubix
-      const sortedData = leaderboardData.sort((a, b) => {
-        if (a.kubix > b.kubix) return sortOrder === 'asc' ? 1 : -1;
-        if (a.kubix < b.kubix) return sortOrder === 'asc' ? -1 : 1;
-        return 0;
-      });
-
-      setData(sortedData);
-    }
-  };
-
-  useEffect(() => {
-    if (!loaded) {
-      fetchLeaderboardData();
-      setLoaded(true);
-    }
-  }, [loaded]);
 
 
   
