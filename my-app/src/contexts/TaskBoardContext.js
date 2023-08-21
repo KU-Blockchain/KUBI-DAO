@@ -62,7 +62,6 @@ export const TaskBoardProvider = ({ children, initialColumns, onColumnChange, on
 
     
 
-    console.log('test')
 
     destColumn.tasks.splice(newIndex, 0, updatedTask);
 
