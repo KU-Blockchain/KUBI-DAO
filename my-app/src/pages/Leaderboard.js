@@ -36,7 +36,7 @@ const glassLayerStyle = {
 
 const Leaderboard = () => {
 
-  const { data, setSortField, sortOrder, setSortOrder } = useLeaderboard();
+  const { data, setSortField, sortOrder, setSortOrder, setData } = useLeaderboard();
   const { KUBIXbalance } = useWeb3Context();
   const [timeframe, setTimeframe] = useState('semester');
 
@@ -53,14 +53,13 @@ const Leaderboard = () => {
   const handleSort = (field) => {
     setSortField(field);
     setSortOrder('desc');
-
     const sortedData = [...data].sort((a, b) => {
       if (a[field] > b[field]) return -1;
       if (a[field] < b[field]) return 1;
       return 0
     });
-
     setData(sortedData);
+    console.log(sortedData)
   };
 
   const getMedalColor = (rank) => {
@@ -103,21 +102,10 @@ const Leaderboard = () => {
                   <Th color="ghostwhite">Name</Th>
                   <Th color="ghostwhite">
                     KUBIX
-                    <IconButton
-                      size="xs"
-                      aria-label="Sort by KUBIX"
-                      icon={<TriangleDownIcon color="gray.600" />}
-                      onClick={() => handleSort('kubix')}
-                    />
+
                   </Th>
                   <Th color="ghostwhite">
                     Tasks Completed
-                    <IconButton
-                      size="xs"
-                      aria-label="Sort by Tasks Completed"
-                      icon={<TriangleDownIcon color="gray.600" />}
-                      onClick={() => handleSort('tasks')}
-                    />
                   </Th>
                 </Tr>
               </Thead>

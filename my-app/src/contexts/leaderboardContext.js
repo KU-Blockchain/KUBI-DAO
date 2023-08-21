@@ -1,4 +1,4 @@
-import { createContext, useContext, useState, useEffect } from 'react';
+import { createContext, useContext, useState, useEffect, useCallback } from 'react';
 import { ethers } from 'ethers';
 import ProjectManagerArtifact from '../abi/ProjectManager.json'; 
 
@@ -33,16 +33,24 @@ export const LeaderboardProvider = ({ children }) => {
         tasks: data.tasksCompleted || 0,
       }));
 
-      setData(leaderboardData);
+      const sortedData = leaderboardData.sort((a, b) => {
+        if (a.kubix > b.kubix) return sortOrder === 'asc' ? 1 : -1;
+        if (a.kubix < b.kubix) return sortOrder === 'asc' ? -1 : 1;
+        return 0;
+      });
+      setData(sortedData);
     }
   };
+
+
 
   useEffect(() => {
     fetchLeaderboardData();
   }, []);
 
+
   return (
-    <leaderboardContext.Provider value={{ data, setSortField, sortOrder, setSortOrder }}>
+    <leaderboardContext.Provider value={{ data, setData, setSortField, sortOrder, setSortOrder }}>
       {children}
     </leaderboardContext.Provider>
   );
