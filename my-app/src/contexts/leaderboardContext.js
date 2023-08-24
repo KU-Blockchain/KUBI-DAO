@@ -13,11 +13,12 @@ export const useLeaderboard = () => {
 
 
 export const LeaderboardProvider = ({ children }) => {
-  const [data, setData] = useState([]);
-  const [sortField, setSortField] = useState('kubix');
-  const [sortOrder, setSortOrder] = useState('desc');
-  const PMContract = "0x6a55a93CA73DFC950430aAeDdB902377fE51a8FA";
-  const {signerUniversal} = useWeb3Context()
+    const [data, setData] = useState([]);
+    const [sortField, setSortField] = useState('kubix');
+    const [sortOrder, setSortOrder] = useState('desc');
+    const PMContract = "0x6a55a93CA73DFC950430aAeDdB902377fE51a8FA";
+    const {signerUniversal} = useWeb3Context()
+    const[leaderboardLoaded, setLeaderboardLoaded] = useState(false);
 
 
   const fetchLeaderboardData = async () => {
@@ -26,6 +27,7 @@ export const LeaderboardProvider = ({ children }) => {
       const accountsDataIpfsHash = await contractPM.accountsDataIpfsHash();
       let accountsDataJson = {};
       if (accountsDataIpfsHash !== '') {
+        console.log("test")
         accountsDataJson = await (await fetch(`https://kubidao.infura-ipfs.io/ipfs/${accountsDataIpfsHash}`)).json();
       }
 
@@ -48,12 +50,15 @@ export const LeaderboardProvider = ({ children }) => {
 
 
   useEffect(() => {
-    fetchLeaderboardData();
-  }, []);
+    if (leaderboardLoaded) {
+        console.log("fetching leaderboard data")
+      fetchLeaderboardData();
+    }
+  }, [leaderboardLoaded]);
 
 
   return (
-    <leaderboardContext.Provider value={{ data, setData, setSortField, sortOrder, setSortOrder }}>
+    <leaderboardContext.Provider value={{ data, setData, setSortField, sortOrder, setSortOrder, setLeaderboardLoaded }}>
       {children}
     </leaderboardContext.Provider>
   );
