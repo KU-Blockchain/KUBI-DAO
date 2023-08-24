@@ -22,8 +22,8 @@ function MyApp({ Component, pageProps }) {
     document.title = 'KUBI DAO';
   }, []);
   return (
-    <DataBaseProvider>
-      <Web3Provider>
+    <Web3Provider>
+      <DataBaseProvider>
         <LeaderboardProvider>
           <ChakraProvider theme={theme}>
             <Flex 
@@ -40,8 +40,8 @@ function MyApp({ Component, pageProps }) {
             </Flex>
           </ChakraProvider>
         </LeaderboardProvider>
-      </Web3Provider>
-    </DataBaseProvider>
+      </DataBaseProvider>
+    </Web3Provider>
   );
 }
 

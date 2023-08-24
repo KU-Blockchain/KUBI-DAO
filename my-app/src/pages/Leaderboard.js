@@ -1,12 +1,10 @@
-import React, { useState, useEffect, useCallback } from 'react';
-import { ethers } from 'ethers';
+import React, { useState} from 'react';
 import {
   Box,
   Button,
   Flex,
   Heading,
   HStack,
-  IconButton,
   Table,
   Tbody,
   Td,
@@ -15,9 +13,6 @@ import {
   Tr,
   VStack,
 } from '@chakra-ui/react';
-import { TriangleDownIcon } from '@chakra-ui/icons';
-import ProjectManagerArtifact from '../abi/ProjectManager.json';
-import { useWeb3Context } from '../contexts/Web3Context';
 import { useLeaderboard } from '../contexts/leaderboardContext';
 
 import '../styles/TaskColumn.module.css';
@@ -36,32 +31,16 @@ const glassLayerStyle = {
 
 const Leaderboard = () => {
 
-  const { data, setSortField, sortOrder, setSortOrder } = useLeaderboard();
-  const { KUBIXbalance } = useWeb3Context();
+  const {data} = useLeaderboard();
+
   const [timeframe, setTimeframe] = useState('semester');
-
-
-
   
 
   const handleTimeframeChange = (newTimeframe) => {
     setTimeframe(newTimeframe);
-    // Update data based on the selected timeframe
-    // setData(fetchData(newTimeframe));
   };
 
-  const handleSort = (field) => {
-    setSortField(field);
-    setSortOrder('desc');
 
-    const sortedData = [...data].sort((a, b) => {
-      if (a[field] > b[field]) return -1;
-      if (a[field] < b[field]) return 1;
-      return 0
-    });
-
-    setData(sortedData);
-  };
 
   const getMedalColor = (rank) => {
     switch (rank) {
@@ -103,21 +82,10 @@ const Leaderboard = () => {
                   <Th color="ghostwhite">Name</Th>
                   <Th color="ghostwhite">
                     KUBIX
-                    <IconButton
-                      size="xs"
-                      aria-label="Sort by KUBIX"
-                      icon={<TriangleDownIcon color="gray.600" />}
-                      onClick={() => handleSort('kubix')}
-                    />
+
                   </Th>
                   <Th color="ghostwhite">
                     Tasks Completed
-                    <IconButton
-                      size="xs"
-                      aria-label="Sort by Tasks Completed"
-                      icon={<TriangleDownIcon color="gray.600" />}
-                      onClick={() => handleSort('tasks')}
-                    />
                   </Th>
                 </Tr>
               </Thead>
@@ -136,7 +104,6 @@ const Leaderboard = () => {
                     <Td borderBottom="none" style={{ color: medalColor || 'ghostwhite' }}>{entry.tasks}</Td>
 
                     </Tr>
-
 
                   );
                 })}

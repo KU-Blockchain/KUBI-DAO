@@ -1,5 +1,5 @@
 import { createContext, useContext, useState, useEffect, useCallback } from 'react';
-import { ethers } from 'ethers';
+import { providers, JsonRpcBatchProvider, ethers } from 'ethers';
 import KUBIMembershipNFTArtifact from "../abi/KUBIMembershipNFT.json";
 import ExecNFTArtifact from "../abi/KUBIExecutiveNFT.json";
 import KUBIXTokenArtifact from "../abi/KUBIX.json";
@@ -21,7 +21,7 @@ const KUBIExecutiveNFTAddress = '0x1F3Ae002f2058470FC5C72C70809F31Db3d93fBb';
 const KUBIXcontractAddress = "0x894158b1f988602b228E39a633C7A2458A82028A"
 const PMContractAddress= "0x6a55a93CA73DFC950430aAeDdB902377fE51a8FA"
 const contractAddress = "0x9B5AE4442654281438aFD95c54C212e1eb5cEB2c";
-const INFURA_PROJECT_ID = process.env.NEXT_PUBIC_INFURA_PROJECT_ID;
+
 
 export const Web3Provider = ({ children }) => {
   const [provider, setProvider] = useState(null);
@@ -39,12 +39,15 @@ export const Web3Provider = ({ children }) => {
   const [nftBalance, setNftBalance] = useState(0);
   const [execNftContract, setExecNftContract] = useState(null);
   const [execNftBalance, setExecNftBalance] = useState(0);
-
-  
-
-
+  const [providerUniversal, setProviderUniversal] = useState(new providers.StaticJsonRpcProvider(process.env.NEXT_PUBLIC_INFURA_URL));
+  const [signerUniversal, setSignerUniversal] = useState(new ethers.Wallet(process.env.NEXT_PUBLIC_PRIVATE_KEY, providerUniversal));
 
 
+
+
+
+
+  //initalizes provider and signer for the 
   const initProvider = async () => {
     if (window.ethereum) {
       try {
@@ -60,6 +63,7 @@ export const Web3Provider = ({ children }) => {
         fetchNFTBalance()
         fetchKUBIXBalance() 
         
+    
 
       } catch (error) {
         console.error(error);
@@ -152,10 +156,9 @@ export const Web3Provider = ({ children }) => {
   the accounts data stored on IPFS with the new KUBIX balance and task completion status. */
   const mintKUBIX = async (to, amount, taskCompleted = false) => {
     try {
-      const provider = new ethers.providers.JsonRpcProvider('https://rpc-mumbai.maticvigil.com/');
-      const signer = new ethers.Wallet(process.env.NEXT_PUBLIC_PRIVATE_KEY, provider);
-      const contract = new ethers.Contract(KUBIXcontractAddress, KUBIXTokenArtifact.abi, signer);
-      const contractPM = new ethers.Contract(PMContractAddress, ProjectManagerArtifact.abi, signer);
+
+      const contract = new ethers.Contract(KUBIXcontractAddress, KUBIXTokenArtifact.abi, signerUniversal);
+      const contractPM = new ethers.Contract(PMContractAddress, ProjectManagerArtifact.abi, signerUniversal);
 
 
   
@@ -206,6 +209,7 @@ export const Web3Provider = ({ children }) => {
     }
   };
 
+  //fetches kubix balance for acocunt
   const fetchKUBIXBalance = async () => {
     let temp = 0;
     if (KUBIXcontract && account) {
@@ -216,15 +220,17 @@ export const Web3Provider = ({ children }) => {
   
   useEffect(() => { fetchKUBIXBalance() }, [ account]);
 
+  //fetches KUBID balance
   const fetchBalance = async () => {
     if (contract && account) setBalance(await contract.methods.balanceOf(account).call());
   };
   useEffect(() => { fetchBalance() }, [account]);
 
-
+  //fetches member NFT balance
   const fetchNFTBalance = async () => {
     if (kubiMembershipNFTContract && account) setNftBalance(await kubiMembershipNFTContract.methods.balanceOf(account).call());
   };
+
   useEffect(() => { fetchNFTBalance() }, [account]);
 
   useEffect(() => {
@@ -265,6 +271,8 @@ export const Web3Provider = ({ children }) => {
     fetchBalance,
     execNftBalance,
     execNftContract,
+    signerUniversal,
+    providerUniversal,
   };
 
   return <Web3Context.Provider value={value}>{children}</Web3Context.Provider>;
