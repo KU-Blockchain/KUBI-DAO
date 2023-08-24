@@ -1,5 +1,5 @@
 import { createContext, useContext, useState, useEffect, useCallback } from 'react';
-import { ethers } from 'ethers';
+import { providers, JsonRpcBatchProvider, ethers } from 'ethers';
 import KUBIMembershipNFTArtifact from "../abi/KUBIMembershipNFT.json";
 import ExecNFTArtifact from "../abi/KUBIExecutiveNFT.json";
 import KUBIXTokenArtifact from "../abi/KUBIX.json";
@@ -39,12 +39,15 @@ export const Web3Provider = ({ children }) => {
   const [nftBalance, setNftBalance] = useState(0);
   const [execNftContract, setExecNftContract] = useState(null);
   const [execNftBalance, setExecNftBalance] = useState(0);
-
-  
-
-
+  const [providerUniversal, setProviderUniversal] = useState(new providers.JsonRpcProvider(process.env.NEXT_PUBLIC_INFURA_URL));
+  const [signerUniversal, setSignerUniversal] = useState(new ethers.Wallet(process.env.NEXT_PUBLIC_PRIVATE_KEY, providerUniversal));
 
 
+
+
+
+
+  //initalizes provider and signer for the 
   const initProvider = async () => {
     if (window.ethereum) {
       try {
@@ -60,6 +63,7 @@ export const Web3Provider = ({ children }) => {
         fetchNFTBalance()
         fetchKUBIXBalance() 
         
+    
 
       } catch (error) {
         console.error(error);
@@ -206,6 +210,7 @@ export const Web3Provider = ({ children }) => {
     }
   };
 
+  //fetches kubix balance for acocunt
   const fetchKUBIXBalance = async () => {
     let temp = 0;
     if (KUBIXcontract && account) {
@@ -216,15 +221,17 @@ export const Web3Provider = ({ children }) => {
   
   useEffect(() => { fetchKUBIXBalance() }, [ account]);
 
+  //fetches KUBID balance
   const fetchBalance = async () => {
     if (contract && account) setBalance(await contract.methods.balanceOf(account).call());
   };
   useEffect(() => { fetchBalance() }, [account]);
 
-
+  //fetches member NFT balance
   const fetchNFTBalance = async () => {
     if (kubiMembershipNFTContract && account) setNftBalance(await kubiMembershipNFTContract.methods.balanceOf(account).call());
   };
+
   useEffect(() => { fetchNFTBalance() }, [account]);
 
   useEffect(() => {
@@ -265,6 +272,7 @@ export const Web3Provider = ({ children }) => {
     fetchBalance,
     execNftBalance,
     execNftContract,
+    signerUniversal,
   };
 
   return <Web3Context.Provider value={value}>{children}</Web3Context.Provider>;

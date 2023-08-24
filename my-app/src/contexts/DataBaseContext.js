@@ -1,7 +1,9 @@
-import { providers, JsonRpcBatchProvider, ethers } from 'ethers';
+import {ethers } from 'ethers';
 import ipfs from '../db/ipfs';
 import ProjectManagerArtifact from '../abi/ProjectManager.json';
 import { createContext, useContext, useState, useEffect } from 'react';
+import { useWeb3Context } from './Web3Context';
+
 
 //UPDATE THIS FILE TO USE RPC TO UPDTAE THE DATABASE
 const DataBaseContext = createContext();
@@ -15,29 +17,27 @@ export const DataBaseProvider = ({ children }) => {
   const [selectedProject, setSelectedProject] = useState(null);
   const [userDetails, setUserDetails] = useState(null);
   const [updateInProgress, setUpdateInProgress] = useState(false);
+  const {signerUniversal} = useWeb3Context()
 
   const PMContract = '0x6a55a93CA73DFC950430aAeDdB902377fE51a8FA';
 
-  // Create provider, signer, and contract instances only once
-  const provider = new providers.JsonRpcProvider(
-   process.env. NEXT_PUBLIC_INFURA_URL
-  );
-  const signer = new ethers.Wallet(process.env.NEXT_PUBLIC_PRIVATE_KEY, provider);
-  const contract = new ethers.Contract(PMContract, ProjectManagerArtifact.abi, signer);
 
 
 
   useEffect(() => {
+
+    const contract = new ethers.Contract(PMContract, ProjectManagerArtifact.abi, signerUniversal);
+    
     const loadInitialProject = async () => {
       const projectCount = await contract.getProjectIdCounter();
       const projectIds = Array.from({ length: projectCount }, (_, i) => i + 1);
-
+  
       // Use batch requests to fetch project data
       
       const batchRequests = projectIds.map((id) => contract.projects(id));
-
+  
       const projectResults = await Promise.all(batchRequests);
-
+  
       
       try {
         const projectsData = await Promise.all(
@@ -71,10 +71,14 @@ export const DataBaseProvider = ({ children }) => {
       }
       
     };
-    
-
     loadInitialProject();
+  
   }, []);
+
+
+
+
+
 
   //handle updating the project data in the smart contract and ipfs when collumn changes
   const handleUpdateColumns = async (newColumns) => {
