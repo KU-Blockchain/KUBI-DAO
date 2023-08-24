@@ -3,6 +3,7 @@ import ipfs from '../db/ipfs';
 import ProjectManagerArtifact from '../abi/ProjectManager.json';
 import { createContext, useContext, useState, useEffect } from 'react';
 import { useWeb3Context } from './Web3Context';
+import { set } from 'lodash';
 
 
 //UPDATE THIS FILE TO USE RPC TO UPDTAE THE DATABASE
@@ -18,6 +19,7 @@ export const DataBaseProvider = ({ children }) => {
   const [userDetails, setUserDetails] = useState(null);
   const [updateInProgress, setUpdateInProgress] = useState(false);
   const {signerUniversal} = useWeb3Context()
+  const [contract, setContract] = useState(null);
 
   const PMContract = '0x6a55a93CA73DFC950430aAeDdB902377fE51a8FA';
 
@@ -27,6 +29,7 @@ export const DataBaseProvider = ({ children }) => {
   useEffect(() => {
 
     const contract = new ethers.Contract(PMContract, ProjectManagerArtifact.abi, signerUniversal);
+    setContract(contract);
     
     const loadInitialProject = async () => {
       const projectCount = await contract.getProjectIdCounter();
