@@ -59,6 +59,14 @@ const Voting = () => {
   const [completedPollsKubid, setCompletedPollsKubid] = useState([]);
 
 
+  const [completedEnd, setCompletedEnd] = useState(3);
+
+  const [totalCompletedCount, setTotalCompletedCount] = useState(0);
+
+
+
+
+
 
   const toast = useToast();
 
@@ -110,7 +118,7 @@ const Voting = () => {
     setLoadingVote(false)
   };
 
-  const fetchPolls = async (selectedContract, setOngoingPollsFunc, setCompletedPollsFunc, completedStart = 0, completedEnd = 3) => {
+  const fetchPolls = async (selectedContract, setOngoingPollsFunc, setCompletedPollsFunc, completedStart = 0, completedEnd=3) => {
     try {
         await selectedContract.moveToCompleted();
         
@@ -167,6 +175,21 @@ const fetchPollsData = async (selectedContract, start, end, completed) => {
 
     return await Promise.all(pollsPromises);
 };
+
+  const loadMoreCompleted = () => {
+    setCompletedEnd(prevCompletedEnd => prevCompletedEnd + 5);  // Increment completedEnd
+    try{
+    if (selectedTab === 0) {
+      fetchPolls(contractD, setOngoingPollsKubid, setCompletedPollsKubid, 0, completedEnd);
+
+    } else if (selectedTab === 1) {
+      fetchPolls(contractX, setOngoingPollsKubix, setCompletedPollsKubix, 0, completedEnd);
+
+    }
+  } catch (error) {
+    console.error(error);
+  }
+  };
 
 
 
@@ -353,9 +376,12 @@ const fetchPollsData = async (selectedContract, start, end, completed) => {
                     {poll.options.map((option, index) => (
                       <Text key={index}>{option.optionName}</Text>
                     ))}
+
                   </VStack>
+                  
                 </Box>
               ))}
+
             </VStack>
                 {/* List ongoing votes here */}
               
@@ -409,6 +435,7 @@ const fetchPollsData = async (selectedContract, start, end, completed) => {
                   </Box>
                 );
               })}
+                <Button onClick={loadMoreCompleted}>Load more</Button>
               </VStack>
             </Grid>
   
@@ -503,6 +530,7 @@ const fetchPollsData = async (selectedContract, start, end, completed) => {
                   </Box>
                 );
               })}
+              <Button onClick={loadMoreCompleted}>Load more</Button>
               </VStack>
             </Grid>
             {/* Create Poll Form */}
