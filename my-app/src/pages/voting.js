@@ -110,22 +110,19 @@ const Voting = () => {
     setLoadingVote(false)
   };
 
-  const fetchPolls = async (selectedContract, setOngoingPollsFunc, setCompletedPollsFunc) => {
+  const fetchPolls = async (selectedContract, setOngoingPollsFunc, setCompletedPollsFunc, completedStart = 0, completedEnd = 3) => {
     try {
         await selectedContract.moveToCompleted();
-
-        // Fetch counts first, then use Promise.all to fetch both sets of polls in parallel
-        const [ongoingPollsCount, completedPollsCount] = await Promise.all([
-            selectedContract.activeProposalsCount(),
-            selectedContract.completedProposalsCount()
-        ]);
-
-        // Fetch both in parallel
-        const [ongoingPolls, completedPolls] = await Promise.all([
-            fetchPollsData(selectedContract, ongoingPollsCount, false),
-            fetchPollsData(selectedContract, completedPollsCount, true)
-        ]);
-
+        
+        const ongoingPollsCount = await selectedContract.activeProposalsCount();
+        
+        // Fetch all ongoing polls
+        console.log("ongoingPollsCount", ongoingPollsCount)
+        const ongoingPolls = await fetchPollsData(selectedContract, 0, ongoingPollsCount, false);
+        
+        // Fetch only the first 3 (or specified number) completed polls
+        const completedPolls = await fetchPollsData(selectedContract, completedStart, completedEnd, true);
+        
         setOngoingPollsFunc(ongoingPolls);
         setCompletedPollsFunc(completedPolls);
     } catch (error) {
@@ -133,23 +130,24 @@ const Voting = () => {
     }
 };
 
-const fetchPollsData = async (selectedContract, pollsCount, completed) => {
-    const pollsPromises = Array.from({ length: pollsCount }, async (_, i) => {
-        // If batching is not possible, we must individually fetch the proposalId
-        const proposalId = completed
-            ? await selectedContract.completedProposalIndices(i)
-            : await selectedContract.activeProposalIndices(i+1);
+const fetchPollsData = async (selectedContract, start, end, completed) => {
+    const pollsPromises = Array.from({ length: end - start }, async (_, i) => {
+        
+        var index = start + i;
+        if (!completed){
+          index++
+        }
 
-        // Fetch proposal and optionsCount in parallel
+        // Aligning the index to start from 0 for both completed and ongoing polls
+        const proposalId = await selectedContract[completed ? "completedProposalIndices" : "activeProposalIndices"](index);
+        
         const [proposal, optionsCount] = await Promise.all([
             selectedContract.activeProposals(proposalId),
             selectedContract.getOptionsCount(proposalId)
         ]);
 
-        const pollOptionsPromises = Array.from({ length: optionsCount }, (_, j) => {
-            return selectedContract.getOption(proposalId, j);
-        });
-
+        const pollOptionsPromises = Array.from({ length: optionsCount }, (_, j) => selectedContract.getOption(proposalId, j));
+        
         const pollOptions = await Promise.all(pollOptionsPromises);
 
         let pollWithOptions = {
@@ -158,18 +156,19 @@ const fetchPollsData = async (selectedContract, pollsCount, completed) => {
             id: proposalId,
             remainingTime: proposal.timeInMinutes * 60 - (Math.floor(Date.now() / 1000) - proposal.creationTimestamp)
         };
-
+        
         if (completed) {
-            const winner = await selectedContract.getWinner(i);
+            const winner = await selectedContract.getWinner(index);
             pollWithOptions = { ...pollWithOptions, winner };
         }
-
+        
         return pollWithOptions;
     });
 
-    const pollsData = await Promise.all(pollsPromises);
-    return pollsData;
+    return await Promise.all(pollsPromises);
 };
+
+
 
 
 
