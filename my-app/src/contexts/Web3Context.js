@@ -273,6 +273,7 @@ export const Web3Provider = ({ children }) => {
     execNftBalance,
     execNftContract,
     signerUniversal,
+    providerUniversal,
   };
 
   return <Web3Context.Provider value={value}>{children}</Web3Context.Provider>;

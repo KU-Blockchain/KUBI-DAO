@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, use } from 'react';
 import {CSSReset,extendTheme, ChakraProvider, Text, Box, useDisclosure, Flex, Grid, Container, Spacer, VStack, Heading, Tabs, TabList, Tab, TabPanels, TabPanel, Button, Collapse, FormControl, FormLabel, Input, Textarea, RadioGroup, Stack, Radio, Modal, ModalOverlay, ModalContent, ModalHeader, ModalCloseButton, ModalBody, ModalFooter } from '@chakra-ui/react';
 
 
@@ -11,6 +11,8 @@ import { useToast } from '@chakra-ui/react';
 import { BarChart, Bar, XAxis, YAxis} from 'recharts';
 import CountDown from '@/components/voting/countDown';
 
+
+
 const glassLayerStyle = {
   position: "absolute",
   height: "100%",
@@ -22,15 +24,16 @@ const glassLayerStyle = {
 };
 
 
-const provider = new ethers.providers.JsonRpcProvider(process.env.NEXT_PUBLIC_INFURA_URL);
-const signer = new ethers.Wallet(process.env.NEXT_PUBLIC_PRIVATE_KEY, provider);
-const contractX = new ethers.Contract('0x4B99866ecE2Fe4b57882EA4715380921EEd2242c', KubixVotingABI.abi, signer);
-const contractD = new ethers.Contract('0xaf395fbBdc0E2e99ae18D42F2724481BF1Ab02c8', KubidVotingABI.abi, signer);
+
 
 
 const Voting = () => {
+  const {signerUniversal, providerUniversal, account}= useWeb3Context()
   const { findMinMaxKubixBalance } = useDataBaseContext();
-  const { account } = useWeb3Context();
+
+  const contractX = new ethers.Contract('0x4B99866ecE2Fe4b57882EA4715380921EEd2242c', KubixVotingABI.abi, signerUniversal);
+  const contractD = new ethers.Contract('0xaf395fbBdc0E2e99ae18D42F2724481BF1Ab02c8', KubidVotingABI.abi, signerUniversal);
+
 
   const [proposal, setProposal] = useState({ name: '', description: '', execution: '', time: 0, options: [] ,id:0 });
   const [selectedTab, setSelectedTab] = useState(0);
@@ -241,7 +244,7 @@ const fetchPollsData = async (selectedContract,pollsCount, completed) => {
 
   
   async function fetchBlockTimestamp() {
-    const currentBlock = await provider.getBlock('latest');
+    const currentBlock = await providerUniversal.getBlock('latest');
     setBlockTimestamp(currentBlock.timestamp);
   }
 
