@@ -70,6 +70,7 @@ const User = () => {
     const checkConnection = async () => {
       if (web3 && account) {
         setIsConnected(true);
+      
         if (hasMemberNFT){
           setIsMember(true);
         }

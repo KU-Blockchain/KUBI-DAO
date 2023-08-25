@@ -27,10 +27,9 @@ export const DataBaseProvider = ({ children }) => {
 
 
   useEffect(() => {
-    if (taskLoaded) {
-
     const contract = new ethers.Contract(PMContract, ProjectManagerArtifact.abi, signerUniversal);
     setContract(contract);
+    if (taskLoaded) {
 
     const loadInitialProject = async () => {
       const projectCount = await contract.getProjectIdCounter();
