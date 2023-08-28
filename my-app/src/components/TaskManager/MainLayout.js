@@ -10,11 +10,11 @@ import { useWeb3Context } from '../../contexts/Web3Context';
 const MainLayout = () => {
   const {
     projects,
-    setProjects,
     selectedProject,
     setSelectedProject,
     handleUpdateColumns,
     handleCreateProject,
+
   } = useDataBaseContext();
 
   const {account}= useWeb3Context()

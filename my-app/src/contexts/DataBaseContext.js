@@ -22,13 +22,14 @@ export const DataBaseProvider = ({ children }) => {
 
   const PMContract = '0x6a55a93CA73DFC950430aAeDdB902377fE51a8FA';
 
+  const [taskLoaded, setTaskLoaded] = useState(false);
 
 
 
   useEffect(() => {
-
     const contract = new ethers.Contract(PMContract, ProjectManagerArtifact.abi, signerUniversal);
     setContract(contract);
+    if (taskLoaded) {
 
     const loadInitialProject = async () => {
       const projectCount = await contract.getProjectIdCounter();
@@ -74,8 +75,10 @@ export const DataBaseProvider = ({ children }) => {
       
     };
     loadInitialProject();
+    console.log("test")
+  }
   
-  }, []);
+  }, [taskLoaded]);
 
 
 
@@ -374,6 +377,7 @@ export const DataBaseProvider = ({ children }) => {
             pushProjectHashes,
             handleDeleteProject,
             findMinMaxKubixBalance,
+            setTaskLoaded
         }}
         >
         {children}

@@ -8,6 +8,7 @@ contract KubixVoting {
     using SafeMath for uint256;
     IERC20 public kubixToken;
     address public dao;
+    string public ipfsHash; 
 
     struct PollOption {
         string optionName;
@@ -33,10 +34,12 @@ contract KubixVoting {
 
     event NewProposal(uint256 indexed proposalId, string name);
 
+    event NewIPFSHash(string indexed newHash); 
+
     constructor(address _kubixToken, address _dao) {
         kubixToken = IERC20(_kubixToken);
         dao = _dao;
-        activeProposalIndices.push(0); // Initialize with a dummy value
+        activeProposalIndices.push(0); 
     }
 
     modifier onlyDAO() {
@@ -202,6 +205,15 @@ contract KubixVoting {
     function getOptionsCount(uint256 _proposalId) public view returns (uint256) {
         Proposal storage proposal = activeProposals[_proposalId];
         return proposal.options.length;
+    }
+
+    function setIPFSHash(string memory _ipfsHash) external onlyDAO { 
+        ipfsHash = _ipfsHash;
+        emit NewIPFSHash(_ipfsHash);
+    }
+
+    function getIPFSHash() external view returns (string memory) { 
+        return ipfsHash;
     }
 
 

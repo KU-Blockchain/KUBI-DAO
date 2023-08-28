@@ -1,4 +1,4 @@
-import React, { useState} from 'react';
+import React, { useEffect, useState} from 'react';
 import {
   Box,
   Button,
@@ -31,7 +31,7 @@ const glassLayerStyle = {
 
 const Leaderboard = () => {
 
-  const {data} = useLeaderboard();
+  const {data, setLeaderboardLoaded} = useLeaderboard();
 
   const [timeframe, setTimeframe] = useState('semester');
   
@@ -39,6 +39,9 @@ const Leaderboard = () => {
   const handleTimeframeChange = (newTimeframe) => {
     setTimeframe(newTimeframe);
   };
+  useEffect(() => {
+    setLeaderboardLoaded(true);
+  }, []);
 
 
 

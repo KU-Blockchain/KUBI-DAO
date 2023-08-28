@@ -1,5 +1,5 @@
 import React, { useState, useEffect, use } from 'react';
-import {CSSReset,extendTheme, ChakraProvider, Text, Box, useDisclosure, Flex, Grid, Container, Spacer, VStack, Heading, Tabs, TabList, Tab, TabPanels, TabPanel, Button, Collapse, FormControl, FormLabel, Input, Textarea, RadioGroup, Stack, Radio, Modal, ModalOverlay, ModalContent, ModalHeader, ModalCloseButton, ModalBody, ModalFooter } from '@chakra-ui/react';
+import {Text, Box, useDisclosure, Flex, Grid, Container, Spacer, VStack, Heading, Tabs, TabList, Tab, TabPanels, TabPanel, Button, Collapse, FormControl, FormLabel, Input, Textarea, RadioGroup, Stack, Radio, Modal, ModalOverlay, ModalContent, ModalHeader, ModalCloseButton, ModalBody, ModalFooter } from '@chakra-ui/react';
 
 
 import { ethers } from 'ethers';
@@ -31,7 +31,7 @@ const Voting = () => {
   const {signerUniversal, providerUniversal, account}= useWeb3Context()
   const { findMinMaxKubixBalance } = useDataBaseContext();
 
-  const contractX = new ethers.Contract('0x4B99866ecE2Fe4b57882EA4715380921EEd2242c', KubixVotingABI.abi, signerUniversal);
+  const contractX = new ethers.Contract('0x4Af0e1994c8e03414ffd523aAc645049bcdadbD6', KubixVotingABI.abi, signerUniversal);
   const contractD = new ethers.Contract('0xaf395fbBdc0E2e99ae18D42F2724481BF1Ab02c8', KubidVotingABI.abi, signerUniversal);
 
 
@@ -57,6 +57,14 @@ const Voting = () => {
   const [completedPollsKubix, setCompletedPollsKubix] = useState([]);
   const [ongoingPollsKubid, setOngoingPollsKubid] = useState([]);
   const [completedPollsKubid, setCompletedPollsKubid] = useState([]);
+
+
+  const [completedEnd, setCompletedEnd] = useState(3);
+
+  const [totalCompletedCount, setTotalCompletedCount] = useState(0);
+
+
+
 
 
 
@@ -110,47 +118,54 @@ const Voting = () => {
     setLoadingVote(false)
   };
 
-  const fetchPolls = async (selectedContract, setOngoingPollsFunc, setCompletedPollsFunc) => {
+  const fetchPolls = async (selectedContract, setOngoingPollsFunc, setCompletedPollsFunc, completedStart = 0, completedEnd = 3) => {
     try {
         await selectedContract.moveToCompleted();
 
-        // Fetch counts first, then use Promise.all to fetch both sets of polls in parallel
+        // Fetch both active and completed poll counts in parallel
         const [ongoingPollsCount, completedPollsCount] = await Promise.all([
             selectedContract.activeProposalsCount(),
-            selectedContract.completedProposalsCount()
+            selectedContract.completedProposalsCount() // Replace with your actual function if different
         ]);
 
-        // Fetch both in parallel
+        // Calculate how many polls to fetch
+        const completedEndModified = Math.min(completedEnd, completedPollsCount);
+
+        // Fetch ongoing and completed polls
         const [ongoingPolls, completedPolls] = await Promise.all([
-            fetchPollsData(selectedContract, ongoingPollsCount, false),
-            fetchPollsData(selectedContract, completedPollsCount, true)
+          fetchPollsData(selectedContract, 0, ongoingPollsCount, false),
+          fetchPollsData(selectedContract, completedStart, completedEndModified, true)
         ]);
 
         setOngoingPollsFunc(ongoingPolls);
         setCompletedPollsFunc(completedPolls);
+        
     } catch (error) {
         console.error(error);
     }
-};
+  };
 
-const fetchPollsData = async (selectedContract, pollsCount, completed) => {
-    const pollsPromises = Array.from({ length: pollsCount }, async (_, i) => {
-        // If batching is not possible, we must individually fetch the proposalId
-        const proposalId = completed
-            ? await selectedContract.completedProposalIndices(i)
-            : await selectedContract.activeProposalIndices(i+1);
+const fetchPollsData = async (selectedContract, start, end, completed) => {
+    const pollsPromises = Array.from({ length: end - start }, async (_, i) => {
+        
+        var index = start + i;
+        if (!completed){
+          index++
+        }
 
-        // Fetch proposal and optionsCount in parallel
+        // Aligning the index to start from 0 for both completed and ongoing polls
+        const proposalId = await selectedContract[completed ? "completedProposalIndices" : "activeProposalIndices"](index);
+
+
         const [proposal, optionsCount] = await Promise.all([
             selectedContract.activeProposals(proposalId),
             selectedContract.getOptionsCount(proposalId)
         ]);
 
-        const pollOptionsPromises = Array.from({ length: optionsCount }, (_, j) => {
-            return selectedContract.getOption(proposalId, j);
-        });
+        const pollOptionsPromises = Array.from({ length: optionsCount }, (_, j) => selectedContract.getOption(proposalId, j));
 
         const pollOptions = await Promise.all(pollOptionsPromises);
+
 
         let pollWithOptions = {
             ...proposal,
@@ -158,18 +173,34 @@ const fetchPollsData = async (selectedContract, pollsCount, completed) => {
             id: proposalId,
             remainingTime: proposal.timeInMinutes * 60 - (Math.floor(Date.now() / 1000) - proposal.creationTimestamp)
         };
-
+        
         if (completed) {
-            const winner = await selectedContract.getWinner(i);
+            const winner = await selectedContract.getWinner(index);
             pollWithOptions = { ...pollWithOptions, winner };
         }
-
+        
         return pollWithOptions;
     });
 
-    const pollsData = await Promise.all(pollsPromises);
-    return pollsData;
+    return await Promise.all(pollsPromises);
 };
+
+  const loadMoreCompleted = () => {
+    setCompletedEnd(prevCompletedEnd => prevCompletedEnd + 5);  // Increment completedEnd
+    try{
+    if (selectedTab === 0) {
+      fetchPolls(contractD, setOngoingPollsKubid, setCompletedPollsKubid, 0, completedEnd);
+
+    } else if (selectedTab === 1) {
+      fetchPolls(contractX, setOngoingPollsKubix, setCompletedPollsKubix, 0, completedEnd);
+
+    }
+  } catch (error) {
+    console.error(error);
+  }
+  };
+
+
 
 
 
@@ -184,7 +215,7 @@ const fetchPollsData = async (selectedContract, pollsCount, completed) => {
     e.preventDefault();
     setLoadingSubmit(true)
     try {
-
+      console.log("handle submit")
       await createPoll();
       toast({
         title: 'Poll created successfully',
@@ -222,15 +253,19 @@ const fetchPollsData = async (selectedContract, pollsCount, completed) => {
   };
 
   useEffect(() => {
-    fetchPolls(contractX, setOngoingPollsKubix, setCompletedPollsKubix);
-    fetchPolls(contractD, setOngoingPollsKubid, setCompletedPollsKubid);
+    const asyncFunc = async () => {
+      await fetchPolls(contractX, setOngoingPollsKubix, setCompletedPollsKubix);
+      await fetchPolls(contractD, setOngoingPollsKubid, setCompletedPollsKubid);
+    }
+    asyncFunc()
   }, []);
 
   const createPoll = async () => {
-    if (contract == contractX) {
+
+    if (selectedTab == 1) {
+      
     const balances = await findMinMaxKubixBalance();
-    console.log('proposal:', proposal);
-    console.log('balances:', balances);
+
   
     // Parse the options string into an array
     const optionsArray = proposal.options.map(option => option.trim());
@@ -354,9 +389,12 @@ const fetchPollsData = async (selectedContract, pollsCount, completed) => {
                     {poll.options.map((option, index) => (
                       <Text key={index}>{option.optionName}</Text>
                     ))}
+
                   </VStack>
+                  
                 </Box>
               ))}
+
             </VStack>
                 {/* List ongoing votes here */}
               
@@ -410,6 +448,7 @@ const fetchPollsData = async (selectedContract, pollsCount, completed) => {
                   </Box>
                 );
               })}
+                <Button onClick={loadMoreCompleted}>Load more</Button>
               </VStack>
             </Grid>
   
@@ -504,6 +543,7 @@ const fetchPollsData = async (selectedContract, pollsCount, completed) => {
                   </Box>
                 );
               })}
+              <Button onClick={loadMoreCompleted}>Load more</Button>
               </VStack>
             </Grid>
             {/* Create Poll Form */}
