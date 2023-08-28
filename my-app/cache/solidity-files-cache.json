@@ -962,8 +962,8 @@
       ]
     },
     "/Users/hudsonheadley/Desktop/Code/DAO2/my-app/contracts/KUBIXvoting.sol": {
-      "lastModificationDate": 1684368854153,
-      "contentHash": "c4f049cc88ae8537199db9eef9c4fd8e",
+      "lastModificationDate": 1692990871047,
+      "contentHash": "3ab38e2e2b23cf84afca45c4754c55b8",
       "sourceName": "contracts/KUBIXvoting.sol",
       "solcConfig": {
         "version": "0.8.18",
@@ -1001,7 +1001,7 @@
       ]
     },
     "/Users/hudsonheadley/Desktop/Code/DAO2/my-app/contracts/KUBIDvoting.sol": {
-      "lastModificationDate": 1691175490370,
+      "lastModificationDate": 1692298633371,
       "contentHash": "0ac98d828566faf04420bcb2005900c9",
       "sourceName": "contracts/KUBIDvoting.sol",
       "solcConfig": {

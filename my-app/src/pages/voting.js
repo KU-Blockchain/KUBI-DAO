@@ -31,7 +31,7 @@ const Voting = () => {
   const {signerUniversal, providerUniversal, account}= useWeb3Context()
   const { findMinMaxKubixBalance } = useDataBaseContext();
 
-  const contractX = new ethers.Contract('0x4B99866ecE2Fe4b57882EA4715380921EEd2242c', KubixVotingABI.abi, signerUniversal);
+  const contractX = new ethers.Contract('0x4Af0e1994c8e03414ffd523aAc645049bcdadbD6', KubixVotingABI.abi, signerUniversal);
   const contractD = new ethers.Contract('0xaf395fbBdc0E2e99ae18D42F2724481BF1Ab02c8', KubidVotingABI.abi, signerUniversal);
 
 
@@ -118,25 +118,32 @@ const Voting = () => {
     setLoadingVote(false)
   };
 
-  const fetchPolls = async (selectedContract, setOngoingPollsFunc, setCompletedPollsFunc, completedStart = 0, completedEnd=3) => {
+  const fetchPolls = async (selectedContract, setOngoingPollsFunc, setCompletedPollsFunc, completedStart = 0, completedEnd = 3) => {
     try {
         await selectedContract.moveToCompleted();
-        
-        const ongoingPollsCount = await selectedContract.activeProposalsCount();
-        
-        // Fetch all ongoing polls
-        console.log("ongoingPollsCount", ongoingPollsCount)
-        const ongoingPolls = await fetchPollsData(selectedContract, 0, ongoingPollsCount, false);
-        
-        // Fetch only the first 3 (or specified number) completed polls
-        const completedPolls = await fetchPollsData(selectedContract, completedStart, completedEnd, true);
-        
+
+        // Fetch both active and completed poll counts in parallel
+        const [ongoingPollsCount, completedPollsCount] = await Promise.all([
+            selectedContract.activeProposalsCount(),
+            selectedContract.completedProposalsCount() // Replace with your actual function if different
+        ]);
+
+        // Calculate how many polls to fetch
+        const completedEndModified = Math.min(completedEnd, completedPollsCount);
+
+        // Fetch ongoing and completed polls
+        const [ongoingPolls, completedPolls] = await Promise.all([
+          fetchPollsData(selectedContract, 0, ongoingPollsCount, false),
+          fetchPollsData(selectedContract, completedStart, completedEndModified, true)
+        ]);
+
         setOngoingPollsFunc(ongoingPolls);
         setCompletedPollsFunc(completedPolls);
+        
     } catch (error) {
         console.error(error);
     }
-};
+  };
 
 const fetchPollsData = async (selectedContract, start, end, completed) => {
     const pollsPromises = Array.from({ length: end - start }, async (_, i) => {
@@ -148,15 +155,17 @@ const fetchPollsData = async (selectedContract, start, end, completed) => {
 
         // Aligning the index to start from 0 for both completed and ongoing polls
         const proposalId = await selectedContract[completed ? "completedProposalIndices" : "activeProposalIndices"](index);
-        
+
+
         const [proposal, optionsCount] = await Promise.all([
             selectedContract.activeProposals(proposalId),
             selectedContract.getOptionsCount(proposalId)
         ]);
 
         const pollOptionsPromises = Array.from({ length: optionsCount }, (_, j) => selectedContract.getOption(proposalId, j));
-        
+
         const pollOptions = await Promise.all(pollOptionsPromises);
+
 
         let pollWithOptions = {
             ...proposal,
@@ -206,7 +215,7 @@ const fetchPollsData = async (selectedContract, start, end, completed) => {
     e.preventDefault();
     setLoadingSubmit(true)
     try {
-
+      console.log("handle submit")
       await createPoll();
       toast({
         title: 'Poll created successfully',
@@ -244,15 +253,19 @@ const fetchPollsData = async (selectedContract, start, end, completed) => {
   };
 
   useEffect(() => {
-    fetchPolls(contractX, setOngoingPollsKubix, setCompletedPollsKubix);
-    fetchPolls(contractD, setOngoingPollsKubid, setCompletedPollsKubid);
+    const asyncFunc = async () => {
+      await fetchPolls(contractX, setOngoingPollsKubix, setCompletedPollsKubix);
+      await fetchPolls(contractD, setOngoingPollsKubid, setCompletedPollsKubid);
+    }
+    asyncFunc()
   }, []);
 
   const createPoll = async () => {
-    if (contract == contractX) {
+
+    if (selectedTab == 1) {
+      
     const balances = await findMinMaxKubixBalance();
-    console.log('proposal:', proposal);
-    console.log('balances:', balances);
+
   
     // Parse the options string into an array
     const optionsArray = proposal.options.map(option => option.trim());
