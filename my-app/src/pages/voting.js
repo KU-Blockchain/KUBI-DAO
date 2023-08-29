@@ -1,11 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import {Text, Box, useDisclosure, Flex, Grid, Container, Spacer, VStack, Heading, Tabs, TabList, Tab, TabPanels, TabPanel, Button, Collapse, FormControl, FormLabel, Input, Textarea, RadioGroup, Stack, Radio, Modal, ModalOverlay, ModalContent, ModalHeader, ModalCloseButton, ModalBody, ModalFooter } from '@chakra-ui/react';
 
-
 import { ethers } from 'ethers';
 
-import { useDataBaseContext } from '@/contexts/DataBaseContext';
-import { useWeb3Context } from '@/contexts/Web3Context';
 import { useVoting } from '@/contexts/votingContext';
 
 import { BarChart, Bar, XAxis, YAxis} from 'recharts';
@@ -25,14 +22,10 @@ const glassLayerStyle = {
 
 
 
-
-
 const Voting = () => {
 
 
   const {setContract,contractX, contractD, contract, loadingVote, setLoadingVote, selectedPoll, setSelectedPoll,selectedOption, setSelectedOption, ongoingPollsKubix, setOngoingPollsKubix, completedPollsKubix, setCompletedPollsKubix, ongoingPollsKubid, setOngoingPollsKubid, completedPollsKubid, setCompletedPollsKubid, completedEnd, setCompletedEnd, totalCompletedCount, setTotalCompletedCount, proposal, setProposal, showCreateVote, setShowCreateVote, blockTimestamp, setBlockTimestamp, loadingSubmit, setLoadingSubmit, handleVote, createPoll, fetchPolls, fetchPollsData, loadMoreCompleted, handleSubmit, showCreatePoll, setShowCreatePoll } = useVoting();
-
-
 
 
   const [selectedTab, setSelectedTab] = useState(0);
@@ -40,10 +33,6 @@ const Voting = () => {
 
 
   const { isOpen, onOpen, onClose } = useDisclosure();
-
-
-
-
 
 
   const handlePollClick = (poll) => {
@@ -446,7 +435,7 @@ const Voting = () => {
 
 
     <ModalFooter>
-      <Button colorScheme="blue" onClick={handleVote} mr={3} isLoading={loadingVote} loadingText="Handling Vote">
+      <Button colorScheme="blue" onClick={() => handleVote(onClose)} mr={3} isLoading={loadingVote} loadingText="Handling Vote">
         Vote
       </Button>
     </ModalFooter>
