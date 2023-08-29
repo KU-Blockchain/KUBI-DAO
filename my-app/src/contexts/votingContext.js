@@ -17,17 +17,14 @@ export const useVoting = () => {
     return useContext(votingContext);
   };
   
-
-
   
-  
-  export const VotingProvider = ({ children }) => {
+export const VotingProvider = ({ children }) => {
     const {signerUniversal, providerUniversal, account}= useWeb3Context()
     const {findMinMaxKubixBalance} = useDataBaseContext()
 
     const contractXAddress = '0x4Af0e1994c8e03414ffd523aAc645049bcdadbD6';
     const contractX = new ethers.Contract(contractXAddress, KubixVotingABI.abi, signerUniversal);
-    const contractD = new ethers.Contract('0xaf395fbBdc0E2e99ae18D42F2724481BF1Ab02c8', KubidVotingABI.abi, signerUniversal);
+    const contractD = new ethers.Contract('0x4F30A625Ddd488b310B453E1488eBF0074c5dBd6', KubidVotingABI.abi, signerUniversal);
 
     const [contract, setContract] = useState(contractX);
 
