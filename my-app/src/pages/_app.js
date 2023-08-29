@@ -3,9 +3,11 @@ import { useRouter } from 'next/router'; // Import useRouter
 import { useEffect } from "react";
 import { ChakraProvider, extendTheme, Flex, Box } from "@chakra-ui/react";
 import NavBar from "../components/NavBar";
+
 import { Web3Provider } from "@/contexts/Web3Context";
 import { DataBaseProvider } from "@/contexts/DataBaseContext";
 import { LeaderboardProvider } from "@/contexts/leaderboardContext";
+import { VotingProvider } from "@/contexts/votingContext";
 
 const theme = extendTheme({
   config: {
@@ -24,6 +26,7 @@ function MyApp({ Component, pageProps }) {
   return (
     <Web3Provider>
       <DataBaseProvider>
+        <VotingProvider>
         <LeaderboardProvider>
           <ChakraProvider theme={theme}>
             <Flex 
@@ -40,6 +43,7 @@ function MyApp({ Component, pageProps }) {
             </Flex>
           </ChakraProvider>
         </LeaderboardProvider>
+        </VotingProvider>
       </DataBaseProvider>
     </Web3Provider>
   );
