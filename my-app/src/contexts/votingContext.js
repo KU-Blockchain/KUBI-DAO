@@ -28,7 +28,7 @@ export const VotingProvider = ({ children }) => {
     const contractX = new ethers.Contract(contractXAddress, KubixVotingABI.abi, signerUniversal);
     const contractD = new ethers.Contract('0x4F30A625Ddd488b310B453E1488eBF0074c5dBd6', KubidVotingABI.abi, signerUniversal);
 
-    const [contract, setContract] = useState(contractX);
+    const [contract, setContract] = useState(contractD);
 
     const [loadingVote, setLoadingVote] = useState(false)
 
@@ -67,6 +67,7 @@ export const VotingProvider = ({ children }) => {
 
       const ipfsHashX = await contractX.getIPFSHash();
       setVoteHashX(ipfsHashX);
+      console.log(ipfsHashX)
   
       // Fetch data for contractX only if ipfsHashX is not null
       if (ipfsHashX) {
@@ -76,6 +77,7 @@ export const VotingProvider = ({ children }) => {
   
       const ipfsHashD = await contractD.getIPFSHash();
       setVoteHashD(ipfsHashD);
+      console.log(ipfsHashD)
   
       // Fetch data for contractD only if ipfsHashD is not null
       if (ipfsHashD) {
@@ -87,61 +89,91 @@ export const VotingProvider = ({ children }) => {
 
     
 
-      const newPollIPFS = async () => {
-        try {
-            //Fetch existing data from IPFS
-            const existingDataHash = contract.address === contractXAddress ? voteHashX : voteHashD;
-            const existingVotingData = await fetch(`https://kubidao.infura-ipfs.io/ipfs/${existingDataHash}`).then(response => response.json());
-            
-            // Append the new poll to the existing voting data
-            const newPollData = {
-                // Your new poll data goes here
-                name: proposal.name,
-                description: proposal.description,
-                execution: proposal.execution,
-                time: proposal.time,
-                options: proposal.options,
-                id: proposal.id
-            };
-    
-            existingVotingData.polls = existingVotingData.polls || [];  // Initialize if it doesn't exist yet
-            existingVotingData.polls.push(newPollData);
-            
-            // Step 3: Upload updated data to IPFS
-            const ipfsResult = await ipfs.add(JSON.stringify(existingVotingData));
-            const newIpfsHash = ipfsResult.path;
-            
-            // Step 4: Update the new IPFS hash in the smart contract
-            const tx = await contract.setIPFSHash(newIpfsHash);
-            await tx.wait();
-    
-            // Optionally, update the local state
-            if (contract.address === contractXAddress) {
-                setVoteHashX(newIpfsHash);
-                setVotingDataX(existingVotingData);
-            } else {
-                setVoteHashD(newIpfsHash);
-                setVotingDataD(existingVotingData);
+  const newPollIPFS = async () => {
+    try {
+        let existingVotingData = {};
+
+        // Determine which contract is currently in use
+        if (contract.address === contractXAddress) {
+            // Use voting data for contractX if it exists, otherwise fetch it
+            existingVotingData = votingDataX || {};
+            if (!votingDataX) {
+                const ipfsHashX = await contractX.getIPFSHash();
+                if (ipfsHashX) {
+                    existingVotingData = await JSON.parse(await (await fetch(`https://kubidao.infura-ipfs.io/ipfs/${ipfsHashX}`)).text());
+                }
             }
-    
-            toast({
-                title: 'Poll Created',
-                description: 'Your new poll has been added to IPFS and the smart contract.',
-                status: 'success',
-                duration: 3000,
-                isClosable: true,
-            });
-        } catch (error) {
-            console.error(error);
-            toast({
-                title: 'Error Creating Poll',
-                description: 'There was an error creating the poll. Please try again.',
-                status: 'error',
-                duration: 3000,
-                isClosable: true,
+        } else {
+            // Use voting data for contractD if it exists, otherwise fetch it
+            existingVotingData = votingDataD || {};
+            if (!votingDataD) {
+                const ipfsHashD = await contractD.getIPFSHash();
+                if (ipfsHashD) {
+                    existingVotingData = await JSON.parse(await (await fetch(`https://kubidao.infura-ipfs.io/ipfs/${ipfsHashD}`)).text());
+                }
+            }
+        }
+        //finds max poll id
+        let maxId = -1;
+        if (existingVotingData.polls) {
+            existingVotingData.polls.forEach(poll => {
+                maxId = Math.max(maxId, poll.id);
             });
         }
-    };
+
+        // Your code for appending new poll to existing voting data
+        const newPollData = {
+            name: proposal.name,
+            description: proposal.description,
+            execution: proposal.execution,
+            time: proposal.time,
+            options: proposal.options,
+            id: maxId+1,
+        };
+
+        existingVotingData.polls = existingVotingData.polls || [];  // Initialize if it doesn't exist yet
+        existingVotingData.polls.push(newPollData);
+
+        // Upload updated data to IPFS
+        const ipfsResult = await ipfs.add(JSON.stringify(existingVotingData));
+        const newIpfsHash = ipfsResult.path;
+
+        // Update the new IPFS hash in the smart contract
+        const tx = await contract.setIPFSHash(newIpfsHash);
+        await tx.wait();
+
+        // Update local state
+        if (contract.address === contractXAddress) {
+            setVoteHashX(newIpfsHash);
+            setVotingDataX(existingVotingData);
+        } else {
+            setVoteHashD(newIpfsHash);
+            setVotingDataD(existingVotingData);
+        }
+
+        // Your existing toast message for success
+        toast({
+            title: 'Poll Created',
+            description: 'Your new poll has been added to IPFS and the smart contract.',
+            status: 'success',
+            duration: 3000,
+            isClosable: true,
+        });
+
+    } catch (error) {
+        console.error(error);
+
+        // Your existing toast message for error
+        toast({
+            title: 'Error Creating Poll',
+            description: 'There was an error creating the poll. Please try again.',
+            status: 'error',
+            duration: 3000,
+            isClosable: true,
+        });
+    }
+};
+
     
 
     useEffect(() => {
@@ -196,14 +228,14 @@ export const VotingProvider = ({ children }) => {
 
 
         if (contract.address == contractXAddress) {
-        const balances = await findMinMaxKubixBalance();
-    
+          const balances = await findMinMaxKubixBalance();
       
-        // Parse the options string into an array
-        const optionsArray = proposal.options.map(option => option.trim());
-      
-        const tx = await contract.createProposal(proposal.name, proposal.description, proposal.execution, balances.maxBalance, balances.minBalance, proposal.time, optionsArray);
-        await tx.wait();
+        
+          // Parse the options string into an array
+          const optionsArray = proposal.options.map(option => option.trim());
+        
+          const tx = await contract.createProposal(proposal.name, proposal.description, proposal.execution, balances.maxBalance, balances.minBalance, proposal.time, optionsArray);
+          await tx.wait();
         } 
         else {
     
