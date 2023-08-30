@@ -1,5 +1,6 @@
 import { createContext, useContext, useState, useEffect } from 'react';
 import { ethers } from 'ethers';
+import ipfs from '../db/ipfs';
 
 import KubixVotingABI from '../abi/KubixVoting.json';
 import KubidVotingABI from '../abi/KubidVoting.json';
@@ -8,6 +9,7 @@ import { useDataBaseContext } from '@/contexts/DataBaseContext';
 import { useWeb3Context } from '@/contexts/Web3Context';
 
 import { useToast } from '@chakra-ui/react';
+import { set } from 'lodash';
 
 
 
@@ -52,8 +54,99 @@ export const VotingProvider = ({ children }) => {
 
     const [loadingSubmit, setLoadingSubmit] = useState(false)
 
+    const [votingDataX, setVotingDataX] = useState(null)
+    const [votingDataD, setVotingDataD] = useState(null)
+
+    const [voteHashX, setVoteHashX] = useState(null)
+    const [voteHashD, setVoteHashD] = useState(null)
+
 
     const toast = useToast();
+
+    const fetchDataIPFS = async () => {
+
+      const ipfsHashX = await contractX.getIPFSHash();
+      setVoteHashX(ipfsHashX);
+  
+      // Fetch data for contractX only if ipfsHashX is not null
+      if (ipfsHashX) {
+          const votingDataX = await JSON.parse(await (await fetch(`https://kubidao.infura-ipfs.io/ipfs/${ipfsHashX}`)).text());
+          setVotingDataX(votingDataX);
+      }
+  
+      const ipfsHashD = await contractD.getIPFSHash();
+      setVoteHashD(ipfsHashD);
+  
+      // Fetch data for contractD only if ipfsHashD is not null
+      if (ipfsHashD) {
+          const votingDataD = await JSON.parse(await (await fetch(`https://kubidao.infura-ipfs.io/ipfs/${ipfsHashD}`)).text());
+          setVotingDataD(votingDataD);
+      }
+  };
+  
+
+    
+
+      const newPollIPFS = async () => {
+        try {
+            //Fetch existing data from IPFS
+            const existingDataHash = contract.address === contractXAddress ? voteHashX : voteHashD;
+            const existingVotingData = await fetch(`https://kubidao.infura-ipfs.io/ipfs/${existingDataHash}`).then(response => response.json());
+            
+            // Append the new poll to the existing voting data
+            const newPollData = {
+                // Your new poll data goes here
+                name: proposal.name,
+                description: proposal.description,
+                execution: proposal.execution,
+                time: proposal.time,
+                options: proposal.options,
+                id: proposal.id
+            };
+    
+            existingVotingData.polls = existingVotingData.polls || [];  // Initialize if it doesn't exist yet
+            existingVotingData.polls.push(newPollData);
+            
+            // Step 3: Upload updated data to IPFS
+            const ipfsResult = await ipfs.add(JSON.stringify(existingVotingData));
+            const newIpfsHash = ipfsResult.path;
+            
+            // Step 4: Update the new IPFS hash in the smart contract
+            const tx = await contract.setIPFSHash(newIpfsHash);
+            await tx.wait();
+    
+            // Optionally, update the local state
+            if (contract.address === contractXAddress) {
+                setVoteHashX(newIpfsHash);
+                setVotingDataX(existingVotingData);
+            } else {
+                setVoteHashD(newIpfsHash);
+                setVotingDataD(existingVotingData);
+            }
+    
+            toast({
+                title: 'Poll Created',
+                description: 'Your new poll has been added to IPFS and the smart contract.',
+                status: 'success',
+                duration: 3000,
+                isClosable: true,
+            });
+        } catch (error) {
+            console.error(error);
+            toast({
+                title: 'Error Creating Poll',
+                description: 'There was an error creating the poll. Please try again.',
+                status: 'error',
+                duration: 3000,
+                isClosable: true,
+            });
+        }
+    };
+    
+
+    useEffect(() => {
+      fetchDataIPFS()
+    }, []);
 
 
     const handleVote = async (onClose) => {
@@ -100,10 +193,9 @@ export const VotingProvider = ({ children }) => {
       };
 
       const createPoll = async () => {
-        console.log(contract.address)
+
 
         if (contract.address == contractXAddress) {
-        console.log("test")
         const balances = await findMinMaxKubixBalance();
     
       
@@ -115,12 +207,12 @@ export const VotingProvider = ({ children }) => {
         } 
         else {
     
-        
           // Parse the options string into an array
           const optionsArray = proposal.options.map(option => option.trim());
         
           const tx = await contract.createProposal(proposal.name, proposal.description, proposal.execution, proposal.time, optionsArray);
           await tx.wait();
+          await newPollIPFS();
     
         }
         
