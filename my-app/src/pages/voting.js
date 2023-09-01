@@ -66,10 +66,13 @@ const Voting = () => {
 
   
   useEffect(() => {
+    async function loadPolls() {
     if (hashLoaded) {
-    fetchPollsIPFS(contractX, setOngoingPollsKubix, setCompletedPollsKubix);
-    fetchPollsIPFS(contractD, setOngoingPollsKubid, setCompletedPollsKubid);
+    await fetchPollsIPFS(contractX, setOngoingPollsKubix, setCompletedPollsKubix);
+    await fetchPollsIPFS(contractD, setOngoingPollsKubid, setCompletedPollsKubid);
     }
+  }
+  loadPolls() 
   }, [hashLoaded]);
   
 

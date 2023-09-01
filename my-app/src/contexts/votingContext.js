@@ -26,7 +26,7 @@ export const VotingProvider = ({ children }) => {
 
     const contractXAddress = '0x4Af0e1994c8e03414ffd523aAc645049bcdadbD6';
     const contractX = new ethers.Contract(contractXAddress, KubixVotingABI.abi, signerUniversal);
-    const contractD = new ethers.Contract('0x1060A4d94A8C086fa135de81BB6e78b2D145F48B', KubidVotingABI.abi, signerUniversal);
+    const contractD = new ethers.Contract('0xB575cCbF4B9A45C9A399619CFe57129Ce057B731', KubidVotingABI.abi, signerUniversal);
 
     const [contract, setContract] = useState(contractD);
 
@@ -140,7 +140,7 @@ export const VotingProvider = ({ children }) => {
           id: maxId+1,
           winner: null,
           completionDate: completionDateTime,
-          creationDate: currentDateTime
+          creationDate: currentDateTime.getTime()
 
       };
       
@@ -196,7 +196,6 @@ export const VotingProvider = ({ children }) => {
 const updateVoteInIPFS = async (pollId, selectedOption) => {
   try {
     // Convert BigNumber pollId to a regular number
-    pollId = pollId.toNumber();
 
     let existingVotingData = contract.address === contractXAddress ? votingDataX : votingDataD;
     console.log(existingVotingData);
@@ -376,7 +375,7 @@ const updateVoteInIPFS = async (pollId, selectedOption) => {
 
           let ongoingPolls = [];
           let completedPolls = [];
-          let existingVotingData = contract.address === contractXAddress ? votingDataX : votingDataD;
+          let existingVotingData = selectedContract.address === contractXAddress ? votingDataX : votingDataD;
           console.log(existingVotingData)
           
           existingVotingData.polls.forEach(async (poll) => {
@@ -385,23 +384,27 @@ const updateVoteInIPFS = async (pollId, selectedOption) => {
             console.log(completionDate, currentTime)
 
             if (!poll.winner) {
+
               if (currentTime > completionDate) {
                 console.log("poll completed")
                 // Call your contract functions here
                 const tx = await selectedContract.moveToCompleted();
                 tx.wait();
-                const winner = await contract.getWinner(poll.id);
-
+                console.log("moved to completed")
+                console.log(poll.id)
+                const winner = await contract.getWinner((poll.id)-1);
+                console.log(winner, "got winner")
  
                 poll.winner = winner;
                 updatePollIPFS(poll);
 
               }
-              console.log(poll)
-              completedPolls.push(poll);
-            } else {
-              console.log(poll)
               ongoingPolls.push(poll);
+
+            } else {
+              completedPolls.push(poll);
+              console.log(poll)
+
             }
           });
           setOngoingPollsFunc(ongoingPolls);
