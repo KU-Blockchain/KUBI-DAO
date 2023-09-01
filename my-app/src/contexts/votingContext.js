@@ -84,6 +84,7 @@ export const VotingProvider = ({ children }) => {
       if (ipfsHashD) {
           console.log("test")
           const votingDataD = await JSON.parse(await (await fetch(`https://kubidao.infura-ipfs.io/ipfs/${ipfsHashD}`)).text());
+          console.log("test2")
           setVotingDataD(votingDataD);
           console.log(votingDataD)
       }
@@ -195,7 +196,7 @@ const updateVoteInIPFS = async (pollId, selectedOption) => {
     existingVotingData.polls.forEach(poll => {
       console.log(poll.id, pollId);
       if (poll.id === pollId) {
-        console.log(poll.options, selectedOption);
+        console.log(poll.options, selectedOption);// the array has [0]
         if (poll.options[selectedOption]) {
           console.log(poll.options[selectedOption].votes);
           poll.options[selectedOption].votes += 1;
