@@ -25,7 +25,7 @@ const glassLayerStyle = {
 const Voting = () => {
 
 
-  const {fetchDataIPFS, setContract,contractX, contractD, contract, loadingVote, setLoadingVote, selectedPoll, setSelectedPoll,selectedOption, setSelectedOption, ongoingPollsKubix, setOngoingPollsKubix, completedPollsKubix, setCompletedPollsKubix, ongoingPollsKubid, setOngoingPollsKubid, completedPollsKubid, setCompletedPollsKubid, completedEnd, setCompletedEnd, totalCompletedCount, setTotalCompletedCount, proposal, setProposal, showCreateVote, setShowCreateVote, blockTimestamp, setBlockTimestamp, loadingSubmit, setLoadingSubmit, handleVote, createPoll, fetchPolls, fetchPollsData, loadMoreCompleted, handleSubmit, showCreatePoll, setShowCreatePoll } = useVoting();
+  const {hashLoaded, fetchPollsIPFS,fetchDataIPFS, setContract,contractX, contractD, contract, loadingVote, setLoadingVote, selectedPoll, setSelectedPoll,selectedOption, setSelectedOption, ongoingPollsKubix, setOngoingPollsKubix, completedPollsKubix, setCompletedPollsKubix, ongoingPollsKubid, setOngoingPollsKubid, completedPollsKubid, setCompletedPollsKubid, completedEnd, setCompletedEnd, totalCompletedCount, setTotalCompletedCount, proposal, setProposal, showCreateVote, setShowCreateVote, blockTimestamp, setBlockTimestamp, loadingSubmit, setLoadingSubmit, handleVote, createPoll, fetchPolls, fetchPollsData, loadMoreCompleted, handleSubmit, showCreatePoll, setShowCreatePoll } = useVoting();
 
 
   const [selectedTab, setSelectedTab] = useState(0);
@@ -60,14 +60,18 @@ const Voting = () => {
   };
 
   useEffect(() => {
-    const asyncFunc = async () => {
-      await fetchPolls(contractX, setOngoingPollsKubix, setCompletedPollsKubix);
-      await fetchPolls(contractD, setOngoingPollsKubid, setCompletedPollsKubid);
-    }
-    asyncFunc()
     fetchDataIPFS()
+
   }, []);
 
+  
+  useEffect(() => {
+    if (hashLoaded) {
+    fetchPollsIPFS(contractX, setOngoingPollsKubix, setCompletedPollsKubix);
+    fetchPollsIPFS(contractD, setOngoingPollsKubid, setCompletedPollsKubid);
+    }
+  }, [hashLoaded]);
+  
 
   
   const handleOptionsChange = (e) => {

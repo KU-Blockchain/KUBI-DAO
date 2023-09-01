@@ -59,6 +59,7 @@ export const VotingProvider = ({ children }) => {
 
     const [voteHashX, setVoteHashX] = useState(null)
     const [voteHashD, setVoteHashD] = useState(null)
+    const [hashLoaded, setHashLoaded] = useState(null)
 
 
     const toast = useToast();
@@ -88,6 +89,8 @@ export const VotingProvider = ({ children }) => {
           setVotingDataD(votingDataD);
           console.log(votingDataD)
       }
+      setHashLoaded(true)
+
   };
   
 
@@ -124,6 +127,8 @@ export const VotingProvider = ({ children }) => {
                 maxId = Math.max(maxId, poll.id);
             });
         }
+        const currentDateTime = new Date();
+        const completionDateTime = new Date(currentDateTime.getTime() + proposal.time * 60000);
 
         // data for appending new poll to existing voting data
         const newPollData = {
@@ -133,6 +138,9 @@ export const VotingProvider = ({ children }) => {
           time: proposal.time,
           options: proposal.options.map(option => ({ name: option, votes: 0 })),  // Assuming each option is just a name
           id: maxId+1,
+          winner: null,
+          completionDate: completionDateTime
+
       };
       
 
@@ -307,6 +315,101 @@ const updateVoteInIPFS = async (pollId, selectedOption) => {
         
     
       };
+      const updatePollIPFS = async (pollToUpdate) => {
+        try {
+          let existingVotingData = contract.address === contractXAddress ? votingDataX : votingDataD;
+      
+          // Find the poll with the given ID and update the winner
+          const updatedPolls = existingVotingData.polls.map(poll => {
+            if (poll.id === pollToUpdate.id) {
+              return { ...poll, winner: pollToUpdate.winner };
+            }
+            return poll;
+          });
+      
+          // Update the existing voting data
+          existingVotingData.polls = updatedPolls;
+      
+          // Upload the updated data to IPFS
+          const ipfsResult = await ipfs.add(JSON.stringify(existingVotingData));
+          const newIpfsHash = ipfsResult.path;
+      
+          // Update the new IPFS hash in the smart contract
+          const tx = await contract.setIPFSHash(newIpfsHash);
+          await tx.wait();
+      
+          // Update local state
+          if (contract.address === contractXAddress) {
+            setVoteHashX(newIpfsHash);
+            setVotingDataX(existingVotingData);
+          } else {
+            setVoteHashD(newIpfsHash);
+            setVotingDataD(existingVotingData);
+          }
+      
+          toast({
+            title: 'Poll Updated',
+            description: 'The poll has been successfully updated on IPFS and the smart contract.',
+            status: 'success',
+            duration: 3000,
+            isClosable: true,
+          });
+        } catch (error) {
+          console.error(error);
+      
+          toast({
+            title: 'Error Updating Poll',
+            description: 'There was an error updating the poll on IPFS. Please try again.',
+            status: 'error',
+            duration: 3000,
+            isClosable: true,
+          });
+        }
+      };
+      
+
+      const fetchPollsIPFS = async (selectedContract, setOngoingPollsFunc, setCompletedPollsFunc) => {
+        try{
+          console.log("fetching polls ipfs")
+          
+
+          let ongoingPolls = [];
+          let completedPolls = [];
+          let existingVotingData = contract.address === contractXAddress ? votingDataX : votingDataD;
+          console.log(existingVotingData)
+          
+          existingVotingData.polls.forEach(async (poll) => {
+            const currentTime = new Date();
+            const completionDate = new Date(poll.completionDate);
+            console.log(completionDate, currentTime)
+
+            if (!poll.winner) {
+              if (currentTime > completionDate) {
+                console.log("poll completed")
+                // Call your contract functions here
+                const tx = await selectedContract.moveToCompleted();
+                tx.wait();
+                const winner = await contract.getWinner(poll.id);
+                winner.wait();
+ 
+                poll.winner = winner;
+                updatePollIPFS(poll);
+
+              }
+              completedPolls.push(poll);
+            } else {
+              ongoingPolls.push(poll);
+            }
+          });
+          setOngoingPollsFunc(ongoingPolls);
+          setCompletedPollsFunc(completedPolls);
+
+        }
+        catch (error) {
+          console.error(error);
+        }
+
+      }
 
       const fetchPolls = async (selectedContract, setOngoingPollsFunc, setCompletedPollsFunc, completedStart = 0, completedEnd = 3) => {
         try {
@@ -429,7 +532,7 @@ const updateVoteInIPFS = async (pollId, selectedOption) => {
 
 
     return (
-        <votingContext.Provider value={{fetchDataIPFS, contractX, contractD, contract, setContract,loadingVote, setLoadingVote, selectedPoll, setSelectedPoll,selectedOption, setSelectedOption, ongoingPollsKubix, setOngoingPollsKubix, completedPollsKubix, setCompletedPollsKubix, ongoingPollsKubid, setOngoingPollsKubid, completedPollsKubid, setCompletedPollsKubid, completedEnd, setCompletedEnd, totalCompletedCount, setTotalCompletedCount, proposal, setProposal, showCreateVote, setShowCreateVote, blockTimestamp, setBlockTimestamp, loadingSubmit, setLoadingSubmit, handleVote, createPoll, fetchPolls, fetchPollsData, loadMoreCompleted, handleSubmit, showCreatePoll, setShowCreatePoll  }}>
+        <votingContext.Provider value={{hashLoaded, fetchPollsIPFS, fetchDataIPFS, contractX, contractD, contract, setContract,loadingVote, setLoadingVote, selectedPoll, setSelectedPoll,selectedOption, setSelectedOption, ongoingPollsKubix, setOngoingPollsKubix, completedPollsKubix, setCompletedPollsKubix, ongoingPollsKubid, setOngoingPollsKubid, completedPollsKubid, setCompletedPollsKubid, completedEnd, setCompletedEnd, totalCompletedCount, setTotalCompletedCount, proposal, setProposal, showCreateVote, setShowCreateVote, blockTimestamp, setBlockTimestamp, loadingSubmit, setLoadingSubmit, handleVote, createPoll, fetchPolls, fetchPollsData, loadMoreCompleted, handleSubmit, showCreatePoll, setShowCreatePoll  }}>
           {children}
         </votingContext.Provider>
       );
