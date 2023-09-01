@@ -26,7 +26,7 @@ export const VotingProvider = ({ children }) => {
 
     const contractXAddress = '0x4Af0e1994c8e03414ffd523aAc645049bcdadbD6';
     const contractX = new ethers.Contract(contractXAddress, KubixVotingABI.abi, signerUniversal);
-    const contractD = new ethers.Contract('0x4F30A625Ddd488b310B453E1488eBF0074c5dBd6', KubidVotingABI.abi, signerUniversal);
+    const contractD = new ethers.Contract('0x1060A4d94A8C086fa135de81BB6e78b2D145F48B', KubidVotingABI.abi, signerUniversal);
 
     const [contract, setContract] = useState(contractD);
 
@@ -73,6 +73,7 @@ export const VotingProvider = ({ children }) => {
       if (ipfsHashX) {
           const votingDataX = await JSON.parse(await (await fetch(`https://kubidao.infura-ipfs.io/ipfs/${ipfsHashX}`)).text());
           setVotingDataX(votingDataX);
+          console.log(votingDataX)
       }
   
       const ipfsHashD = await contractD.getIPFSHash();
@@ -81,8 +82,10 @@ export const VotingProvider = ({ children }) => {
   
       // Fetch data for contractD only if ipfsHashD is not null
       if (ipfsHashD) {
+          console.log("test")
           const votingDataD = await JSON.parse(await (await fetch(`https://kubidao.infura-ipfs.io/ipfs/${ipfsHashD}`)).text());
           setVotingDataD(votingDataD);
+          console.log(votingDataD)
       }
   };
   
@@ -121,15 +124,16 @@ export const VotingProvider = ({ children }) => {
             });
         }
 
-        // Your code for appending new poll to existing voting data
+        // data for appending new poll to existing voting data
         const newPollData = {
-            name: proposal.name,
-            description: proposal.description,
-            execution: proposal.execution,
-            time: proposal.time,
-            options: proposal.options,
-            id: maxId+1,
-        };
+          name: proposal.name,
+          description: proposal.description,
+          execution: proposal.execution,
+          time: proposal.time,
+          options: proposal.options.map(option => ({ name: option, votes: 0 })),  // Assuming each option is just a name
+          id: maxId+1,
+      };
+      
 
         existingVotingData.polls = existingVotingData.polls || [];  // Initialize if it doesn't exist yet
         existingVotingData.polls.push(newPollData);
@@ -176,9 +180,59 @@ export const VotingProvider = ({ children }) => {
 
     
 
-    useEffect(() => {
-      fetchDataIPFS()
-    }, []);
+
+
+
+const updateVoteInIPFS = async (pollId, selectedOption) => {
+  try {
+    // Convert BigNumber pollId to a regular number
+    pollId = pollId.toNumber();
+
+    let existingVotingData = contract.address === contractXAddress ? votingDataX : votingDataD;
+    console.log(existingVotingData);
+
+    // Update the relevant poll with the new vote count
+    existingVotingData.polls.forEach(poll => {
+      console.log(poll.id, pollId);
+      if (poll.id === pollId) {
+        console.log(poll.options, selectedOption);
+        if (poll.options[selectedOption]) {
+          console.log(poll.options[selectedOption].votes);
+          poll.options[selectedOption].votes += 1;
+        }
+      }
+    });
+
+    // Upload the updated data to IPFS
+    const ipfsResult = await ipfs.add(JSON.stringify(existingVotingData));
+    const newIpfsHash = ipfsResult.path;
+
+    // Update the new IPFS hash in the smart contract
+    const tx = await contract.setIPFSHash(newIpfsHash);
+    await tx.wait();
+
+    // Update local state
+    if (contract.address === contractXAddress) {
+      setVoteHashX(newIpfsHash);
+      setVotingDataX(existingVotingData);
+    } else {
+      setVoteHashD(newIpfsHash);
+      setVotingDataD(existingVotingData);
+    }
+  } catch (error) {
+    console.error(error);
+
+    toast({
+      title: 'Error Updating Vote',
+      description: 'There was an error updating the vote in IPFS. Please try again.',
+      status: 'error',
+      duration: 3000,
+      isClosable: true,
+    });
+  }
+};
+
+  
 
 
     const handleVote = async (onClose) => {
@@ -202,6 +256,8 @@ export const VotingProvider = ({ children }) => {
           console.log(account)
           const tx = await contract.vote(selectedPoll.id, account, selectedOption[0]);
           await tx.wait();
+
+          await updateVoteInIPFS(selectedPoll.id, selectedOption[0]);
           toast({
             title: 'Vote submitted',
             description: 'Your vote has been submitted successfully',
@@ -372,7 +428,7 @@ export const VotingProvider = ({ children }) => {
 
 
     return (
-        <votingContext.Provider value={{contractX, contractD, contract, setContract,loadingVote, setLoadingVote, selectedPoll, setSelectedPoll,selectedOption, setSelectedOption, ongoingPollsKubix, setOngoingPollsKubix, completedPollsKubix, setCompletedPollsKubix, ongoingPollsKubid, setOngoingPollsKubid, completedPollsKubid, setCompletedPollsKubid, completedEnd, setCompletedEnd, totalCompletedCount, setTotalCompletedCount, proposal, setProposal, showCreateVote, setShowCreateVote, blockTimestamp, setBlockTimestamp, loadingSubmit, setLoadingSubmit, handleVote, createPoll, fetchPolls, fetchPollsData, loadMoreCompleted, handleSubmit, showCreatePoll, setShowCreatePoll  }}>
+        <votingContext.Provider value={{fetchDataIPFS, contractX, contractD, contract, setContract,loadingVote, setLoadingVote, selectedPoll, setSelectedPoll,selectedOption, setSelectedOption, ongoingPollsKubix, setOngoingPollsKubix, completedPollsKubix, setCompletedPollsKubix, ongoingPollsKubid, setOngoingPollsKubid, completedPollsKubid, setCompletedPollsKubid, completedEnd, setCompletedEnd, totalCompletedCount, setTotalCompletedCount, proposal, setProposal, showCreateVote, setShowCreateVote, blockTimestamp, setBlockTimestamp, loadingSubmit, setLoadingSubmit, handleVote, createPoll, fetchPolls, fetchPollsData, loadMoreCompleted, handleSubmit, showCreatePoll, setShowCreatePoll  }}>
           {children}
         </votingContext.Provider>
       );
