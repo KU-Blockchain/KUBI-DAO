@@ -139,7 +139,8 @@ export const VotingProvider = ({ children }) => {
           options: proposal.options.map(option => ({ name: option, votes: 0 })),  // Assuming each option is just a name
           id: maxId+1,
           winner: null,
-          completionDate: completionDateTime
+          completionDate: completionDateTime,
+          creationDate: currentDateTime
 
       };
       
@@ -390,14 +391,16 @@ const updateVoteInIPFS = async (pollId, selectedOption) => {
                 const tx = await selectedContract.moveToCompleted();
                 tx.wait();
                 const winner = await contract.getWinner(poll.id);
-                winner.wait();
+
  
                 poll.winner = winner;
                 updatePollIPFS(poll);
 
               }
+              console.log(poll)
               completedPolls.push(poll);
             } else {
+              console.log(poll)
               ongoingPolls.push(poll);
             }
           });
