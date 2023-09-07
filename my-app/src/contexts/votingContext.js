@@ -26,7 +26,7 @@ export const VotingProvider = ({ children }) => {
 
     const contractXAddress = '0x4Af0e1994c8e03414ffd523aAc645049bcdadbD6';
     const contractX = new ethers.Contract(contractXAddress, KubixVotingABI.abi, signerUniversal);
-    const contractD = new ethers.Contract('0xB575cCbF4B9A45C9A399619CFe57129Ce057B731', KubidVotingABI.abi, signerUniversal);
+    const contractD = new ethers.Contract('0xc2b11607dA0fCE51E75Fa4af8DA1D59f738245B2', KubidVotingABI.abi, signerUniversal);
 
     const [contract, setContract] = useState(contractD);
 
@@ -61,6 +61,8 @@ export const VotingProvider = ({ children }) => {
     const [voteHashD, setVoteHashD] = useState(null)
     const [hashLoaded, setHashLoaded] = useState(null)
 
+    const[votingLoaded, setVotingLoaded] = useState(false);
+
 
     const toast = useToast();
 
@@ -72,7 +74,9 @@ export const VotingProvider = ({ children }) => {
   
       // Fetch data for contractX only if ipfsHashX is not null
       if (ipfsHashX) {
-          const votingDataX = await JSON.parse(await (await fetch(`https://kubidao.infura-ipfs.io/ipfs/${ipfsHashX}`)).text());
+          const response = await fetch(`https://kubidao.infura-ipfs.io/ipfs/${ipfsHashX}`);
+          const votingDataText = await response.text();
+          const votingDataX = JSON.parse(votingDataText);
           setVotingDataX(votingDataX);
           console.log(votingDataX)
       }
@@ -83,11 +87,10 @@ export const VotingProvider = ({ children }) => {
   
       // Fetch data for contractD only if ipfsHashD is not null
       if (ipfsHashD) {
-          console.log("test")
-          const votingDataD = await JSON.parse(await (await fetch(`https://kubidao.infura-ipfs.io/ipfs/${ipfsHashD}`)).text());
-          console.log("test2")
-          setVotingDataD(votingDataD);
-          console.log(votingDataD)
+        const response = await fetch(`https://kubidao.infura-ipfs.io/ipfs/${ipfsHashD}`);
+        const votingDataText = await response.text();
+        const votingDataD = JSON.parse(votingDataText);
+        setVotingDataD(votingDataD);
       }
       setHashLoaded(true)
 
@@ -107,7 +110,7 @@ export const VotingProvider = ({ children }) => {
             if (!votingDataX) {
                 const ipfsHashX = await contractX.getIPFSHash();
                 if (ipfsHashX) {
-                    existingVotingData = await JSON.parse(await (await fetch(`https://kubidao.infura-ipfs.io/ipfs/${ipfsHashX}`)).text());
+                    existingVotingData = await JSON.parse( (await fetch(`https://kubidao.infura-ipfs.io/ipfs/${ipfsHashX}`)).text());
                 }
             }
         } else {
@@ -116,7 +119,7 @@ export const VotingProvider = ({ children }) => {
             if (!votingDataD) {
                 const ipfsHashD = await contractD.getIPFSHash();
                 if (ipfsHashD) {
-                    existingVotingData = await JSON.parse(await (await fetch(`https://kubidao.infura-ipfs.io/ipfs/${ipfsHashD}`)).text());
+                    existingVotingData = await JSON.parse( (await fetch(`https://kubidao.infura-ipfs.io/ipfs/${ipfsHashD}`)).text());
                 }
             }
         }
@@ -333,11 +336,7 @@ const updateVoteInIPFS = async (pollId, selectedOption) => {
           // Upload the updated data to IPFS
           const ipfsResult = await ipfs.add(JSON.stringify(existingVotingData));
           const newIpfsHash = ipfsResult.path;
-      
-          // Update the new IPFS hash in the smart contract
-          const tx = await contract.setIPFSHash(newIpfsHash);
-          await tx.wait();
-      
+
           // Update local state
           if (contract.address === contractXAddress) {
             setVoteHashX(newIpfsHash);
@@ -346,6 +345,12 @@ const updateVoteInIPFS = async (pollId, selectedOption) => {
             setVoteHashD(newIpfsHash);
             setVotingDataD(existingVotingData);
           }
+      
+          // Update the new IPFS hash in the smart contract
+          const tx = await contract.setIPFSHash(newIpfsHash);
+          await tx.wait();
+      
+
       
           toast({
             title: 'Poll Updated',
@@ -369,53 +374,52 @@ const updateVoteInIPFS = async (pollId, selectedOption) => {
       
 
       const fetchPollsIPFS = async (selectedContract, setOngoingPollsFunc, setCompletedPollsFunc) => {
-        try{
-          console.log("fetching polls ipfs")
-          
-
+        try {
+          console.log("fetching polls ipfs");
+      
           let ongoingPolls = [];
           let completedPolls = [];
           let existingVotingData = selectedContract.address === contractXAddress ? votingDataX : votingDataD;
-          console.log(existingVotingData)
+          console.log(existingVotingData);
           
-          existingVotingData.polls.forEach(async (poll) => {
+      
+          // Use a for...of loop to handle async/await properly
+          for (const poll of existingVotingData.polls) {
             const currentTime = new Date();
             const completionDate = new Date(poll.completionDate);
-            console.log(completionDate, currentTime)
-
+            console.log(completionDate, currentTime);
+      
             if (!poll.winner) {
-
               if (currentTime > completionDate) {
-                console.log("poll completed")
+                console.log("poll completed");
                 // Call your contract functions here
                 const tx = await selectedContract.moveToCompleted();
-                tx.wait();
-                console.log("moved to completed")
-                console.log(poll.id)
-                const winner = await contract.getWinner((poll.id)-1);
-                console.log(winner, "got winner")
- 
+                await tx.wait();  // Wait for the transaction to be confirmed
+                console.log("moved to completed");
+                console.log(poll.id);
+                const winner = await selectedContract.getWinner(poll.id);
+                console.log(winner, "got winner");
+      
                 poll.winner = winner;
-                updatePollIPFS(poll);
-
+                await updatePollIPFS(poll);
+                completedPolls.push(poll);
+                setCompletedPollsFunc(completedPolls);
               }
               ongoingPolls.push(poll);
-
             } else {
               completedPolls.push(poll);
-              console.log(poll)
-
+              console.log(poll);
             }
-          });
-          setOngoingPollsFunc(ongoingPolls);
-          setCompletedPollsFunc(completedPolls);
+            setOngoingPollsFunc(ongoingPolls);
+            setCompletedPollsFunc(completedPolls);
+          }
+      
 
-        }
-        catch (error) {
+        } catch (error) {
           console.error(error);
         }
-
-      }
+      };
+      
 
       const fetchPolls = async (selectedContract, setOngoingPollsFunc, setCompletedPollsFunc, completedStart = 0, completedEnd = 3) => {
         try {
@@ -515,7 +519,7 @@ const updateVoteInIPFS = async (pollId, selectedOption) => {
           // Reset the form
           setProposal({ name: '', description: '', execution: '', time: 0, options: [] });
           setShowCreatePoll(false);
-          fetchPolls();
+
     //bugs: modal card dispalying last vote, glass modal overlay bad, ongoing votes doesnt have glass properly applied
         } catch (error) {
           console.error(error);
@@ -536,9 +540,16 @@ const updateVoteInIPFS = async (pollId, selectedOption) => {
         setBlockTimestamp(currentBlock.timestamp);
       }
 
+      useEffect(() => {
+        if (votingLoaded) {
+            console.log("fetching voting data")
+          fetchDataIPFS()
+        }
+      }, [votingLoaded]);
+
 
     return (
-        <votingContext.Provider value={{hashLoaded, fetchPollsIPFS, fetchDataIPFS, contractX, contractD, contract, setContract,loadingVote, setLoadingVote, selectedPoll, setSelectedPoll,selectedOption, setSelectedOption, ongoingPollsKubix, setOngoingPollsKubix, completedPollsKubix, setCompletedPollsKubix, ongoingPollsKubid, setOngoingPollsKubid, completedPollsKubid, setCompletedPollsKubid, completedEnd, setCompletedEnd, totalCompletedCount, setTotalCompletedCount, proposal, setProposal, showCreateVote, setShowCreateVote, blockTimestamp, setBlockTimestamp, loadingSubmit, setLoadingSubmit, handleVote, createPoll, fetchPolls, fetchPollsData, loadMoreCompleted, handleSubmit, showCreatePoll, setShowCreatePoll  }}>
+        <votingContext.Provider value={{setVotingLoaded,hashLoaded, fetchPollsIPFS, fetchDataIPFS, contractX, contractD, contract, setContract,loadingVote, setLoadingVote, selectedPoll, setSelectedPoll,selectedOption, setSelectedOption, ongoingPollsKubix, setOngoingPollsKubix, completedPollsKubix, setCompletedPollsKubix, ongoingPollsKubid, setOngoingPollsKubid, completedPollsKubid, setCompletedPollsKubid, completedEnd, setCompletedEnd, totalCompletedCount, setTotalCompletedCount, proposal, setProposal, showCreateVote, setShowCreateVote, blockTimestamp, setBlockTimestamp, loadingSubmit, setLoadingSubmit, handleVote, createPoll, fetchPolls, fetchPollsData, loadMoreCompleted, handleSubmit, showCreatePoll, setShowCreatePoll  }}>
           {children}
         </votingContext.Provider>
       );
