@@ -36,6 +36,7 @@ const Voting = () => {
 
 
   const handlePollClick = (poll) => {
+    console.log(poll);
     setSelectedPoll(poll);
     onOpen();
   };

@@ -9,7 +9,6 @@ import { useDataBaseContext } from '@/contexts/DataBaseContext';
 import { useWeb3Context } from '@/contexts/Web3Context';
 
 import { useToast } from '@chakra-ui/react';
-import { set } from 'lodash';
 
 
 
@@ -26,7 +25,7 @@ export const VotingProvider = ({ children }) => {
 
     const contractXAddress = '0x4Af0e1994c8e03414ffd523aAc645049bcdadbD6';
     const contractX = new ethers.Contract(contractXAddress, KubixVotingABI.abi, signerUniversal);
-    const contractD = new ethers.Contract('0xc2b11607dA0fCE51E75Fa4af8DA1D59f738245B2', KubidVotingABI.abi, signerUniversal);
+    const contractD = new ethers.Contract('0xb63c20630e31c8B85CEd064f578096C8BDaa3065', KubidVotingABI.abi, signerUniversal);
 
     const [contract, setContract] = useState(contractD);
 
@@ -66,7 +65,25 @@ export const VotingProvider = ({ children }) => {
 
     const toast = useToast();
 
+    async function fetchFromIpfs(ipfsHash) {
+      for await (const file of ipfs.cat(ipfsHash)) {
+        const stringData = new TextDecoder().decode(file);
+
+        return JSON.parse(stringData);
+      }
+    }
+
     const fetchDataIPFS = async () => {
+
+      const ipfsHashD = await contractD.getIPFSHash();
+      setVoteHashD(ipfsHashD);
+      console.log(ipfsHashD)
+  
+      // Fetch data for contractD only if ipfsHashD is not null
+      if (ipfsHashD) {
+        const votingDataD = await fetchFromIpfs(ipfsHashD);
+        setVotingDataD(votingDataD);
+      }
 
       const ipfsHashX = await contractX.getIPFSHash();
       setVoteHashX(ipfsHashX);
@@ -74,24 +91,11 @@ export const VotingProvider = ({ children }) => {
   
       // Fetch data for contractX only if ipfsHashX is not null
       if (ipfsHashX) {
-          const response = await fetch(`https://kubidao.infura-ipfs.io/ipfs/${ipfsHashX}`);
-          const votingDataText = await response.text();
-          const votingDataX = JSON.parse(votingDataText);
-          setVotingDataX(votingDataX);
-          console.log(votingDataX)
+        const votingDataX = await fetchFromIpfs(ipfsHashX);
+        setVotingDataX(votingDataX);
       }
   
-      const ipfsHashD = await contractD.getIPFSHash();
-      setVoteHashD(ipfsHashD);
-      console.log(ipfsHashD)
-  
-      // Fetch data for contractD only if ipfsHashD is not null
-      if (ipfsHashD) {
-        const response = await fetch(`https://kubidao.infura-ipfs.io/ipfs/${ipfsHashD}`);
-        const votingDataText = await response.text();
-        const votingDataD = JSON.parse(votingDataText);
-        setVotingDataD(votingDataD);
-      }
+
       setHashLoaded(true)
 
   };
@@ -130,6 +134,7 @@ export const VotingProvider = ({ children }) => {
                 maxId = Math.max(maxId, poll.id);
             });
         }
+        console.log(maxId)
         const currentDateTime = new Date();
         const completionDateTime = new Date(currentDateTime.getTime() + proposal.time * 60000);
 
@@ -265,7 +270,8 @@ const updateVoteInIPFS = async (pollId, selectedOption) => {
         try {
           // Call the vote function from the contract
           console.log(selectedPoll.id, account, selectedOption[0])
-          console.log(account)
+
+
           const tx = await contract.vote(selectedPoll.id, account, selectedOption[0]);
           await tx.wait();
 
@@ -301,6 +307,8 @@ const updateVoteInIPFS = async (pollId, selectedOption) => {
         
           // Parse the options string into an array
           const optionsArray = proposal.options.map(option => option.trim());
+
+          console.log(proposal.time)
         
           const tx = await contract.createProposal(proposal.name, proposal.description, proposal.execution, balances.maxBalance, balances.minBalance, proposal.time, optionsArray);
           await tx.wait();
@@ -309,6 +317,8 @@ const updateVoteInIPFS = async (pollId, selectedOption) => {
     
           // Parse the options string into an array
           const optionsArray = proposal.options.map(option => option.trim());
+
+          console.log(proposal.time)
         
           const tx = await contract.createProposal(proposal.name, proposal.description, proposal.execution, proposal.time, optionsArray);
           await tx.wait();
@@ -390,7 +400,9 @@ const updateVoteInIPFS = async (pollId, selectedOption) => {
             console.log(completionDate, currentTime);
       
             if (!poll.winner) {
+              ongoingPolls.push(poll);
               if (currentTime > completionDate) {
+                ongoingPolls.pop(poll);
                 console.log("poll completed");
                 // Call your contract functions here
                 const tx = await selectedContract.moveToCompleted();
@@ -402,17 +414,24 @@ const updateVoteInIPFS = async (pollId, selectedOption) => {
       
                 poll.winner = winner;
                 await updatePollIPFS(poll);
+                
                 completedPolls.push(poll);
+
+                console.log(poll);
+                console.log(completedPolls)
                 setCompletedPollsFunc(completedPolls);
+  
+                console.log(completedPollsKubid)
               }
-              ongoingPolls.push(poll);
             } else {
               completedPolls.push(poll);
               console.log(poll);
             }
+
             setOngoingPollsFunc(ongoingPolls);
             setCompletedPollsFunc(completedPolls);
           }
+          
       
 
         } catch (error) {
