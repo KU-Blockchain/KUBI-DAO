@@ -391,53 +391,39 @@ const updateVoteInIPFS = async (pollId, selectedOption) => {
           let completedPolls = [];
           let existingVotingData = selectedContract.address === contractXAddress ? votingDataX : votingDataD;
           console.log(existingVotingData);
-          
       
-          // Use a for...of loop to handle async/await properly
-          for (const poll of existingVotingData.polls) {
+          await Promise.all(existingVotingData.polls.map(async (poll) => {
             const currentTime = new Date();
             const completionDate = new Date(poll.completionDate);
             console.log(completionDate, currentTime);
       
-            if (!poll.winner) {
-              ongoingPolls.push(poll);
-              if (currentTime > completionDate) {
-                ongoingPolls.pop(poll);
-                console.log("poll completed");
-                // Call your contract functions here
-                const tx = await selectedContract.moveToCompleted();
-                await tx.wait();  // Wait for the transaction to be confirmed
-                console.log("moved to completed");
-                console.log(poll.id);
-                const winner = await selectedContract.getWinner(poll.id);
-                console.log(winner, "got winner");
-      
-                poll.winner = winner;
-                await updatePollIPFS(poll);
-                
-                completedPolls.push(poll);
-
-                console.log(poll);
-                console.log(completedPolls)
-                setCompletedPollsFunc(completedPolls);
-  
-                console.log(completedPollsKubid)
-              }
-            } else {
+            if (poll.winner) {
               completedPolls.push(poll);
-              console.log(poll);
+            } else if (currentTime > completionDate) {
+              console.log("poll completed");
+              const tx = await selectedContract.moveToCompleted();
+              await tx.wait();  // Wait for the transaction to be confirmed
+              console.log("moved to completed");
+              const winner = await selectedContract.getWinner(poll.id);
+              console.log(winner, "got winner");
+              poll.winner = winner;
+              await updatePollIPFS(poll);
+              completedPolls.push({ ...poll, winner });
+            } else {
+              ongoingPolls.push(poll);
             }
-
-            setOngoingPollsFunc(ongoingPolls);
-            setCompletedPollsFunc(completedPolls);
-          }
-          
+          }));
       
-
+          // Update states after all promises have resolved
+          setOngoingPollsFunc([...ongoingPolls]);
+          setCompletedPollsFunc([...completedPolls]);
+      
         } catch (error) {
           console.error(error);
         }
       };
+      
+      
       
 
       const fetchPolls = async (selectedContract, setOngoingPollsFunc, setCompletedPollsFunc, completedStart = 0, completedEnd = 3) => {

@@ -185,7 +185,7 @@ const Voting = () => {
               {/* History */}
               <VStack spacing={4}>
                 <Heading color="ghostwhite" mt="4"mb="4"size="lg">History</Heading>
-                {completedPollsKubid.map((poll, index) => {
+                {[...completedPollsKubid].reverse().map((poll, index) => {
                   const totalVotes = poll.options.reduce((total, option) => total + ethers.BigNumber.from(option.votes).toNumber(), 0);
                   
                   const predefinedColors = ['red', 'darkblue', 'yellow', 'purple'];
