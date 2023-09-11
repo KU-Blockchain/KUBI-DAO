@@ -166,7 +166,7 @@ const Voting = () => {
                   <div className="glass" style={glassLayerStyle} />
                   <Text mb ="2" fontSize="2xl" fontWeight="extrabold">{poll.name}</Text>
                   <Text mb="4">{poll.description}</Text>
-                  <CountDown duration={poll.time} />
+                  <CountDown duration={Math.floor((poll?.completionDate - (new Date()).getTime())/1000)} />
                   <Text mt="4">Options:</Text>
                   <VStack spacing={2}>
                     {poll.options.map((option, index) => (
@@ -266,7 +266,7 @@ const Voting = () => {
                   <div className="glass" style={glassLayerStyle} />
                   <Text mb ="2" fontSize="2xl" fontWeight="extrabold">{poll.name}</Text>
                   <Text mb="4">{poll.description}</Text>
-                  <CountDown duration={poll.time} />
+                  <CountDown duration={Math.floor((selectedPoll?.completionDate - (new Date()).getTime())/1000)} />
                   <Text mt="4">Options:</Text>
                   <VStack spacing={2}>
                     {poll.options.map((option, index) => (
@@ -428,9 +428,9 @@ const Voting = () => {
       <VStack spacing={4}>
         <Text>{selectedPoll?.description}</Text>
         <Text>Total Minutes: {ethers.BigNumber.from(selectedPoll?.time|| 0).toNumber()}</Text>
-        <Text>Creation Time: {new Date(ethers.BigNumber.from(selectedPoll?.creationTimestamp || 0).toNumber() * 1000).toLocaleString()}</Text>
-        <Text fontWeight="bold" fontSize="xl">Remaining Time: </Text>
-        <CountDown duration={selectedPoll?.remainingTime} />
+        <Text>Creation Time: {selectedPoll?.creationDate }</Text>
+        <Text fontWeight="bold" fontSize="xl"> Remaining Time: {Math.floor((selectedPoll?.completionDate - (new Date()).getTime()) / (1000 * 60))} minutes </Text>
+        <CountDown duration={Math.floor((selectedPoll?.completionDate - (new Date()).getTime())/1000)} />
         <RadioGroup onChange={setSelectedOption} value={selectedOption}>
           <VStack spacing={4}>
             {selectedPoll?.options?.map((option, index) => (
