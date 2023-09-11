@@ -16,6 +16,14 @@
 
 .specialEmma{
   background-color: white;
+  visibility: none;
+}
+
+.fadeaway{
+  animation-name: fadeaway;
+  animation-duration: 5s;
+  animation-iteration-count: 1;
+  background-color: white;
 }
 
 .specialCameron{
@@ -36,4 +44,11 @@
 @keyframes TejBg{
   from {background-color: aqua;}
   to {background-color: greenyellow;}
+}
+
+@keyframes fadeaway {
+  from{background-color: white;}
+
+  to {background-color: rgba(0, 0, 0, 0);
+    color:rgba(0, 0, 0, 0);}
 }

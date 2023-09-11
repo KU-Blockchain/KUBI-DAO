@@ -26,7 +26,7 @@ import {
   Avatar
 } from '@chakra-ui/react';
 import { red } from '@mui/material/colors';
-import { wrap } from 'lodash';
+import { delay, wrap } from 'lodash';
 import classNames from 'classnames';
 
 
@@ -35,52 +35,87 @@ const AllExecs=[
     cardname: "Tej",
     description:"Hey guys, I am Tej Gumaste and I am a sophomore studying CS and Math. I love playing video games and sometimes making them too, and I also enjoy badminton and bad bitches.",
     picture:"Headshot_Tej.jpg",
-    id:nameboard.specialcolors
+    id:nameboard.specialcolors,
+    classid:"card"
   },
   {
     cardname:"Hudson",
     description:"Hey guys, I am Tej Gumaste and I am a sophomore studying CS and Math. I love playing video games and sometimes making them too, and I also enjoy badminton and bad bitches.",
     picture:"Hudson",
-    id:nameboard.specialblockchain
+    id:nameboard.specialblockchain,
+    classid:"card"
   },
   {
     cardname:"Emma",
     description:"Hey guys, I am Tej Gumaste and I am a sophomore studying CS and Math. I love playing video games and sometimes making them too, and I also enjoy badminton and bad bitches.",
     picture:"Emma",
-    id:nameboard.specialEmma
+    id:nameboard.specialEmma,
+    classid:"Emcard"
   },
   {
     cardname: "Cameron",
     description:"Hey guys, I am Tej Gumaste and I am a sophomore studying CS and Math. I love playing video games and sometimes making them too, and I also enjoy badminton and bad bitches.",
     picture:"Headshot_Tej.jpg",
-    id:nameboard.specialCameron
+    id:nameboard.specialCameron,
+    classid:"card"
   },
   {
     cardname: "Jonathan",
     description:"Hey guys, I am Tej Gumaste and I am a sophomore studying CS and Math. I love playing video games and sometimes making them too, and I also enjoy badminton and bad bitches.",
     picture:"Headshot_Tej.jpg",
-    id:nameboard.specialJonathan
+    id:nameboard.specialJonathan,
+    classid:"card"
   },
 ]
 
 
-function cardClasses(idnum){
-  console.log(idnum)
-  switch(idnum){
-    case "colors": return "specialcolors"
+function cardClasses(card){
+
+  if(card.id===nameboard.specialEmma)
+  {
+    let allcards=document.getElementsByName("card")
+    
+    let classnames=[];
+
+    AllExecs.forEach((exec)=>{
+      if(exec.classid!="Emcard")
+      classnames.push(exec.id)
+    })
+
+    console.log(classnames)
+    
+    allcards.forEach((card)=>{
+      card.className=""
+      card.classList.add(nameboard.fadeaway)
+      console.log(card.id)
+    })
+
+    setTimeout(()=>{
+      for(let i =0;i< allcards.length;i++)
+      {
+        allcards[i].className=""
+        allcards[i].classList.add(classnames[i])
+      }
+    },5500)
+
+    
   }
+
+
 }
 
 
 function practice()
 {
+
+  
   return(
     <>
     
     <Flex columnGap={6} margin={4} rowGap={6} flexWrap={"wrap"}>
       {AllExecs.map(exec =>(
       
-        <div className={exec.id} style={{
+        <div className={exec.id} name={exec.classid} onClick={()=>{cardClasses(exec)}} style={{
           maxHeight:"500px",
           width:"400px",
           borderRadius:"10px",
