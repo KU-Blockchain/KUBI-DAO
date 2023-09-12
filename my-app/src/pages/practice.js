@@ -2,28 +2,16 @@ import React, { use, useState } from 'react';
 import nameboard from '../styles/nameboards.module.css';
 import glass from '../styles/TaskColumn.module.css';
 import {
-  Button,
-  FormControl,
-  FormLabel,
-  Input,
-  Modal,
-  ModalBody,
-  ModalCloseButton,
-  ModalContent,
-  ModalHeader,
-  ModalOverlay,
-  ModalFooter,
-  VStack,
-  Select,
-  Textarea,
-  useToast,
   Card,
   CardHeader,
   CardBody,
   CardFooter,
   Box,
   Flex,
-  Avatar
+  Avatar,
+  Text,
+  Heading,
+  Center
 } from '@chakra-ui/react';
 import { red } from '@mui/material/colors';
 import { delay, wrap } from 'lodash';
@@ -61,7 +49,7 @@ const AllExecs=[
   },
   {
     cardname: "Jonathan",
-    description:"Hey guys, I am Tej Gumaste and I am a sophomore studying CS and Math. I love playing video games and sometimes making them too, and I also enjoy badminton and bad bitches.",
+    description:"Hey hey! I am a Junior studying Finance. I hope to tie my financial knowlegde with blockchain to educate others on the use-cases of fintech.",
     picture:"Headshot_Tej.jpg",
     id:nameboard.specialJonathan,
     classid:"card"
@@ -69,7 +57,7 @@ const AllExecs=[
 ]
 
 
-function cardClasses(card){
+function Fadeout(card){
 
   if(card.id===nameboard.specialEmma)
   {
@@ -82,7 +70,6 @@ function cardClasses(card){
       classnames.push(exec.id)
     })
 
-    console.log(classnames)
     
     allcards.forEach((card)=>{
       card.className=""
@@ -111,16 +98,31 @@ function practice()
   
   return(
     <>
+    <Center paddingTop={2}>
+      <Heading justifyContent={'center'} color={'white'}>Welcome to KUBI!</Heading>
+      
+    </Center>
+    <div style={{display:"flex", justifyContent:"center"}}>
+      <div style={{
+        maxWidth:"800px",
+        paddingTop:"1rem"
+      }}>
+      <Text align={'center'} fontSize={'l'} color={'white'} fontStyle={'bold'}>
+      This is a practice board developed specifically for you! Make sure you make clone the repository on to your local system and experiment away! The code is extensively documented to help you answer your questions, but if you have further questions feel free to ask any of the execs!
+      </Text>
+      </div>
+    </div>
     
     <Flex columnGap={6} margin={4} rowGap={6} flexWrap={"wrap"}>
       {AllExecs.map(exec =>(
       
-        <div className={exec.id} name={exec.classid} onClick={()=>{cardClasses(exec)}} style={{
+        <div className={exec.id} name={exec.classid} onClick={()=>{Fadeout(exec)}} style={{
           maxHeight:"500px",
           width:"400px",
           borderRadius:"10px",
           position:"relative",
-          cursor:"pointer"
+          cursor:"pointer",
+          padding:"1rem"
         }}>
         <div className={glass} style={{
           position:"absolute",
@@ -159,7 +161,9 @@ function practice()
           
         </div>
       </div>
+      
       ))}
+            {/* <---- Start working here, create a new Card open and close tag along with a cardbody open and close tag right here. Then start typing away! */}
     </Flex>
       
     </>
