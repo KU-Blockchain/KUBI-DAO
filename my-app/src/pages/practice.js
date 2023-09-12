@@ -30,7 +30,7 @@ import { delay, wrap } from 'lodash';
 import classNames from 'classnames';
 
 
-const AllExecs=[
+const AllExecs=[  
   {
     cardname: "Tej",
     description:"Hey guys, I am Tej Gumaste and I am a sophomore studying CS and Math. I love playing video games and sometimes making them too, and I also enjoy badminton and bad bitches.",

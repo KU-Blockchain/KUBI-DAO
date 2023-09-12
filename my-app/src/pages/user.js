@@ -5,6 +5,7 @@ import { useWeb3Context } from "@/contexts/Web3Context";
 import { ethers } from "ethers";
 import MumbaiButton from "../components/userPage/importMumbai";
 import { ScaleFade } from "@chakra-ui/react";
+import NextLink from 'next/link';
 
 import {
   Box,
@@ -400,6 +401,11 @@ const User = () => {
         <DeployMenu / >
         <MintMenu />
         <DataMenu />
+        <Button mt ={4} colorScheme="purple" _hover={{ bg: "purple.600", boxShadow: "md", transform: "scale(1.05)"}}>
+        <Link as={NextLink} href="/practice" color="white" fontWeight="bold" fontSize="l" mx={"2%"}> 
+            Practice
+          </Link>
+        </Button>
       </Flex>
       )}
   </>
