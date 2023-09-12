@@ -97,7 +97,7 @@ const User = () => {
       const contract = new ethers.Contract(kubiMembershipNFTAddress, KUBIMembershipNFTArtifact.abi, signerUniversal);
       
       const nonce = await providerUniversal.getTransactionCount(signerUniversal.address, 'latest');
-      
+
       const transaction = await contract.mintMembershipNFT(account, 2023, 1, "ipfs://QmSXjGAfQacm25UappNPgVq3ZxnFfH5XBM773WEzUCBBSG", {
         nonce: nonce,
       });
