@@ -23,11 +23,10 @@ export const VotingProvider = ({ children }) => {
     const { hasExecNFT, hasMemberNFT, signerUniversal, providerUniversal, account}= useWeb3Context()
     const {findMinMaxKubixBalance} = useDataBaseContext()
 
-    const contractXAddress = '0x4Af0e1994c8e03414ffd523aAc645049bcdadbD6';
+    const contractXAddress = '0x5205F7977D153f0820c916e9380E39B9c6daDa6a';
     const contractX = new ethers.Contract(contractXAddress, KubixVotingABI.abi, signerUniversal);
     
-    //0x6E0f9406e638b3710DdE4e6C4a8bbD55D3cE5d60
-    const contractD = new ethers.Contract('0x732c0Eb859393717b5ded85f1808eaa2b6384772', KubidVotingABI.abi, signerUniversal);
+    const contractD = new ethers.Contract('0x3FACF8c4fDd429638A1570F557BE1c860db8e897', KubidVotingABI.abi, signerUniversal);
 
     const [contract, setContract] = useState(contractD);
 

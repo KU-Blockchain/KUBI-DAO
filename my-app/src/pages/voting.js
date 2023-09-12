@@ -17,7 +17,7 @@ const glassLayerStyle = {
   zIndex: -1,
   borderRadius: "inherit",
   backdropFilter: "blur(20px)",
-  backgroundColor: "rgba(0, 0, 0, .7)",
+  backgroundColor: "rgba(0, 0, 0, .6)",
 };
 
 
@@ -181,7 +181,7 @@ const Voting = () => {
               {/* Ongoing Votes */}
 
               <HStack w ="100%" justifyContent= "space-between">
-                <Heading pl= {2} color="ghostwhite" >Ongoing Polls </Heading>
+                <Heading pl= {2} color="ghostwhite" >Ongoing Votes </Heading>
                 <Button fontWeight="black" p="2%" w="20%"bg="green.300" mt="2%" onClick={handleCreatePollClick} _hover={{ bg: "green.400",  transform: "scale(1.05)"} }>
                   {selectedTab === 0 ? (showCreateVote ? 'Hide Create Vote Form' : 'Create Vote') : (showCreatePoll ? 'Hide Create Poll Form' : 'Create Poll')}
                 </Button>
@@ -247,7 +247,7 @@ const Voting = () => {
                         pt={14}
                         pb={14}
                       >
-                        No Ongoing Polls
+                        No Ongoing Votes
                       </Text>
                     </Flex>
                   </Box>
@@ -262,7 +262,8 @@ const Voting = () => {
               <Heading pl={2} color= "ghostwhite">History </Heading>
               <HStack spacing={4}  w= "100%" justifyContent="flex-start" >
                 
-                {[...completedPollsKubid].reverse().map((poll, index) => {
+              {completedPollsKubid.length > 0 ? (
+                  [...completedPollsKubid].reverse().map((poll, index) => {
                   const totalVotes = poll.options.reduce((total, option) => total + ethers.BigNumber.from(option.votes).toNumber(), 0);
                   
                   const predefinedColors = ['red', 'darkblue', 'yellow', 'purple'];
@@ -305,8 +306,41 @@ const Voting = () => {
 
                     <Text mb="2" fontSize="xl" fontWeight="extrabold">Winner: {poll.winner}</Text>
                   </Box>
+                  
                 );
-              })}
+              })  ) : (
+                <Box flexDirection="column"
+                  alignItems="center"
+                  justifyContent="center"
+                  borderRadius="3xl"
+                  boxShadow="lg"
+                  display="flex"
+                  w="100%"
+                  maxWidth="100%"
+                  bg="transparent"
+                  position="relative"
+                  p={4}
+                  zIndex={1}
+                  color="ghostwhite">
+                  <div className="glass" style={glassLayerStyle} />
+                  <Flex
+                    flexDirection="column"
+                    alignItems="center"
+                    justifyContent="center">
+                    <Text
+                      mb="2"
+                      fontSize="2xl"
+                      fontWeight="extrabold"
+                      pl={12}
+                      pr={12}
+                      pt={14}
+                      pb={14}
+                    >
+                      No History
+                    </Text>
+                  </Flex>
+                </Box>
+              )}
                 
               </HStack>
               </VStack>
@@ -343,7 +377,8 @@ const Voting = () => {
 
               </HStack>
                 <HStack justifyContent={"flex-start"} w="100%" spacing={4}>
-                {(ongoingPollsKubix).map((poll, index) => (
+                {ongoingPollsKubix.length > 0 ? (
+                  ongoingPollsKubix.map((poll, index) => (
                     <Box key={index} flexDirection="column"
                     alignItems="center"
                     justifyContent="center"
@@ -368,13 +403,48 @@ const Voting = () => {
                         {poll.options.map((option, index) => (
                             <Text fontSize= "lg" fontWeight="extrabold" key={index}>{option.name}</Text>
                         ))}
-                        </HStack>            
+                        </HStack>    
+
                     </Box>
-                ))}
+                ))) : (
+                  <Box flexDirection="column"
+                    alignItems="center"
+                    justifyContent="center"
+                    borderRadius="3xl"
+                    boxShadow="lg"
+                    display="flex"
+                    w="100%"
+                    maxWidth="100%"
+                    bg="transparent"
+                    position="relative"
+                    p={4}
+                    zIndex={1}
+                    color="ghostwhite">
+                    <div className="glass" style={glassLayerStyle} />
+                    <Flex
+                      flexDirection="column"
+                      alignItems="center"
+                      justifyContent="center">
+                      <Text
+                        mb="2"
+                        fontSize="2xl"
+                        fontWeight="extrabold"
+                        pl={12}
+                        pr={12}
+                        pt={14}
+                        pb={14}
+                      >
+                        No Ongoing Polls
+                      </Text>
+                    </Flex>
+                  </Box>
+                  )}
                 </HStack>
+             
                 <Heading pl={2} color= "ghostwhite">History </Heading>
                 <HStack spacing={4}  w= "100%" justifyContent="flex-start" >
-                {[...completedPollsKubix].reverse().map((poll, index) => {
+                {completedPollsKubix.length > 0 ? (
+                  [...completedPollsKubix].reverse().map((poll, index) => {
                   const totalVotes = poll.options.reduce((total, option) => total + ethers.BigNumber.from(option.votes).toNumber(), 0);
                   const predefinedColors = ['red', 'darkblue', 'yellow', 'purple'];
                   const data = [{ name: 'Options', values: poll.options.map((option, index) => {
@@ -412,7 +482,40 @@ const Voting = () => {
                     <Text mb="2" fontSize="xl" fontWeight="extrabold">Winner: {poll.winner}</Text>
                   </Box>
                 );
-              })}
+              })
+              ) : (
+                <Box flexDirection="column"
+                  alignItems="center"
+                  justifyContent="center"
+                  borderRadius="3xl"
+                  boxShadow="lg"
+                  display="flex"
+                  w="100%"
+                  maxWidth="100%"
+                  bg="transparent"
+                  position="relative"
+                  p={4}
+                  zIndex={1}
+                  color="ghostwhite">
+                  <div className="glass" style={glassLayerStyle} />
+                  <Flex
+                    flexDirection="column"
+                    alignItems="center"
+                    justifyContent="center">
+                    <Text
+                      mb="2"
+                      fontSize="2xl"
+                      fontWeight="extrabold"
+                      pl={12}
+                      pr={12}
+                      pt={14}
+                      pb={14}
+                    >
+                      No History
+                    </Text>
+                  </Flex>
+                </Box>
+              )}
               </HStack>
               </VStack>
               </Flex>
