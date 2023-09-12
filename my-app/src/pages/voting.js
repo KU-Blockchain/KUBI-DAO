@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import {Text, Box, useDisclosure, Flex, Grid, Container, Spacer, VStack, Heading, Tabs, TabList, Tab, TabPanels, TabPanel, Button, Collapse, FormControl, FormLabel, Input, Textarea, RadioGroup, Stack, Radio, Modal, ModalOverlay, ModalContent, ModalHeader, ModalCloseButton, ModalBody, ModalFooter } from '@chakra-ui/react';
+import {HStack, Text, Box, useDisclosure, Flex, Grid, Container, Spacer, VStack, Heading, Tabs, TabList, Tab, TabPanels, TabPanel, Button, Collapse, FormControl, FormLabel, Input, Textarea, RadioGroup, Stack, Radio, Modal, ModalOverlay, ModalContent, ModalHeader, ModalCloseButton, ModalBody, ModalFooter } from '@chakra-ui/react';
 
 import { ethers } from 'ethers';
 
@@ -17,7 +17,7 @@ const glassLayerStyle = {
   zIndex: -1,
   borderRadius: "inherit",
   backdropFilter: "blur(20px)",
-  backgroundColor: "rgba(0, 0, 0, .6)",
+  backgroundColor: "rgba(0, 0, 0, .7)",
 };
 
 
@@ -98,6 +98,7 @@ const Voting = () => {
   return (
     <>
     <Container maxW="container.xl" py={8} >
+      
       <Flex align="center" mb={8}
                 flexDirection="column"
                 alignItems="center"
@@ -137,16 +138,49 @@ const Voting = () => {
           
         >
           <div className="glass" style={glassLayerStyle} />
-          <Tab fontSize="2xl" fontWeight="extrabold" >Votes</Tab>
-          <Tab fontSize="2xl"fontWeight="extrabold">Polls</Tab>
+          <Tab 
+            fontSize="2xl" 
+            fontWeight="extrabold" 
+            _selected={{ backgroundColor: "ghostwhite", color: "black" }}
+          >
+            Votes
+          </Tab>
+          <Tab 
+            fontSize="2xl" 
+            fontWeight="extrabold" 
+            _selected={{ backgroundColor: "ghostwhite", color: "black" }}
+          >
+            Polls
+          </Tab>
+
         </TabList>
         <TabPanels>
+          
           <TabPanel>
-            <Grid templateColumns={{ sm: "1fr", md: "repeat(2, 1fr)" }} gap={6}>
+          
+            <Box  flexDirection="column"
+                  alignItems="center"
+                  justifyContent="center"
+                  borderRadius="3xl"
+                  boxShadow="lg"
+                  display="flex"
+                  w="100%"
+                  maxWidth="90%"
+                  bg="transparent"
+                  position="relative"
+                  p={4}
+                  zIndex={1}
+                  mt={4} 
+                  color= "ghostwhite">
+                  <div className="glass" style={glassLayerStyle} />
+        <Grid templateRows="repeat(2, 1fr)" gap={6}>
+              
+              
               {/* Ongoing Votes */}
-              <VStack spacing={4}>
-              <Heading color="ghostwhite" mt="4"mb="4"size="lg">Ongoing Polls</Heading>
-              {(ongoingPollsKubid).map((poll, index) => (
+
+              <Heading >Ongoing Polls </Heading>
+              <HStack spacing={4} >
+      {(ongoingPollsKubid).map((poll, index) => (
                 <Box key={index} flexDirection="column"
                   alignItems="center"
                   justifyContent="center"
@@ -178,13 +212,14 @@ const Voting = () => {
                 </Box>
               ))}
 
-            </VStack>
+    </HStack>
                 {/* List ongoing votes here */}
               
   
               {/* History */}
-              <VStack spacing={4}>
-                <Heading color="ghostwhite" mt="4"mb="4"size="lg">History</Heading>
+              <Heading >History </Heading>
+              <HStack spacing={4} >
+                
                 {[...completedPollsKubid].reverse().map((poll, index) => {
                   const totalVotes = poll.options.reduce((total, option) => total + ethers.BigNumber.from(option.votes).toNumber(), 0);
                   
@@ -211,7 +246,7 @@ const Voting = () => {
                   position="relative"
                   p={4}
                   zIndex={1}
-                  mt={4} 
+                  
                   color= "ghostwhite">
                     <div className="glass" style={glassLayerStyle} />
                     <Text mb ="2" fontSize={"2xl"} fontWeight="extrabold">{poll.name}</Text>
@@ -231,9 +266,11 @@ const Voting = () => {
                   </Box>
                 );
               })}
-                <Button onClick={loadMoreCompleted}>Load more</Button>
-              </VStack>
-            </Grid>
+                
+              </HStack>
+              </Grid>
+              </Box>
+            
   
             {/* Create Vote Form */}
             <Collapse in={showCreateVote}>
@@ -278,7 +315,7 @@ const Voting = () => {
             </VStack>
   
               {/* History */}
-              <VStack spacing={4}>
+              <HStack spacing={4}>
                 <Heading color="ghostwhite" mt="4"mb="4"size="lg">History</Heading>
                 {completedPollsKubix.map((poll, index) => {
                   const totalVotes = poll.options.reduce((total, option) => total + ethers.BigNumber.from(option.votes).toNumber(), 0);
@@ -327,7 +364,7 @@ const Voting = () => {
                 );
               })}
               <Button onClick={loadMoreCompleted}>Load more</Button>
-              </VStack>
+              </HStack>
             </Grid>
             {/* Create Poll Form */}
             <Modal isOpen={showCreatePoll} onClose={handleCreatePollClick}>

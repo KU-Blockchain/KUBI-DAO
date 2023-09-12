@@ -16,7 +16,7 @@ const Navbar = () => {
               />
           </Link>
         </Box>
-        <Flex justifyContent="space-between" flexGrow={1} ml={4} mr={4}>
+        <Flex justifyContent="space-between" flexGrow={1} ml={0} mr={4}>
           <Link as={NextLink} href="/tasks" color="white" fontWeight="extrabold" fontSize="xl" mx={"2%"}>
             Tasks
           </Link>
