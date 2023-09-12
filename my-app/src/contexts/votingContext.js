@@ -25,7 +25,7 @@ export const VotingProvider = ({ children }) => {
 
     const contractXAddress = '0x4Af0e1994c8e03414ffd523aAc645049bcdadbD6';
     const contractX = new ethers.Contract(contractXAddress, KubixVotingABI.abi, signerUniversal);
-    const contractD = new ethers.Contract('0x03a828e3bCa7F4C18055297775Bd333a866B48a6', KubidVotingABI.abi, signerUniversal);
+    const contractD = new ethers.Contract('0x9E8A6552E838bF80a4FC7B5Ae834a41ab93354Ff', KubidVotingABI.abi, signerUniversal);
 
     const [contract, setContract] = useState(contractD);
 
@@ -391,6 +391,8 @@ const updateVoteInIPFS = async (pollId, selectedOption) => {
               const tx = await selectedContract.moveToCompleted();
               await tx.wait();  // Wait for the transaction to be confirmed
               console.log("moved to completed");
+              
+              console.log("poll id",poll.id);
               const winner = await selectedContract.getWinner(poll.id);
               console.log(winner, "got winner");
               poll.winner = winner;

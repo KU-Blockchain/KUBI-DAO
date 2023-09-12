@@ -170,7 +170,7 @@ const Voting = () => {
                   <Text mt="4">Options:</Text>
                   <VStack spacing={2}>
                     {poll.options.map((option, index) => (
-                      <Text key={index}>{option.optionName}</Text>
+                      <Text fontWeight="extrabold" key={index}>{option.name}</Text>
                     ))}
 
                   </VStack>
@@ -421,27 +421,38 @@ const Voting = () => {
       color="ghostwhite"
   >
     <div className="glass" style={glassLayerStyle} />
-    <ModalHeader >{selectedPoll?.name}</ModalHeader>
+    <ModalHeader fontWeight={"extrabold"} fontSize={"2xl"}>{selectedPoll?.name}</ModalHeader>
     <ModalCloseButton />
-    <ModalBody>
+<ModalBody>
+  <VStack spacing={6}>
 
-      <VStack spacing={4}>
-        <Text>{selectedPoll?.description}</Text>
-        <Text>Total Minutes: {ethers.BigNumber.from(selectedPoll?.time|| 0).toNumber()}</Text>
-        <Text>Creation Time: {selectedPoll?.creationDate }</Text>
-        <Text fontWeight="bold" fontSize="xl"> Remaining Time: {Math.floor((selectedPoll?.completionDate - (new Date()).getTime()) / (1000 * 60))} minutes </Text>
-        <CountDown duration={Math.floor((selectedPoll?.completionDate - (new Date()).getTime())/1000)} />
-        <RadioGroup onChange={setSelectedOption} value={selectedOption}>
-          <VStack spacing={4}>
-            {selectedPoll?.options?.map((option, index) => (
-              <Radio key={index} value={index}>
-                {option.optionName} (Votes: {ethers.BigNumber.from(option.votes).toNumber()})
-              </Radio>
-            ))}
-          </VStack>
-        </RadioGroup>
-      </VStack>
-    </ModalBody>
+    
+    {/* Description Section */}
+    <VStack spacing={2} alignItems="start">
+      <Text fontWeight="bold" fontSize="lg">Description:</Text>
+      <Text fontSize="md">{selectedPoll?.description}</Text>
+    </VStack>
+    
+    {/* Time Details Section */}
+    <VStack spacing={2} alignItems="start">
+    </VStack>
+
+    {/* Voting Options Section */}
+    <VStack spacing={4} alignItems="start">
+      <Text fontWeight="bold" fontSize="lg">Voting Options:</Text>
+      <RadioGroup onChange={setSelectedOption} value={selectedOption}>
+        <VStack spacing={3}>
+          {selectedPoll?.options?.map((option, index) => (
+            <Radio key={index} value={index}>
+              {option.name} (Votes: {ethers.BigNumber.from(option.votes).toNumber()})
+            </Radio>
+          ))}
+        </VStack>
+      </RadioGroup>
+    </VStack>
+  </VStack>
+</ModalBody>
+
 
 
     <ModalFooter>

@@ -4,6 +4,7 @@ import { useDataBaseContext } from "@/contexts/DataBaseContext";
 import { useWeb3Context } from "@/contexts/Web3Context";
 import { ethers } from "ethers";
 import MumbaiButton from "../components/userPage/importMumbai";
+import NFTButton from "@/components/userPage/importMemberNFT";
 import { ScaleFade } from "@chakra-ui/react";
 
 import {
@@ -400,6 +401,7 @@ const User = () => {
         <DeployMenu / >
         <MintMenu />
         <DataMenu />
+        <NFTButton />
       </Flex>
       )}
   </>
