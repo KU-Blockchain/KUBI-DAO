@@ -28,7 +28,7 @@ const AllExecs=[
   },
   {
     cardname:"Hudson",
-    description:"Hey guys, I am Tej Gumaste and I am a sophomore studying CS and Math. I love playing video games and sometimes making them too, and I also enjoy badminton and bad bitches.",
+    description:"Hey guys, I am Hudson Headley and I am a Senior studying CS and Econ. I am intrested in how we can use blockchain to make organizations more democratic and better for employees",
     picture:"Hudson",
     id:nameboard.specialblockchain,
     classid:"card"
