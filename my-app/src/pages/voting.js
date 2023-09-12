@@ -97,7 +97,7 @@ const Voting = () => {
 
   return (
     <>
-    <Container maxW="container.xl" py={8} >
+    <Container maxW="container.2xl" py={8} px={10} >
       
       <Flex align="center" mb={8}
                 flexDirection="column"
@@ -156,69 +156,102 @@ const Voting = () => {
         </TabList>
         <TabPanels>
           
-          <TabPanel>
+          <TabPanel >
           
-            <Box  flexDirection="column"
-                  alignItems="center"
-                  justifyContent="center"
-                  borderRadius="3xl"
-                  boxShadow="lg"
-                  display="flex"
-                  w="100%"
-                  maxWidth="90%"
-                  bg="transparent"
-                  position="relative"
-                  p={4}
-                  zIndex={1}
-                  mt={4} 
-                  color= "ghostwhite">
+          <Flex align="center" mb={8}
+                flexDirection="column"
+                alignItems="center"
+                justifyContent="center"
+                borderRadius="3xl"
+                boxShadow="lg"
+                p="2%"
+                w="100%"
+                
+                bg="transparent"
+                position="relative"
+                display="flex"
+                zIndex={0}
+                >
                   <div className="glass" style={glassLayerStyle} />
-        <Grid templateRows="repeat(2, 1fr)" gap={6}>
-              
+       
+              <Flex w="100%" alignItems="flex-start" flexDirection="column">
+
+              <VStack  alignItems={"flex-start"} spacing={8} >
               
               {/* Ongoing Votes */}
 
-              <Heading >Ongoing Polls </Heading>
-              <HStack spacing={4} >
-      {(ongoingPollsKubid).map((poll, index) => (
-                <Box key={index} flexDirection="column"
+              <Heading pl= {2} color="ghostwhite" >Ongoing Polls </Heading>
+              <HStack spacing={4}>
+              {ongoingPollsKubid.length > 0 ? (
+                ongoingPollsKubid.map((poll, index) => (
+                  <Box key={index} flexDirection="column"
                   alignItems="center"
                   justifyContent="center"
                   borderRadius="3xl"
                   boxShadow="lg"
                   display="flex"
-                  w="100%"
+                  w="50%"
                   maxWidth="90%"
                   bg="transparent"
                   position="relative"
                   p={4}
-                  zIndex={1}
-                  mt={4} 
-                  color= "ghostwhite"  
-                  _hover={{ bg: "black", boxShadow: "md", transform: "scale(1.05)"}}
-                  onClick={() => handlePollClick(poll)}>
-                  <div className="glass" style={glassLayerStyle} />
-                  <Text mb ="2" fontSize="2xl" fontWeight="extrabold">{poll.name}</Text>
-                  <Text mb="4">{poll.description}</Text>
-                  <CountDown duration={Math.floor((poll?.completionDate - (new Date()).getTime())/1000)} />
-                  <Text mt="4">Options:</Text>
-                  <VStack spacing={2}>
-                    {poll.options.map((option, index) => (
-                      <Text fontWeight="extrabold" key={index}>{option.name}</Text>
-                    ))}
+                  zIndex={1} 
+                    _hover={{ bg: "black", boxShadow: "md", transform: "scale(1.05)"}}
+                    onClick={() => handlePollClick(poll)}>
+                    <div className="glass" style={glassLayerStyle} />
+                    <Text mb ="2" fontSize="2xl" fontWeight="extrabold">{poll.name}</Text>
+                    <Text mb="4">{poll.description}</Text>
+                    <CountDown duration={Math.floor((poll?.completionDate - (new Date()).getTime())/1000)} />
+                    <Text mt="4">Options:</Text>
+                    <VStack spacing={2}>
+                      {poll.options.map((option, index) => (
+                        <Text fontWeight="extrabold" key={index}>{option.name}</Text>
+                      ))}
+                    </VStack>            
+                  </Box>
+                ))
+              ) : (
+                  <Box flexDirection="column"
+                    alignItems="center"
+                    justifyContent="center"
+                    borderRadius="3xl"
+                    boxShadow="lg"
+                    display="flex"
+                    w="100%"
+                    maxWidth="100%"
+                    bg="transparent"
+                    position="relative"
+                    p={4}
+                    zIndex={1}
+                    color="ghostwhite">
+                    <div className="glass" style={glassLayerStyle} />
+                    <Flex
+                      flexDirection="column"
+                      alignItems="center"
+                      justifyContent="center">
+                      <Text
+                        mb="2"
+                        fontSize="2xl"
+                        fontWeight="extrabold"
+                        pl={10}
+                        pr={10}
+                        pt={12}
+                        pb={12}
+                      >
+                        No Ongoing Polls
+                      </Text>
+                    </Flex>
+                  </Box>
 
-                  </VStack>
-                  
-                </Box>
-              ))}
+              )}
+            </HStack>
 
-    </HStack>
                 {/* List ongoing votes here */}
               
   
               {/* History */}
-              <Heading >History </Heading>
-              <HStack spacing={4} >
+              <Heading pl={2} color= "ghostwhite">History </Heading>
+              <HStack spacing={4} justifyContent="flex-start" >
                 
                 {[...completedPollsKubid].reverse().map((poll, index) => {
                   const totalVotes = poll.options.reduce((total, option) => total + ethers.BigNumber.from(option.votes).toNumber(), 0);
@@ -240,7 +273,7 @@ const Voting = () => {
                   borderRadius="3xl"
                   boxShadow="lg"
                   display="flex"
-                  w="100%"
+                  w="50%"
                   maxWidth="90%"
                   bg="transparent"
                   position="relative"
@@ -250,9 +283,8 @@ const Voting = () => {
                   color= "ghostwhite">
                     <div className="glass" style={glassLayerStyle} />
                     <Text mb ="2" fontSize={"2xl"} fontWeight="extrabold">{poll.name}</Text>
-                    <Text mb ="4">{poll.description}</Text>
                     <Flex  justifyContent="center">
-                      <BarChart  width={400} height={50} layout="vertical" data={data}>
+                      <BarChart  width={100} height={50} layout="vertical" data={data}>
                         <XAxis type="number" hide="true" />
                         <YAxis type="category" dataKey="name" hide="true" />
                       {data[0].values.map((option, index) => (
@@ -268,14 +300,13 @@ const Voting = () => {
               })}
                 
               </HStack>
-              </Grid>
-              </Box>
+              </VStack>
+              </Flex>
+              </Flex>
             
   
             {/* Create Vote Form */}
-            <Collapse in={showCreateVote}>
-              {/* Your form goes here */}
-            </Collapse>
+
           </TabPanel>
   
           <TabPanel>

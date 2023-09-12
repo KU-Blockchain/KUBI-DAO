@@ -25,7 +25,7 @@ export const VotingProvider = ({ children }) => {
 
     const contractXAddress = '0x4Af0e1994c8e03414ffd523aAc645049bcdadbD6';
     const contractX = new ethers.Contract(contractXAddress, KubixVotingABI.abi, signerUniversal);
-    const contractD = new ethers.Contract('0x9E8A6552E838bF80a4FC7B5Ae834a41ab93354Ff', KubidVotingABI.abi, signerUniversal);
+    const contractD = new ethers.Contract('0x51B43C04FBf8938d7005261Bba1F03db4b9ff2f5', KubidVotingABI.abi, signerUniversal);
 
     const [contract, setContract] = useState(contractD);
 
