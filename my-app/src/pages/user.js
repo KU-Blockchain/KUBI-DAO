@@ -262,9 +262,10 @@ const User = () => {
           </Heading>
           <Text fontSize="xl"  mb={4}>1. If you haven't added the polygon Mumbai testnet import it below:</Text>
           <MumbaiButton />
-          <Text  fontSize="xl" mt={4} mb={4}>2. Get some free testnet MATIC by pasting your wallet adress <Link href="https://faucet.polygon.technology/" isExternal fontWeight="bold" textDecoration="underline" color="blue.500">here</Link></Text>
-          <Text fontWeight ="bold" mt= {4}>Wallet Adress for copying:</Text>
+          <Text  fontSize="xl" mt={4} mb={4}>2. Copy your wallet adress: </Text>
           <Text  >{account}</Text>
+          <Text  fontSize="xl" mt={4} mb={4}>and paste it to get free MATIC <Link href="https://mumbaifaucet.com/" isExternal fontWeight="bold" textDecoration="underline" color="blue.500">here</Link></Text>
+        
           <Text  fontSize="xl" mt={4} mb={4}>3. Import the KUBIX coin here:</Text>
           <KubixButton />
           <Text mt ={4}  fontSize="xl" >4. Make sure to switch to the mumbai Network at the top of Metamask </Text>
