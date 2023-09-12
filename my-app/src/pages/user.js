@@ -56,7 +56,7 @@ const User = () => {
   const [loading,setLoading]=useState(false);
 
   const { userDetails, fetchUserDetails, addUserData } = useDataBaseContext();
-  const{signerUniversal, hasMemberNFT, execNftBalance,balance,nftBalance, fetchBalance,web3, account,kubiMembershipNFTContract, contract,KUBIXbalance, kubiMembershipNFTAddress}=useWeb3Context();
+  const{providerUniversal,signerUniversal, hasMemberNFT, execNftBalance,balance,nftBalance, fetchBalance,web3, account,kubiMembershipNFTContract, contract,KUBIXbalance, kubiMembershipNFTAddress}=useWeb3Context();
 
 
   

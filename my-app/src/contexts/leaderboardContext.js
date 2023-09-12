@@ -2,6 +2,7 @@ import { createContext, useContext, useState, useEffect, useCallback } from 'rea
 import { ethers } from 'ethers';
 import ProjectManagerArtifact from '../abi/ProjectManager.json'; 
 import { useWeb3Context } from './Web3Context';
+import ipfs from '../db/ipfs';
 
 
 const leaderboardContext = createContext();
@@ -21,6 +22,15 @@ export const LeaderboardProvider = ({ children }) => {
     const[leaderboardLoaded, setLeaderboardLoaded] = useState(false);
 
 
+    async function fetchFromIpfs(ipfsHash) {
+      for await (const file of ipfs.cat(ipfsHash)) {
+        const stringData = new TextDecoder().decode(file);
+        console.log("stringData", stringData)
+
+        return JSON.parse(stringData);
+      }
+    }
+
   const fetchLeaderboardData = async () => {
     if (signerUniversal) {
       const contractPM = new ethers.Contract(PMContract, ProjectManagerArtifact.abi, signerUniversal);
@@ -28,7 +38,7 @@ export const LeaderboardProvider = ({ children }) => {
       let accountsDataJson = {};
       if (accountsDataIpfsHash !== '') {
         console.log("test")
-        accountsDataJson = await (await fetch(`https://kubidao.infura-ipfs.io/ipfs/${accountsDataIpfsHash}`)).json();
+        accountsDataJson = await fetchFromIpfs(accountsDataIpfsHash)
       }
 
       const leaderboardData = Object.entries(accountsDataJson).map(([address, data]) => ({

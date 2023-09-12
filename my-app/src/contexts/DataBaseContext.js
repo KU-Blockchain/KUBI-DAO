@@ -159,6 +159,7 @@ export const DataBaseProvider = ({ children }) => {
     async function fetchFromIpfs(ipfsHash) {
       for await (const file of ipfs.cat(ipfsHash)) {
         const stringData = new TextDecoder().decode(file);
+        console.log("stringData", stringData)
 
         return JSON.parse(stringData);
       }
