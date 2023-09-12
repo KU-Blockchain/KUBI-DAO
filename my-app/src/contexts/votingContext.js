@@ -270,7 +270,12 @@ const updateVoteInIPFS = async (pollId, selectedOption) => {
           console.log(selectedPoll.id, account, selectedOption[0])
 
 
-          const tx = await contract.vote(selectedPoll.id, account, selectedOption[0]);
+          const nonce = await providerUniversal.getTransactionCount(signerUniversal.address, 'latest');
+          console.log("nonce", nonce);
+
+          const tx = await contract.vote(selectedPoll.id, account, selectedOption[0], {
+            nonce: nonce,
+          });
           await tx.wait();
 
           await updateVoteInIPFS(selectedPoll.id, selectedOption[0]);
