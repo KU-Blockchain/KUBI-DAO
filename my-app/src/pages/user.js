@@ -401,7 +401,6 @@ const User = () => {
         <DeployMenu / >
         <MintMenu />
         <DataMenu />
-        <NFTButton />
       </Flex>
       )}
   </>

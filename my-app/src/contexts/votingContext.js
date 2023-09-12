@@ -20,7 +20,7 @@ export const useVoting = () => {
   
   
 export const VotingProvider = ({ children }) => {
-    const {signerUniversal, providerUniversal, account}= useWeb3Context()
+    const { hasExecNFT, hasMemberNFT, signerUniversal, providerUniversal, account}= useWeb3Context()
     const {findMinMaxKubixBalance} = useDataBaseContext()
 
     const contractXAddress = '0x4Af0e1994c8e03414ffd523aAc645049bcdadbD6';
@@ -239,6 +239,17 @@ const updateVoteInIPFS = async (pollId, selectedOption) => {
 
 
     const handleVote = async (onClose) => {
+      if (!hasMemberNFT) {
+        toast({
+            title: 'Error',
+            description: 'You must own a membership NFT to vote',
+            status: 'error',
+            duration: 3000,
+            isClosable: true,
+        });
+        setLoadingVote(false);
+        return;
+    }
         setLoadingVote(true)
         if (selectedOption === null) {
           toast({
@@ -285,6 +296,7 @@ const updateVoteInIPFS = async (pollId, selectedOption) => {
       };
 
       const createPoll = async () => {
+
 
 
         if (contract.address == contractXAddress) {
@@ -498,6 +510,16 @@ const updateVoteInIPFS = async (pollId, selectedOption) => {
     };
 
     const handleSubmit = async (e) => {
+      if (!hasExecNFT) {
+        toast({
+            title: 'Error',
+            description: 'You must be an executive to create a poll',
+            status: 'error',
+            duration: 3000,
+            isClosable: true,
+        });
+        return;
+    }
         e.preventDefault();
         setLoadingSubmit(true)
         try {
