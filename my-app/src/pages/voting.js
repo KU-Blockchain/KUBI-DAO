@@ -114,7 +114,8 @@ const Voting = () => {
                 zIndex={0}
                 >
       <div className="glass" style={glassLayerStyle} />
-        <Heading color= "ghostwhite"size="xl">{selectedTab === 0 ? 'Democracy Voting (KUBI)' : 'Polling (KUBIX)'}</Heading>
+        <Heading color= "ghostwhite"size="2xl">{selectedTab === 0 ? 'Democracy Voting (KUBI)' : 'Polling (KUBIX)'}</Heading>
+        <Text mt={2}color= "ghostwhite" fontSize="md" fontWeight="bold">{selectedTab === 0 ? 'Equal Vote for All: For Critical Decisions' : 'Participation Based Polling: For Casual Decisions'}</Text>
         <Spacer />
 
       </Flex>
