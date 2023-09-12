@@ -116,9 +116,7 @@ const Voting = () => {
       <div className="glass" style={glassLayerStyle} />
         <Heading color= "ghostwhite"size="xl">{selectedTab === 0 ? 'Democracy Voting (KUBI)' : 'Polling (KUBIX)'}</Heading>
         <Spacer />
-        <Button fontWeight="black" p="2%" w="20%"bg="green.300" mt="2%" onClick={handleCreatePollClick} _hover={{ bg: "green.400",  transform: "scale(1.05)"} }>
-          {selectedTab === 0 ? (showCreateVote ? 'Hide Create Vote Form' : 'Create Vote') : (showCreatePoll ? 'Hide Create Poll Form' : 'Create Poll')}
-        </Button>
+
       </Flex>
   
       <Tabs isFitted variant="soft-rounded" onChange={handleTabsChange} mb={6}>
@@ -182,7 +180,15 @@ const Voting = () => {
               
               {/* Ongoing Votes */}
 
-              <Heading pl= {2} color="ghostwhite" >Ongoing Polls </Heading>
+              <HStack w ="100%" justifyContent= "space-between">
+                <Heading pl= {2} color="ghostwhite" >Ongoing Polls </Heading>
+                <Button fontWeight="black" p="2%" w="20%"bg="green.300" mt="2%" onClick={handleCreatePollClick} _hover={{ bg: "green.400",  transform: "scale(1.05)"} }>
+                  {selectedTab === 0 ? (showCreateVote ? 'Hide Create Vote Form' : 'Create Vote') : (showCreatePoll ? 'Hide Create Poll Form' : 'Create Poll')}
+                </Button>
+
+              </HStack>
+
+              
               <HStack justifyContent={"flex-start"} w="100%" spacing={4}>
               {ongoingPollsKubid.length > 0 ? (
                 ongoingPollsKubid.map((poll, index) => (
@@ -313,49 +319,64 @@ const Voting = () => {
           </TabPanel>
   
           <TabPanel>
-            <Grid templateColumns={{ sm: "1fr", md: "repeat(2, 1fr)" }} gap={6}>
-              {/* Ongoing Polls */}
-              <VStack spacing={4}>
-              <Heading color="ghostwhite" mt="4"mb="4"size="lg">Ongoing Polls</Heading>
-              {(ongoingPollsKubix).map((poll, index) => (
-                <Box key={index} flexDirection="column"
-                  alignItems="center"
-                  justifyContent="center"
-                  borderRadius="3xl"
-                  boxShadow="lg"
-                  display="flex"
-                  w="100%"
-                  maxWidth="90%"
-                  bg="transparent"
-                  position="relative"
-                  p={4}
-                  zIndex={1}
-                  mt={4} 
-                  color= "ghostwhite"  
-                  _hover={{ bg: "black", boxShadow: "md", transform: "scale(1.05)"}}
-                  onClick={() => handlePollClick(poll)}>
-                  <div className="glass" style={glassLayerStyle} />
-                  <Text mb ="2" fontSize="2xl" fontWeight="extrabold">{poll.name}</Text>
-                  <Text mb="4">{poll.description}</Text>
-                  <CountDown duration={Math.floor((selectedPoll?.completionDate - (new Date()).getTime())/1000)} />
-                  <Text mt="4">Options:</Text>
-                  <VStack spacing={2}>
-                    {poll.options.map((option, index) => (
-                      <Text key={index}>{option.optionName}</Text>
-                    ))}
-                  </VStack>
-                </Box>
-              ))}
-            </VStack>
-  
-              {/* History */}
-              <HStack spacing={4}>
-                <Heading color="ghostwhite" mt="4"mb="4"size="lg">History</Heading>
-                {completedPollsKubix.map((poll, index) => {
+            <Flex align="center" mb={8}
+                flexDirection="column"
+                alignItems="center"
+                justifyContent="center"
+                borderRadius="3xl"
+                boxShadow="lg"
+                p="2%"
+                w="100%"
+                bg="transparent"
+                position="relative"
+                display="flex"
+                zIndex={0}
+                >
+                <div className="glass" style={glassLayerStyle} />
+            <Flex w="100%"  flexDirection="column">
+                <VStack  alignItems={"flex-start"} spacing={8} >
+                <HStack w ="100%" justifyContent= "space-between">
+                <Heading pl= {2} color="ghostwhite" >Ongoing Polls </Heading>
+                <Button fontWeight="black" p="2%" w="20%"bg="green.300" mt="2%" onClick={handleCreatePollClick} _hover={{ bg: "green.400",  transform: "scale(1.05)"} }>
+                  {selectedTab === 0 ? (showCreateVote ? 'Hide Create Vote Form' : 'Create Vote') : (showCreatePoll ? 'Hide Create Poll Form' : 'Create Poll')}
+                </Button>
+
+              </HStack>
+                <HStack justifyContent={"flex-start"} w="100%" spacing={4}>
+                {(ongoingPollsKubix).map((poll, index) => (
+                    <Box key={index} flexDirection="column"
+                    alignItems="center"
+                    justifyContent="center"
+                    borderRadius="3xl"
+                    boxShadow="lg"
+                    display="flex"
+                    w="30%"
+                    minW="30%"
+                    maxWidth="30%"
+                    bg="transparent"
+                    position="relative"
+                    color= "ghostwhite"
+                    p={2}
+                    zIndex={1} 
+                        _hover={{ bg: "black", boxShadow: "md", transform: "scale(1.05)"}}
+                        onClick={() => handlePollClick(poll)}>
+                        <div className="glass" style={glassLayerStyle} />
+                        <Text mb ="4" fontSize="xl" fontWeight="extrabold">{poll.name}</Text>
+                        <CountDown duration={Math.floor((poll?.completionDate - (new Date()).getTime())/1000)} />
+                        <Text mt="2"> Voting Options:</Text>
+                        <HStack spacing={6}>
+                        {poll.options.map((option, index) => (
+                            <Text fontSize= "lg" fontWeight="extrabold" key={index}>{option.name}</Text>
+                        ))}
+                        </HStack>            
+                    </Box>
+                ))}
+                </HStack>
+                <Heading pl={2} color= "ghostwhite">History </Heading>
+                <HStack spacing={4}  w= "100%" justifyContent="flex-start" >
+                {[...completedPollsKubix].reverse().map((poll, index) => {
                   const totalVotes = poll.options.reduce((total, option) => total + ethers.BigNumber.from(option.votes).toNumber(), 0);
-                  
                   const predefinedColors = ['red', 'darkblue', 'yellow', 'purple'];
-                  
                   const data = [{ name: 'Options', values: poll.options.map((option, index) => {
                     const color = index < predefinedColors.length ? predefinedColors[index] : `rgba(${Math.random() * 255}, ${Math.random() * 255}, ${Math.random() * 255}, 1)`;
                     return {
@@ -363,7 +384,6 @@ const Voting = () => {
                       color: color
                     };
                   }) }];
-
                 return (
                   <Box key={index} flexDirection="column"
                   alignItems="center"
@@ -371,37 +391,35 @@ const Voting = () => {
                   borderRadius="3xl"
                   boxShadow="lg"
                   display="flex"
-                  w="100%"
-                  maxWidth="90%"
+                  w="30%"
+                  minW="30%"
+                  maxWidth="30%"
                   bg="transparent"
                   position="relative"
-                  p={4}
-                  zIndex={1}
-                  mt={4} 
-                  color= "ghostwhite">
+                  color= "ghostwhite"
+                  zIndex={1}>
                     <div className="glass" style={glassLayerStyle} />
-                    <Text mb ="2" fontSize={"2xl"} fontWeight="extrabold">{poll.name}</Text>
-                    <Text mb ="4">{poll.description}</Text>
+                    <Text mr="2" mt="4" ml="2 "mb ="2" fontSize={"xl"} fontWeight="extrabold">{poll.name}</Text>
                     <Flex  justifyContent="center">
-                      <BarChart  width={400} height={50} layout="vertical" data={data}>
+                      <BarChart  width={200} height={30} layout="vertical" data={data}>
                         <XAxis type="number" hide="true" />
                         <YAxis type="category" dataKey="name" hide="true" />
                       {data[0].values.map((option, index) => (
                         <Bar key={index} dataKey={`values[${index}].value`} stackId="a" fill={option.color} />
                       ))}
                     </BarChart>
-
                     </Flex>
-
-                    <Text fontSize="2xl" fontWeight="extrabold">Winner: {poll.winner}</Text>
+                    <Text mb="2" fontSize="xl" fontWeight="extrabold">Winner: {poll.winner}</Text>
                   </Box>
                 );
               })}
-              <Button onClick={loadMoreCompleted}>Load more</Button>
               </HStack>
-            </Grid>
-            {/* Create Poll Form */}
-            <Modal isOpen={showCreatePoll} onClose={handleCreatePollClick}>
+              </VStack>
+              </Flex>
+              </Flex>
+        </TabPanel>
+                    {/* Create Poll Form */}
+                    <Modal isOpen={showCreatePoll} onClose={handleCreatePollClick}>
               <ModalOverlay />
               <ModalContent>
                 <ModalHeader>Create a Poll</ModalHeader>
@@ -469,7 +487,6 @@ const Voting = () => {
                 </ModalFooter>
               </ModalContent>
             </Modal>
-          </TabPanel>
         </TabPanels>
       </Tabs>
   
