@@ -113,9 +113,9 @@ function practice()
       </div>
     </div>
     
-    <Flex columnGap={6} margin={4} rowGap={6} flexWrap={"wrap"}>
-      {AllExecs.map(exec =>(
-      
+    <Flex columnGap={6} margin={4} rowGap={6} flexWrap={"wrap"}> {/*This is a flex Box, and its used  to arrange content in an orderly manner. All the cards that you all make will go into this Flex*/}
+      {AllExecs.map(exec =>(  
+      // This is a .map block and its used to traverse through a list and run a block of code for each element of the list. "exec" is the local variable that refers to the current element. .map is akin to for loop in Python where the "exec" is basically the "i" in a python for loop such as for i in range(5):
         <div className={exec.id} name={exec.classid} onClick={()=>{Fadeout(exec)}} style={{
           maxHeight:"500px",
           width:"400px",
@@ -158,7 +158,6 @@ function practice()
               
             </div>
           </div>
-          
         </div>
       </div>
       
