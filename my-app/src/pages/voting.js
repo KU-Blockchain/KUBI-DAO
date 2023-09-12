@@ -97,9 +97,9 @@ const Voting = () => {
 
   return (
     <>
-    <Container maxW="container.2xl" py={8} px={10} >
+    <Container maxW="container.2xl" py={6} px={10} >
       
-      <Flex align="center" mb={8}
+      <Flex align="center" mb={6}
                 flexDirection="column"
                 alignItems="center"
                 justifyContent="center"
@@ -121,7 +121,7 @@ const Voting = () => {
         </Button>
       </Flex>
   
-      <Tabs isFitted variant="enclosed" onChange={handleTabsChange} mb={8}>
+      <Tabs isFitted variant="soft-rounded" onChange={handleTabsChange} mb={6}>
         
         <TabList          
           alignItems="center"
@@ -141,6 +141,7 @@ const Voting = () => {
           <Tab 
             fontSize="2xl" 
             fontWeight="extrabold" 
+            color= "ghostwhite"
             _selected={{ backgroundColor: "ghostwhite", color: "black" }}
           >
             Votes
@@ -148,6 +149,7 @@ const Voting = () => {
           <Tab 
             fontSize="2xl" 
             fontWeight="extrabold" 
+            color= "ghostwhite"
             _selected={{ backgroundColor: "ghostwhite", color: "black" }}
           >
             Polls
@@ -174,14 +176,14 @@ const Voting = () => {
                 >
                   <div className="glass" style={glassLayerStyle} />
        
-              <Flex w="100%" alignItems="flex-start" flexDirection="column">
+              <Flex w="100%"  flexDirection="column">
 
               <VStack  alignItems={"flex-start"} spacing={8} >
               
               {/* Ongoing Votes */}
 
               <Heading pl= {2} color="ghostwhite" >Ongoing Polls </Heading>
-              <HStack spacing={4}>
+              <HStack justifyContent={"flex-start"} w="100%" spacing={4}>
               {ongoingPollsKubid.length > 0 ? (
                 ongoingPollsKubid.map((poll, index) => (
                   <Box key={index} flexDirection="column"
@@ -190,24 +192,25 @@ const Voting = () => {
                   borderRadius="3xl"
                   boxShadow="lg"
                   display="flex"
-                  w="50%"
-                  maxWidth="90%"
+                  w="30%"
+                  minW="30%"
+                  maxWidth="30%"
                   bg="transparent"
                   position="relative"
-                  p={4}
+                  color= "ghostwhite"
+                  p={2}
                   zIndex={1} 
                     _hover={{ bg: "black", boxShadow: "md", transform: "scale(1.05)"}}
                     onClick={() => handlePollClick(poll)}>
                     <div className="glass" style={glassLayerStyle} />
-                    <Text mb ="2" fontSize="2xl" fontWeight="extrabold">{poll.name}</Text>
-                    <Text mb="4">{poll.description}</Text>
+                    <Text mb ="4" fontSize="xl" fontWeight="extrabold">{poll.name}</Text>
                     <CountDown duration={Math.floor((poll?.completionDate - (new Date()).getTime())/1000)} />
-                    <Text mt="4">Options:</Text>
-                    <VStack spacing={2}>
+                    <Text mt="2"> Voting Options:</Text>
+                    <HStack spacing={6}>
                       {poll.options.map((option, index) => (
-                        <Text fontWeight="extrabold" key={index}>{option.name}</Text>
+                        <Text fontSize= "lg" fontWeight="extrabold" key={index}>{option.name}</Text>
                       ))}
-                    </VStack>            
+                    </HStack>            
                   </Box>
                 ))
               ) : (
@@ -233,10 +236,10 @@ const Voting = () => {
                         mb="2"
                         fontSize="2xl"
                         fontWeight="extrabold"
-                        pl={10}
-                        pr={10}
-                        pt={12}
-                        pb={12}
+                        pl={12}
+                        pr={12}
+                        pt={14}
+                        pb={14}
                       >
                         No Ongoing Polls
                       </Text>
@@ -251,7 +254,7 @@ const Voting = () => {
   
               {/* History */}
               <Heading pl={2} color= "ghostwhite">History </Heading>
-              <HStack spacing={4} justifyContent="flex-start" >
+              <HStack spacing={4}  w= "100%" justifyContent="flex-start" >
                 
                 {[...completedPollsKubid].reverse().map((poll, index) => {
                   const totalVotes = poll.options.reduce((total, option) => total + ethers.BigNumber.from(option.votes).toNumber(), 0);
@@ -273,18 +276,18 @@ const Voting = () => {
                   borderRadius="3xl"
                   boxShadow="lg"
                   display="flex"
-                  w="50%"
-                  maxWidth="90%"
+                  w="30%"
+                  minW="30%"
+                  maxWidth="30%"
                   bg="transparent"
                   position="relative"
-                  p={4}
-                  zIndex={1}
-                  
-                  color= "ghostwhite">
+                  color= "ghostwhite"
+                  zIndex={1}>
+
                     <div className="glass" style={glassLayerStyle} />
-                    <Text mb ="2" fontSize={"2xl"} fontWeight="extrabold">{poll.name}</Text>
+                    <Text mr="2" mt="4" ml="2 "mb ="2" fontSize={"xl"} fontWeight="extrabold">{poll.name}</Text>
                     <Flex  justifyContent="center">
-                      <BarChart  width={100} height={50} layout="vertical" data={data}>
+                      <BarChart  width={200} height={30} layout="vertical" data={data}>
                         <XAxis type="number" hide="true" />
                         <YAxis type="category" dataKey="name" hide="true" />
                       {data[0].values.map((option, index) => (
@@ -294,7 +297,7 @@ const Voting = () => {
 
                     </Flex>
 
-                    <Text fontSize="2xl" fontWeight="extrabold">Winner: {poll.winner}</Text>
+                    <Text mb="2" fontSize="xl" fontWeight="extrabold">Winner: {poll.winner}</Text>
                   </Box>
                 );
               })}

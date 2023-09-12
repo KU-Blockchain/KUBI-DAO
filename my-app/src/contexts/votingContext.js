@@ -25,7 +25,9 @@ export const VotingProvider = ({ children }) => {
 
     const contractXAddress = '0x4Af0e1994c8e03414ffd523aAc645049bcdadbD6';
     const contractX = new ethers.Contract(contractXAddress, KubixVotingABI.abi, signerUniversal);
-    const contractD = new ethers.Contract('0x51B43C04FBf8938d7005261Bba1F03db4b9ff2f5', KubidVotingABI.abi, signerUniversal);
+    
+    //0x6E0f9406e638b3710DdE4e6C4a8bbD55D3cE5d60
+    const contractD = new ethers.Contract('0x732c0Eb859393717b5ded85f1808eaa2b6384772', KubidVotingABI.abi, signerUniversal);
 
     const [contract, setContract] = useState(contractD);
 
@@ -317,7 +319,7 @@ const updateVoteInIPFS = async (pollId, selectedOption) => {
           // Parse the options string into an array
           const optionsArray = proposal.options.map(option => option.trim());
 
-          console.log(proposal.time)
+          console.log(proposal)
         
           const tx = await contract.createProposal(proposal.name, proposal.description, proposal.execution, proposal.time, optionsArray);
           await tx.wait();
@@ -390,6 +392,7 @@ const updateVoteInIPFS = async (pollId, selectedOption) => {
           let completedPolls = [];
           let existingVotingData = selectedContract.address === contractXAddress ? votingDataX : votingDataD;
           console.log(existingVotingData);
+          console.log(selectedContract.address)
       
           await Promise.all(existingVotingData.polls.map(async (poll) => {
             const currentTime = new Date();
@@ -405,7 +408,10 @@ const updateVoteInIPFS = async (pollId, selectedOption) => {
               console.log("moved to completed");
               
               console.log("poll id",poll.id);
-              const winner = await selectedContract.getWinner(poll.id);
+              const completedProposalsCount = await contract.completedProposalsCount();
+              
+    
+              const winner = await selectedContract.getWinner(completedProposalsCount-1);
               console.log(winner, "got winner");
               poll.winner = winner;
               await updatePollIPFS(poll);

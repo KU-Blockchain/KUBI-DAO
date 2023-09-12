@@ -1,4 +1,3 @@
-
 pragma solidity ^0.8.0;
 
 import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
@@ -31,7 +30,9 @@ contract KubidVoting {
     uint256[] public completedProposalIndices;
 
     event NewProposal(uint256 indexed proposalId, string name);
-    event NewIPFSHash(string indexed newHash); 
+    event Voted(uint256 indexed proposalId, address indexed voter, uint256 optionIndex);
+    event ProposalCompleted(uint256 indexed proposalId);
+    event NewIPFSHash(string indexed newHash);
 
     constructor(address _kubidToken, address _dao) {
         kubidToken = IERC20(_kubidToken);
@@ -72,7 +73,6 @@ contract KubidVoting {
         newProposal.totalVotes = 0;
         newProposal.timeInMinutes = _timeInMinutes;
         newProposal.creationTimestamp = block.timestamp;
-    
 
         for (uint256 i = 0; i < _options.length; i++) {
             newProposal.options.push(PollOption(_options[i], 0));
@@ -94,6 +94,8 @@ contract KubidVoting {
         proposal.votes[_voter] = 1;
         proposal.totalVotes += 1;
         proposal.options[_optionIndex].votes += 1;
+
+        emit Voted(_proposalId, _voter, _optionIndex);
     }
 
     function getWinner(uint256 _completedProposalIndex) external view returns (string memory) {
@@ -119,9 +121,11 @@ contract KubidVoting {
             uint256 proposalId = activeProposalIndices[i];
             Proposal storage proposal = activeProposals[proposalId];
             if (block.timestamp > proposal.creationTimestamp + proposal.timeInMinutes * 1 minutes) {
-                completedProposalIndices.push(proposalId); // Push the index instead of the proposal
+                completedProposalIndices.push(proposalId);
 
-                // Remove the expired proposal index from the activeProposalIndices array by shifting the elements
+                emit ProposalCompleted(proposalId);
+
+                // Remove the expired proposal index from the activeProposalIndices array
                 for (uint256 j = i; j < activeProposalIndices.length - 1; j++) {
                     activeProposalIndices[j] = activeProposalIndices[j + 1];
                 }
@@ -133,7 +137,7 @@ contract KubidVoting {
     }
 
     function activeProposalsCount() public view returns (uint256) {
-        return activeProposalIndices.length - 1; // Subtract 1 because of the dummy value
+        return activeProposalIndices.length - 1;
     }
 
     function completedProposalsCount() public view returns (uint256) {
@@ -149,13 +153,13 @@ contract KubidVoting {
         PollOption storage option = proposal.options[_optionIndex];
         return (option.optionName, option.votes);
     }
-    
+
     function getOptionsCount(uint256 _proposalId) public view returns (uint256) {
         Proposal storage proposal = activeProposals[_proposalId];
         return proposal.options.length;
     }
 
-        function setIPFSHash(string memory _ipfsHash) external onlyDAO { 
+    function setIPFSHash(string memory _ipfsHash) external onlyDAO { 
         ipfsHash = _ipfsHash;
         emit NewIPFSHash(_ipfsHash);
     }
