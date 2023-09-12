@@ -47,14 +47,14 @@ const AllExecs=[
   },
   {
     cardname:"Emma",
-    description:"Hey guys, I am Tej Gumaste and I am a sophomore studying CS and Math. I love playing video games and sometimes making them too, and I also enjoy badminton and bad bitches.",
+    description:"Hi! I'm Emma and I'm a senior majoring in Computer Science and minoring in visual arts. I believe blockchain has the power to make technology more just and equitable for all",
     picture:"Emma",
     id:nameboard.specialEmma,
     classid:"Emcard"
   },
   {
     cardname: "Cameron",
-    description:"Hey guys, I am Tej Gumaste and I am a sophomore studying CS and Math. I love playing video games and sometimes making them too, and I also enjoy badminton and bad bitches.",
+    description:"Hello! My name is Cameron Denton. I am an applied computer science major with a focus in economics. I love chess, rock climbing, and modern warfare 3 :)",
     picture:"Headshot_Tej.jpg",
     id:nameboard.specialCameron,
     classid:"card"
@@ -119,7 +119,8 @@ function practice()
           maxHeight:"500px",
           width:"400px",
           borderRadius:"10px",
-          position:"relative"
+          position:"relative",
+          cursor:"pointer"
         }}>
         <div className={glass} style={{
           position:"absolute",
@@ -159,11 +160,6 @@ function practice()
         </div>
       </div>
       ))}
-      <Card>
-        <CardBody>
-          hi its Tej
-        </CardBody>
-      </Card>
     </Flex>
       
     </>
