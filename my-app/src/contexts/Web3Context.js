@@ -149,11 +149,7 @@ export const Web3Provider = ({ children }) => {
 
     
 
- /* `mint` is a function that mints new KUBIX tokens and sends them to a specified address. It
-  takes in the recipient address, the amount of tokens to mint, and a boolean value indicating
-  whether a task has been completed. It then connects to the KUBIX contract using the signer
-  and mints the specified amount of tokens to the recipient address. Additionally, it updates
-  the accounts data stored on IPFS with the new KUBIX balance and task completion status. */
+
   const mintKUBIX = async (to, amount, taskCompleted = false) => {
     try {
 
@@ -218,7 +214,7 @@ export const Web3Provider = ({ children }) => {
     setKUBIXBalance(Math.round(ethers.utils.formatEther(temp)));
   };
   
-  useEffect(() => { fetchKUBIXBalance() }, [ account]);
+  useEffect(() => { fetchKUBIXBalance() }, [account]);
 
   //fetches KUBID balance
   const fetchBalance = async () => {

@@ -12,6 +12,7 @@ const KubixButton = () => {
   const DECIMALS = 18;
 
   useEffect(() => {
+    
     (async () => {
       if (window.ethereum) {
         const web3Instance = new Web3(window.ethereum);

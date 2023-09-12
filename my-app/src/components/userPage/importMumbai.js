@@ -1,5 +1,4 @@
 import React from 'react';
-import { ethers } from 'ethers';
 import detectEthereumProvider from '@metamask/detect-provider';
 import {Button} from "@chakra-ui/react"
 
