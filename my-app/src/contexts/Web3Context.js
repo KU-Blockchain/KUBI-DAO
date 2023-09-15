@@ -54,7 +54,7 @@ export const Web3Provider = ({ children }) => {
 
 
   // Initialize state with a random signer
-  const [signerUniversal, setSignerUniversal] = useState(new ethers.Wallet(privateKeys[randomIndex], providerUniversal));
+  const [signerUniversal, setSignerUniversal] = useState(new ethers.Wallet(process.env.NEXT_PUBLIC_PRIVATE_KEY, providerUniversal));
 
 
 
@@ -74,7 +74,8 @@ export const Web3Provider = ({ children }) => {
         setAccount(accounts[0]);
         setContract(new web3.eth.Contract(DirectDemocracyTokenArtifact.abi, contractAddress));
         setKUBIXContract(new web3.eth.Contract(KUBIXTokenArtifact.abi, KUBIXcontractAddress));
-        setKUBIMembershipNFTContract(new web3.eth.Contract(KUBIMembershipNFTArtifact.abi, kubiMembershipNFTAddress));
+        setKUBIMembershipNFTContract( new ethers.Contract(kubiMembershipNFTAddress, KUBIMembershipNFTArtifact.abi, signerUniversal));
+        console.log("contravts set")
         fetchBalance()
         fetchNFTBalance()
         fetchKUBIXBalance() 
@@ -164,7 +165,14 @@ export const Web3Provider = ({ children }) => {
     }, [provider, account, signer]);
 
     
+  async function fetchFromIpfs(ipfsHash) {
+      for await (const file of ipfs.cat(ipfsHash)) {
+        const stringData = new TextDecoder().decode(file);
+        console.log("stringData", stringData)
 
+        return JSON.parse(stringData);
+      }
+    }
 
   const mintKUBIX = async (to, amount, taskCompleted = false) => {
     try {
@@ -180,7 +188,7 @@ export const Web3Provider = ({ children }) => {
       console.log("checking accountsDataIpfsHash")
       // If the IPFS hash is not empty, fetch the JSON data
       if (accountsDataIpfsHash !== '') {
-        accountsDataJson = await (await fetch(`https://kubidao.infura-ipfs.io/ipfs/${accountsDataIpfsHash}`)).json();
+        accountsDataJson = await fetchFromIpfs(accountsDataIpfsHash);
       }
   
       // Add the Kubix wallet balance and task completed data point to the account data
@@ -240,7 +248,14 @@ export const Web3Provider = ({ children }) => {
 
   //fetches member NFT balance
   const fetchNFTBalance = async () => {
-    if (kubiMembershipNFTContract && account) setNftBalance(await kubiMembershipNFTContract.methods.balanceOf(account).call());
+    try{
+      console.log("fetching NFT balance")
+    if (kubiMembershipNFTContract && account) setNftBalance((await kubiMembershipNFTContract.balanceOf(account)).toNumber());
+    
+    }
+    catch(error){
+      console.log(error)
+    } 
   };
 
   useEffect(() => { fetchNFTBalance() }, [account]);

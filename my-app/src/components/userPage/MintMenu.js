@@ -20,9 +20,10 @@ const MintMenu = memo(() => {
   const [showMintMenu, setShowMintMenu] = useState(false);
   const [isMintModalOpen, setIsMintModalOpen] = useState(false);
   const [mintAddress, setMintAddress] = useState("");
+  const [mintAmount, setMintAmount] = useState("");
   const [mintType, setMintType] = useState("");
 
-  const { execNftContract, account, kubiMembershipNFTContract } = useWeb3Context();
+  const { execNftContract, account, kubiMembershipNFTContract, mintKUBIX } = useWeb3Context();
   const toast = useToast();
 
   const openMintModal = (type) => {
@@ -52,7 +53,7 @@ const MintMenu = memo(() => {
     if (!kubiMembershipNFTContract) return;
     try {
       console.log(account)
-      await kubiMembershipNFTContract.methods. mintMembershipNFT(mintAddress, 2023, 0, "yes").send({ from: account });
+      await kubiMembershipNFTContract.mintMembershipNFT(mintAddress, 2023, 0, "yes")
       toast({ title: "Success", description: "Successfully minted Member NFT", status: "success", duration: 5000, isClosable: true });
     } catch (error) {
       console.error(error);
@@ -61,48 +62,98 @@ const MintMenu = memo(() => {
     closeMintModal();
   };
 
-  return (
-    <VStack spacing={4}>
-      <Button mt={4} colorScheme="blue" onClick={() => setShowMintMenu(!showMintMenu)}>
-        Mint Menu
-      </Button>
-      {showMintMenu && (
-        <>
-          <Button colorScheme="purple" onClick={() => openMintModal("executive")}>
-            Mint Executive NFT
-          </Button>
-          <Button colorScheme="green" onClick={() => openMintModal("member")}>
-            Mint Membership NFT
-          </Button>
-        </>
-      )}
+  const mintKUBIXToken = async () => {
+    if (!mintKUBIX) return;
 
-      <Modal isOpen={isMintModalOpen} onClose={closeMintModal}>
-        <ModalOverlay />
-        <ModalContent>
-          <ModalHeader>Mint {mintType === "executive" ? "Executive" : "Membership"} NFT</ModalHeader>
-          <ModalCloseButton />
-          <ModalBody>
-            <FormControl id="mintAddress">
-              <FormLabel>Address</FormLabel>
+    try {
+
+      await mintKUBIX(mintAddress, mintAmount);
+      toast({ title: "Success", description: "Successfully minted KUBIX token", status: "success", duration: 5000, isClosable: true });
+    } catch (error) {
+      console.error(error);
+      toast({ title: "Error", description: "Error minting KUBIX token", status: "error", duration: 5000, isClosable: true });
+    }
+    closeMintModal();
+  };
+
+// ... Your existing code
+
+return (
+  <VStack spacing={4}>
+    <Button mt={4} colorScheme="blue" onClick={() => setShowMintMenu(!showMintMenu)}>
+      Mint Menu
+    </Button>
+
+    {showMintMenu && (
+      <>
+        <Button colorScheme="purple" onClick={() => openMintModal("executive")}>
+          Mint Executive NFT
+        </Button>
+        <Button colorScheme="green" onClick={() => openMintModal("member")}>
+          Mint Membership NFT
+        </Button>
+        <Button colorScheme="orange" onClick={() => openMintModal("kubix")}>
+          Mint KUBIX Token
+        </Button>
+      </>
+    )}
+
+    <Modal isOpen={isMintModalOpen} onClose={closeMintModal}>
+      <ModalOverlay />
+      <ModalContent>
+        <ModalHeader>
+          Mint {
+            mintType === "executive" ? "Executive NFT" : 
+            mintType === "member" ? "Membership NFT" :
+            "KUBIX Token"
+          }
+        </ModalHeader>
+        <ModalCloseButton />
+        <ModalBody>
+          <FormControl id="mintAddress">
+            <FormLabel>Address</FormLabel>
+            <Input
+              type="text"
+              placeholder="Enter address to mint to"
+              value={mintAddress}
+              onChange={(event) => setMintAddress(event.target.value)}
+            />
+          </FormControl>
+
+          {mintType === "kubix" && (
+            <FormControl mt={4} id="mintAmount">
+              <FormLabel>Amount</FormLabel>
               <Input
-                type="text"
-                placeholder="Enter address to mint to"
-                value={mintAddress}
-                onChange={(event) => setMintAddress(event.target.value)}
+                type="number"
+                placeholder="Enter amount to mint"
+                value={mintAmount}
+                onChange={(event) => setMintAmount(event.target.value)}
               />
             </FormControl>
-          </ModalBody>
-          <ModalFooter>
-            <Button colorScheme={mintType === "executive" ? "blue" : "green"} mr={3} onClick={mintType === "executive" ? mintExecutiveNFT : mintMemberNFT}>
-              Mint
-            </Button>
-            <Button onClick={closeMintModal}>Cancel</Button>
-          </ModalFooter>
-        </ModalContent>
-      </Modal>
-    </VStack>
-  );
+          )}
+          
+        </ModalBody>
+        <ModalFooter>
+          <Button colorScheme={
+            mintType === "executive" ? "blue" : 
+            mintType === "member" ? "green" :
+            "orange"
+          } mr={3} onClick={
+            mintType === "executive" ? mintExecutiveNFT : 
+            mintType === "member" ? mintMemberNFT :
+            mintKUBIXToken
+          }>
+            Mint
+          </Button>
+          <Button onClick={closeMintModal}>Cancel</Button>
+        </ModalFooter>
+      </ModalContent>
+    </Modal>
+  </VStack>
+);
+
+// ... Rest of your code
+
 });
 
 export default MintMenu;

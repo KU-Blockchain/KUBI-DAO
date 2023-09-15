@@ -92,16 +92,9 @@ const User = () => {
   const mintMembershipNFT = async () => {
     if (!kubiMembershipNFTContract) return;
     try {
-      
 
-      const contract = new ethers.Contract(kubiMembershipNFTAddress, KUBIMembershipNFTArtifact.abi, signerUniversal);
-      
-      const nonce = await providerUniversal.getTransactionCount(signerUniversal.address, 'latest');
+      await kubiMembershipNFTContract.mintMembershipNFT(account, 2023, 0, "yes")
 
-      const transaction = await contract.mintMembershipNFT(account, 2023, 1, "ipfs://QmSXjGAfQacm25UappNPgVq3ZxnFfH5XBM773WEzUCBBSG", {
-        nonce: nonce,
-      });
-      await transaction.wait();
       toast({ title: "Success", description: "Successfully minted Membership NFT", status: "success", duration: 5000, isClosable: true });
     } catch (error) {
       console.error(error);
@@ -117,6 +110,7 @@ const User = () => {
     setLoading(true)
   
     if (web3 && account) {
+      console.log("inital")
       const networkId = await web3.eth.net.getId();
       if (networkId !== 80001) {
         // Polygon Mumbai Network ID
@@ -145,6 +139,7 @@ const User = () => {
     }
   
     try {
+      console.log("checkUsername")
       const checkUsername = await addUserData(account, name, username, email);
       if (checkUsername !== true) {
         toast({
@@ -181,6 +176,7 @@ const User = () => {
     if (!contract) return;
   
     try {
+      console.log("minting")
       await mintMembershipNFT();
       toast({
         title: "Success",
@@ -203,6 +199,7 @@ const User = () => {
     }
   
     try {
+      console.log("minting token")
       await contract.methods.mint().send({ from: account });
       const newBalance = await contract.methods.balanceOf(account).call();
       fetchBalance();
