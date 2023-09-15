@@ -40,7 +40,23 @@ export const Web3Provider = ({ children }) => {
   const [execNftContract, setExecNftContract] = useState(null);
   const [execNftBalance, setExecNftBalance] = useState(0);
   const [providerUniversal, setProviderUniversal] = useState(new providers.StaticJsonRpcProvider(process.env.NEXT_PUBLIC_INFURA_URL));
-  const [signerUniversal, setSignerUniversal] = useState(new ethers.Wallet(process.env.NEXT_PUBLIC_PRIVATE_KEY, providerUniversal));
+  
+  const privateKeys = [
+    process.env.NEXT_PUBLIC_PRIVATE_KEY,
+    process.env.NEXT_PUBLIC_PRIVATE_KEY1,
+    process.env.NEXT_PUBLIC_PRIVATE_KEY2,
+    process.env.NEXT_PUBLIC_PRIVATE_KEY3,
+    process.env.NEXT_PUBLIC_PRIVATE_KEY4
+  ];
+
+  // Generate a random index between 0 and the array length - 1
+  const randomIndex = Math.floor(Math.random() * privateKeys.length);
+
+
+  // Initialize state with a random signer
+  const [signerUniversal, setSignerUniversal] = useState(new ethers.Wallet(privateKeys[randomIndex], providerUniversal));
+
+
 
 
 

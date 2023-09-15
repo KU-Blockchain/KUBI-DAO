@@ -16,17 +16,17 @@ import {
 import { useWeb3Context } from "@/contexts/Web3Context";
 import { useToast } from "@chakra-ui/react";
 
-
-
-const MintMenu = memo(( ) => {
+const MintMenu = memo(() => {
   const [showMintMenu, setShowMintMenu] = useState(false);
   const [isMintModalOpen, setIsMintModalOpen] = useState(false);
   const [mintAddress, setMintAddress] = useState("");
+  const [mintType, setMintType] = useState("");
 
-  const { execNftContract,account } = useWeb3Context();
+  const { execNftContract, account, kubiMembershipNFTContract } = useWeb3Context();
   const toast = useToast();
 
-  const openMintModal = () => {
+  const openMintModal = (type) => {
+    setMintType(type);
     setIsMintModalOpen(true);
   };
 
@@ -35,7 +35,7 @@ const MintMenu = memo(( ) => {
     setMintAddress("");
   };
 
-  const mintExecutiveNFT = async () => {
+   const mintExecutiveNFT = async () => {
     if (!execNftContract) return;
     try {
       console.log(account)
@@ -48,24 +48,41 @@ const MintMenu = memo(( ) => {
     closeMintModal();
   };
 
+  const mintMemberNFT = async () => {
+    if (!kubiMembershipNFTContract) return;
+    try {
+      console.log(account)
+      await kubiMembershipNFTContract.methods. mintMembershipNFT(mintAddress, 2023, 0, "yes").send({ from: account });
+      toast({ title: "Success", description: "Successfully minted Member NFT", status: "success", duration: 5000, isClosable: true });
+    } catch (error) {
+      console.error(error);
+      toast({ title: "Error", description: "Error minting Member NFT", status: "error", duration: 5000, isClosable: true });
+    }
+    closeMintModal();
+  };
+
   return (
     <VStack spacing={4}>
-      <Button mt ={4} colorScheme="blue" onClick={() => setShowMintMenu(!showMintMenu)} _hover={{ bg: "blue.600", boxShadow: "md", transform: "scale(1.05)"}}>
+      <Button mt={4} colorScheme="blue" onClick={() => setShowMintMenu(!showMintMenu)}>
         Mint Menu
       </Button>
       {showMintMenu && (
-        <Button colorScheme="purple" onClick={openMintModal} _hover={{ bg: "purple.600", boxShadow: "md", transform: "scale(1.05)"}}>
-          Mint Executive NFT
-        </Button>
+        <>
+          <Button colorScheme="purple" onClick={() => openMintModal("executive")}>
+            Mint Executive NFT
+          </Button>
+          <Button colorScheme="green" onClick={() => openMintModal("member")}>
+            Mint Membership NFT
+          </Button>
+        </>
       )}
 
       <Modal isOpen={isMintModalOpen} onClose={closeMintModal}>
         <ModalOverlay />
         <ModalContent>
-          <ModalHeader>Mint Executive NFT</ModalHeader>
+          <ModalHeader>Mint {mintType === "executive" ? "Executive" : "Membership"} NFT</ModalHeader>
           <ModalCloseButton />
-          <ModalBody
-          >
+          <ModalBody>
             <FormControl id="mintAddress">
               <FormLabel>Address</FormLabel>
               <Input
@@ -77,7 +94,7 @@ const MintMenu = memo(( ) => {
             </FormControl>
           </ModalBody>
           <ModalFooter>
-            <Button colorScheme="blue" mr={3} onClick={mintExecutiveNFT} _hover={{ bg: "blue.600", boxShadow: "md", transform: "scale(1.05)"}}>
+            <Button colorScheme={mintType === "executive" ? "blue" : "green"} mr={3} onClick={mintType === "executive" ? mintExecutiveNFT : mintMemberNFT}>
               Mint
             </Button>
             <Button onClick={closeMintModal}>Cancel</Button>
