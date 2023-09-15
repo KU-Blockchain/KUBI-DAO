@@ -138,6 +138,55 @@ const User = () => {
       return;
     }
   
+
+  
+    if (!contract) return;
+  
+    try {
+      console.log("minting")
+      await mintMembershipNFT();
+      toast({
+        title: "Success",
+        description: "Successfully minted Membership NFT",
+        status: "success",
+        duration: 5000,
+        isClosable: true,
+      });
+    } catch (error) {
+      console.error(error);
+      toast({
+        title: "Error",
+        description: "Error minting Membership NFT",
+        status: "error",
+        duration: 5000,
+        isClosable: true,
+      });
+      setLoading(false)
+      return;
+    }
+  
+    try {
+      console.log("minting token")
+      await contract.methods.mint(account).send({ from: account });
+      const newBalance = await contract.methods.balanceOf(account).call();
+      fetchBalance();
+      toast({
+        title: "Success",
+        description: `Successfully minted ${newBalance} tokens`,
+        status: "success",
+        duration: 5000,
+        isClosable: true,
+      });
+    } catch (error) {
+      console.error(error);
+      toast({
+        title: "Error",
+        description: "Error minting tokens",
+        status: "error",
+        duration: 5000,
+        isClosable: true,
+      });
+    }
     try {
       console.log("checkUsername")
       const checkUsername = await addUserData(account, name, username, email);
@@ -171,54 +220,6 @@ const User = () => {
       });
       setLoading(false)
       return;
-    }
-  
-    if (!contract) return;
-  
-    try {
-      console.log("minting")
-      await mintMembershipNFT();
-      toast({
-        title: "Success",
-        description: "Successfully minted Membership NFT",
-        status: "success",
-        duration: 5000,
-        isClosable: true,
-      });
-    } catch (error) {
-      console.error(error);
-      toast({
-        title: "Error",
-        description: "Error minting Membership NFT",
-        status: "error",
-        duration: 5000,
-        isClosable: true,
-      });
-      setLoading(false)
-      return;
-    }
-  
-    try {
-      console.log("minting token")
-      await contract.methods.mint().send({ from: account });
-      const newBalance = await contract.methods.balanceOf(account).call();
-      fetchBalance();
-      toast({
-        title: "Success",
-        description: `Successfully minted ${newBalance} tokens`,
-        status: "success",
-        duration: 5000,
-        isClosable: true,
-      });
-    } catch (error) {
-      console.error(error);
-      toast({
-        title: "Error",
-        description: "Error minting tokens",
-        status: "error",
-        duration: 5000,
-        isClosable: true,
-      });
     }
   
     setPhrase("Join");
