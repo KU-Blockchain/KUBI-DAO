@@ -10,6 +10,7 @@ import ExecNFTArtifiact from "../../abi/KUBIExecutiveNFT.json";
 import KUBIXArtifact from "../../abi/KUBIX.json";
 import KubixVotingArtifact from "../../abi/KubixVoting.json";
 import KubidVotingArtifact from "../../abi/KubidVoting.json";
+import directDemocracyTokenArtifact from "../../abi/DirectDemocracyToken.json";
 //add in deployed contract adress pop up
 const DeployMenu = () => {
   const [showDeployMenu, setShowDeployMenu] = useState(false);

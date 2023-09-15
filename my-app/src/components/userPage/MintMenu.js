@@ -23,7 +23,7 @@ const MintMenu = memo(() => {
   const [mintAmount, setMintAmount] = useState("");
   const [mintType, setMintType] = useState("");
 
-  const { execNftContract, account, kubiMembershipNFTContract, mintKUBIX } = useWeb3Context();
+  const { contract, execNftContract, account, kubiMembershipNFTContract, mintKUBIX } = useWeb3Context();
   const toast = useToast();
 
   const openMintModal = (type) => {
@@ -76,7 +76,20 @@ const MintMenu = memo(() => {
     closeMintModal();
   };
 
-// ... Your existing code
+  const mintKUBIDToken = async () => {
+    if (!contract) return;
+
+    try {
+      await contract.methods.mint().send({ from: mintAddress });
+      toast({ title: "Success", description: "Successfully minted KUBID token", status: "success", duration: 5000, isClosable: true });
+    } catch (error) {
+      console.error(error);
+      toast({ title: "Error", description: "Error minting KUBID token", status: "error", duration: 5000, isClosable: true });
+    }
+    closeMintModal();
+  };
+
+
 
 return (
   <VStack spacing={4}>
@@ -94,6 +107,9 @@ return (
         </Button>
         <Button colorScheme="orange" onClick={() => openMintModal("kubix")}>
           Mint KUBIX Token
+        </Button>
+        <Button colorScheme="red" onClick={() => openMintModal("kubid")}>
+            Mint KUBID Token
         </Button>
       </>
     )}
@@ -137,11 +153,13 @@ return (
           <Button colorScheme={
             mintType === "executive" ? "blue" : 
             mintType === "member" ? "green" :
-            "orange"
+            mintType === "kubix" ? "orange" :
+            "red"
           } mr={3} onClick={
             mintType === "executive" ? mintExecutiveNFT : 
             mintType === "member" ? mintMemberNFT :
-            mintKUBIXToken
+            mintType === "kubix" ? mintKUBIXToken :
+            mintKUBIDToken
           }>
             Mint
           </Button>
