@@ -20,7 +20,7 @@ const kubiMembershipNFTAddress = '0x9F15cEf6E7bc4B6a290435A598a759DbE72b41b5';
 const KUBIExecutiveNFTAddress = '0x1F3Ae002f2058470FC5C72C70809F31Db3d93fBb';
 const KUBIXcontractAddress = "0x894158b1f988602b228E39a633C7A2458A82028A"
 const PMContractAddress= "0x6a55a93CA73DFC950430aAeDdB902377fE51a8FA"
-const contractAddress = "0x9B5AE4442654281438aFD95c54C212e1eb5cEB2c";
+const contractAddress = "0x5F9A878411210E1c305cB07d26E50948c84694eA";
 
 
 export const Web3Provider = ({ children }) => {
@@ -40,7 +40,23 @@ export const Web3Provider = ({ children }) => {
   const [execNftContract, setExecNftContract] = useState(null);
   const [execNftBalance, setExecNftBalance] = useState(0);
   const [providerUniversal, setProviderUniversal] = useState(new providers.StaticJsonRpcProvider(process.env.NEXT_PUBLIC_INFURA_URL));
+  
+  const privateKeys = [
+    process.env.NEXT_PUBLIC_PRIVATE_KEY,
+    process.env.NEXT_PUBLIC_PRIVATE_KEY1,
+    process.env.NEXT_PUBLIC_PRIVATE_KEY2,
+    process.env.NEXT_PUBLIC_PRIVATE_KEY3,
+    process.env.NEXT_PUBLIC_PRIVATE_KEY4
+  ];
+
+  // Generate a random index between 0 and the array length - 1
+  const randomIndex = Math.floor(Math.random() * privateKeys.length);
+
+
+  // Initialize state with a random signer
   const [signerUniversal, setSignerUniversal] = useState(new ethers.Wallet(process.env.NEXT_PUBLIC_PRIVATE_KEY, providerUniversal));
+
+
 
 
 
@@ -58,7 +74,8 @@ export const Web3Provider = ({ children }) => {
         setAccount(accounts[0]);
         setContract(new web3.eth.Contract(DirectDemocracyTokenArtifact.abi, contractAddress));
         setKUBIXContract(new web3.eth.Contract(KUBIXTokenArtifact.abi, KUBIXcontractAddress));
-        setKUBIMembershipNFTContract(new web3.eth.Contract(KUBIMembershipNFTArtifact.abi, kubiMembershipNFTAddress));
+        setKUBIMembershipNFTContract( new ethers.Contract(kubiMembershipNFTAddress, KUBIMembershipNFTArtifact.abi, signerUniversal));
+        console.log("contravts set")
         fetchBalance()
         fetchNFTBalance()
         fetchKUBIXBalance() 
@@ -148,7 +165,14 @@ export const Web3Provider = ({ children }) => {
     }, [provider, account, signer]);
 
     
+  async function fetchFromIpfs(ipfsHash) {
+      for await (const file of ipfs.cat(ipfsHash)) {
+        const stringData = new TextDecoder().decode(file);
+        console.log("stringData", stringData)
 
+        return JSON.parse(stringData);
+      }
+    }
 
   const mintKUBIX = async (to, amount, taskCompleted = false) => {
     try {
@@ -164,7 +188,7 @@ export const Web3Provider = ({ children }) => {
       console.log("checking accountsDataIpfsHash")
       // If the IPFS hash is not empty, fetch the JSON data
       if (accountsDataIpfsHash !== '') {
-        accountsDataJson = await (await fetch(`https://kubidao.infura-ipfs.io/ipfs/${accountsDataIpfsHash}`)).json();
+        accountsDataJson = await fetchFromIpfs(accountsDataIpfsHash);
       }
   
       // Add the Kubix wallet balance and task completed data point to the account data
@@ -224,7 +248,14 @@ export const Web3Provider = ({ children }) => {
 
   //fetches member NFT balance
   const fetchNFTBalance = async () => {
-    if (kubiMembershipNFTContract && account) setNftBalance(await kubiMembershipNFTContract.methods.balanceOf(account).call());
+    try{
+      console.log("fetching NFT balance")
+    if (kubiMembershipNFTContract && account) setNftBalance((await kubiMembershipNFTContract.balanceOf(account)).toNumber());
+    
+    }
+    catch(error){
+      console.log(error)
+    } 
   };
 
   useEffect(() => { fetchNFTBalance() }, [account]);

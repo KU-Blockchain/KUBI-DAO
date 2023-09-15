@@ -628,43 +628,6 @@
         "IERC165"
       ]
     },
-    "/Users/hudsonheadley/Desktop/Code/DAO2/my-app/contracts/KUBIdem.sol": {
-      "lastModificationDate": 1681864264674,
-      "contentHash": "db7e013f327fd6df230c38a3d52385e8",
-      "sourceName": "contracts/KUBIdem.sol",
-      "solcConfig": {
-        "version": "0.8.18",
-        "settings": {
-          "optimizer": {
-            "enabled": false,
-            "runs": 200
-          },
-          "outputSelection": {
-            "*": {
-              "*": [
-                "abi",
-                "evm.bytecode",
-                "evm.deployedBytecode",
-                "evm.methodIdentifiers",
-                "metadata"
-              ],
-              "": [
-                "ast"
-              ]
-            }
-          }
-        }
-      },
-      "imports": [
-        "@openzeppelin/contracts/token/ERC20/ERC20.sol"
-      ],
-      "versionPragmas": [
-        "^0.8.0"
-      ],
-      "artifacts": [
-        "DirectDemocracyToken"
-      ]
-    },
     "/Users/hudsonheadley/Desktop/Code/DAO2/my-app/contracts/KUBIXtoken.sol": {
       "lastModificationDate": 1681864264671,
       "contentHash": "33c65448902c4010071dd832cb9634a4",
@@ -1001,7 +964,7 @@
       ]
     },
     "/Users/hudsonheadley/Desktop/Code/DAO2/my-app/contracts/KUBIDvoting.sol": {
-      "lastModificationDate": 1694538956476,
+      "lastModificationDate": 1694554389531,
       "contentHash": "10d31ef10f8a0e71fde679fd206dfe0b",
       "sourceName": "contracts/KUBIDvoting.sol",
       "solcConfig": {
@@ -1036,6 +999,44 @@
       ],
       "artifacts": [
         "KubidVoting"
+      ]
+    },
+    "/Users/hudsonheadley/Desktop/Code/DAO2/my-app/contracts/KUBIdem.sol": {
+      "lastModificationDate": 1694797551339,
+      "contentHash": "0916ee2db88b87c235faa5c3634a8ec6",
+      "sourceName": "contracts/KUBIdem.sol",
+      "solcConfig": {
+        "version": "0.8.18",
+        "settings": {
+          "optimizer": {
+            "enabled": false,
+            "runs": 200
+          },
+          "outputSelection": {
+            "*": {
+              "*": [
+                "abi",
+                "evm.bytecode",
+                "evm.deployedBytecode",
+                "evm.methodIdentifiers",
+                "metadata"
+              ],
+              "": [
+                "ast"
+              ]
+            }
+          }
+        }
+      },
+      "imports": [
+        "@openzeppelin/contracts/token/ERC20/ERC20.sol",
+        "@openzeppelin/contracts/access/Ownable.sol"
+      ],
+      "versionPragmas": [
+        "^0.8.0"
+      ],
+      "artifacts": [
+        "DirectDemocracyToken"
       ]
     }
   }

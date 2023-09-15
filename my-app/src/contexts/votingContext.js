@@ -26,7 +26,7 @@ export const VotingProvider = ({ children }) => {
     const contractXAddress = '0x5205F7977D153f0820c916e9380E39B9c6daDa6a';
     const contractX = new ethers.Contract(contractXAddress, KubixVotingABI.abi, signerUniversal);
     
-    const contractD = new ethers.Contract('0x3C8A775189D8e2A1b66aF02C1bE0D9178202681d', KubidVotingABI.abi, signerUniversal);
+    const contractD = new ethers.Contract('0xe3eB7E738C2650C8cD2c0F498f82B3689207a9B9', KubidVotingABI.abi, signerUniversal);
 
     const [contract, setContract] = useState(contractD);
 
@@ -105,10 +105,13 @@ export const VotingProvider = ({ children }) => {
     
 
   const newPollIPFS = async () => {
+    console.log('Starting newPollIPFS function');
     try {
+      console.log('Inside try block');
+  
       let existingVotingData, setVotingDataFunc, setVoteHashFunc, contractFunc;
   
-      // Determine which contract is currently in use
+      console.log('Determining contract in use');
       if (contract.address === contractXAddress) {
         existingVotingData = votingDataX || {};
         setVotingDataFunc = setVotingDataX;
@@ -121,7 +124,7 @@ export const VotingProvider = ({ children }) => {
         contractFunc = contractD;
       }
   
-      // Find the maximum poll ID
+      console.log('Finding max poll ID');
       let maxId = existingVotingData.polls
         ? Math.max(-1, ...existingVotingData.polls.map(p => p.id))
         : -1;
@@ -129,37 +132,38 @@ export const VotingProvider = ({ children }) => {
       const currentDateTime = new Date();
       const completionDateTime = currentDateTime.getTime() + proposal.time * 60000;
   
-      // Create new poll data
+      console.log('Creating new poll data');
       const newPollData = {
         name: proposal.name,
         description: proposal.description,
         execution: proposal.execution,
         time: proposal.time,
-        options: proposal.options.map(option => ({ name: option, votes: 0 })),  // Assuming each option is just a name
-        id: maxId+1,
+        options: proposal.options.map(option => ({ name: option, votes: 0 })),  
+        id: maxId + 1,
         winner: null,
         completionDate: completionDateTime,
         creationDate: currentDateTime.getTime()
-      
       };
   
+      console.log('Pushing new poll data to existing data');
       existingVotingData.polls = existingVotingData.polls || [];
       existingVotingData.polls.push(newPollData);
   
-      // Upload updated data to IPFS
+      console.log('Uploading updated data to IPFS');
       const ipfsResult = await ipfs.add(JSON.stringify(existingVotingData));
       const newIpfsHash = ipfsResult.path;
+      
   
-      // Update the new IPFS hash in the smart contract
+      console.log('Updating IPFS hash in smart contract');
       const tx = await contractFunc.setIPFSHash(newIpfsHash);
       await tx.wait();
   
-      // Update local state
+      console.log('Updating local state');
       setVoteHashFunc(newIpfsHash);
-      console.log(existingVotingData)
+      console.log('New existingVotingData:', existingVotingData);
       setVotingDataFunc({ ...existingVotingData });
-
   
+      console.log('Displaying success toast');
       toast({
         title: 'Poll Created',
         description: 'Your new poll has been added to IPFS and the smart contract.',
@@ -169,8 +173,9 @@ export const VotingProvider = ({ children }) => {
       });
   
     } catch (error) {
-      console.error(error);
+      console.error('Caught an error:', error);
   
+      console.log('Displaying error toast');
       toast({
         title: 'Error Creating Poll',
         description: 'There was an error creating the poll. Please try again.',
@@ -179,7 +184,10 @@ export const VotingProvider = ({ children }) => {
         isClosable: true,
       });
     }
+  
+    console.log('Exiting newPollIPFS function');
   };
+  
   
 
 
@@ -321,12 +329,14 @@ const updateVoteInIPFS = async (pollId, selectedOption) => {
         else {
     
           // Parse the options string into an array
+          console.log("democracy poll creating...")
           const optionsArray = proposal.options.map(option => option.trim());
 
           console.log(proposal)
         
           const tx = await contract.createProposal(proposal.name, proposal.description, proposal.execution, proposal.time, optionsArray);
           await tx.wait();
+          console.log("poll created snart contract")
           await newPollIPFS();
     
         }

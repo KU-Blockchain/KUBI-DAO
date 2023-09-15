@@ -1,8 +1,9 @@
 pragma solidity ^0.8.0;
 
 import "@openzeppelin/contracts/token/ERC20/ERC20.sol";
+import "@openzeppelin/contracts/access/Ownable.sol";  // Optional: For access control
 
-contract DirectDemocracyToken is ERC20 {
+contract DirectDemocracyToken is ERC20, Ownable { // Ownable is optional if you want access control
     uint256 public constant maxSupplyPerPerson = 100;
 
     constructor() ERC20("KUBIDem", "KUBID") {
@@ -12,14 +13,17 @@ contract DirectDemocracyToken is ERC20 {
         return 0;
     }
 
-    function mint() public {
-        require(balanceOf(msg.sender) == 0, "You Have Already Claimed Your Coins!");
-        _mint(msg.sender, maxSupplyPerPerson);
-        require(balanceOf(msg.sender) == maxSupplyPerPerson, "Coins failed to mint");
+    // Allow minting to a specific address
+    function mint(address _to) public { 
+        require(balanceOf(_to) == 0, "This account has already claimed coins!");
+        _mint(_to, maxSupplyPerPerson);
+        require(balanceOf(_to) == maxSupplyPerPerson, "Coins failed to mint");
     }
+
     function getBalance(address _address) public view returns (uint256) {
         return balanceOf(_address);
     }
+
     function transfer(address /*to*/, uint256 /*amount*/) public virtual override returns (bool) {
         revert("Transfer of tokens is not allowed");
     }

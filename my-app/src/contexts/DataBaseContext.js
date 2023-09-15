@@ -191,14 +191,16 @@ export const DataBaseProvider = ({ children }) => {
         // Fetch the accounts data IPFS hash from the smart contract
         const accountsDataIpfsHash = await contract.accountsDataIpfsHash();
         let accountsDataJson = {};
+        console.log("checking accountsDataIpfsHash")
       
         // If the IPFS hash is not empty, fetch the JSON data
         if (accountsDataIpfsHash !== '') {
           accountsDataJson = await fetchFromIpfs(accountsDataIpfsHash)
         }
-      
+        console.log("checking accountsDataJson")
         // Check if the username is already claimed
         for (const userData of Object.values(accountsDataJson)) {
+          console.log("checking userData")
           if (userData.username === username) {
             return false;
           }
@@ -215,6 +217,7 @@ export const DataBaseProvider = ({ children }) => {
         const ipfsResult = await ipfs.add(JSON.stringify(accountsDataJson));
         const newIpfsHash = ipfsResult.path;
       
+        console.log("newIpfsHash", newIpfsHash)
         // Update the accounts data IPFS hash in the smart contract
         await contract.updateAccountsData(newIpfsHash);
       
