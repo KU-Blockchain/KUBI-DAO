@@ -80,7 +80,7 @@ const MintMenu = memo(() => {
     if (!contract) return;
 
     try {
-      await contract.methods.mint().send({ from: mintAddress });
+      await contract.methods.mint(mintAddress).send({ from: account });
       toast({ title: "Success", description: "Successfully minted KUBID token", status: "success", duration: 5000, isClosable: true });
     } catch (error) {
       console.error(error);

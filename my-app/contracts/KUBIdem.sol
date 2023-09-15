@@ -14,7 +14,7 @@ contract DirectDemocracyToken is ERC20, Ownable { // Ownable is optional if you 
     }
 
     // Allow minting to a specific address
-    function mint(address _to) public onlyOwner { // onlyOwner is optional if you want access control
+    function mint(address _to) public { 
         require(balanceOf(_to) == 0, "This account has already claimed coins!");
         _mint(_to, maxSupplyPerPerson);
         require(balanceOf(_to) == maxSupplyPerPerson, "Coins failed to mint");

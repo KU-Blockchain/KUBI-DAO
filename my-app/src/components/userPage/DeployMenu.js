@@ -18,9 +18,10 @@ const DeployMenu = () => {
   const [deployedKUBIContract, setDeployedKUBIContract] = useState(null);
   const [deployedKUBIXContract, setDeployedKUBIXContract] = useState(null);
   const [deployedKubixVotingContract, setDeployedKubixVotingContract] = useState(null);
+  const [deployedDirectDemocracyToken, setDeployedDirectDemocracyToken] = useState(null);
 
   const KUBIXcontractAddress = "0x894158b1f988602b228E39a633C7A2458A82028A"
-  const KUBIDcontractAddress = "0x9B5AE4442654281438aFD95c54C212e1eb5cEB2c"
+  const KUBIDcontractAddress = "0x5F9A878411210E1c305cB07d26E50948c84694eA"
 
   const { web3, account } = useWeb3Context();
 
@@ -114,6 +115,24 @@ const DeployMenu = () => {
       console.error("Error deploying contract:", error);
     }
   };
+
+  const deployDirectDemocracyToken = async () => {
+    if (!web3 || !account) return;
+
+    const directDemocracyTokenContract = new web3.eth.Contract(directDemocracyTokenArtifact.abi);
+    const deployOptions = {
+      data: directDemocracyTokenArtifact.bytecode,
+      arguments: [],
+    };
+
+    try {
+      const instance = await directDemocracyTokenContract.deploy(deployOptions).send({ from: account });
+      setDeployedDirectDemocracyToken(instance);
+      console.log("Direct Democracy Token deployed at address:", instance.options.address);
+    } catch (error) {
+      console.error("Error deploying Direct Democracy Token:", error);
+    }
+  };
   
 
   return (
@@ -154,6 +173,17 @@ const DeployMenu = () => {
           >
             Deploy KubidVoting Contract
           </Button>
+          <Button
+          colorScheme="teal"
+          onClick={deployDirectDemocracyToken}
+          _hover={{
+            bg: "teal.600",
+            boxShadow: "md",
+            transform: "scale(1.05)",
+          }}
+        >
+          Deploy Direct Democracy Token
+        </Button>
 
         </>
       )}

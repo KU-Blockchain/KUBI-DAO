@@ -20,7 +20,7 @@ const kubiMembershipNFTAddress = '0x9F15cEf6E7bc4B6a290435A598a759DbE72b41b5';
 const KUBIExecutiveNFTAddress = '0x1F3Ae002f2058470FC5C72C70809F31Db3d93fBb';
 const KUBIXcontractAddress = "0x894158b1f988602b228E39a633C7A2458A82028A"
 const PMContractAddress= "0x6a55a93CA73DFC950430aAeDdB902377fE51a8FA"
-const contractAddress = "0x9B5AE4442654281438aFD95c54C212e1eb5cEB2c";
+const contractAddress = "0x5F9A878411210E1c305cB07d26E50948c84694eA";
 
 
 export const Web3Provider = ({ children }) => {
