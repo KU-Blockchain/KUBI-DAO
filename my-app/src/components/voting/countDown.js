@@ -6,20 +6,24 @@ const Countdown = ({ duration }) => {
 
   useEffect(() => {
     const intervalId = setInterval(() => {
-      setRemainingTime((prevTime) => prevTime - 1);
+      setRemainingTime((prevTime) => Math.max(prevTime - 1, 0));
     }, 1000);
 
     return () => clearInterval(intervalId);
   }, []);
 
-  const hours = Math.floor(remainingTime / 3600);
+  const days = Math.floor(remainingTime / (3600 * 24));
+  const hours = Math.floor((remainingTime % (3600 * 24)) / 3600);
   const minutes = Math.floor((remainingTime % 3600) / 60);
   const seconds = remainingTime % 60;
 
   return (
-    <div style={{ position:"relative" }}>
+    <div style={{ position: 'relative' }}>
       <Text fontWeight="bold" fontSize="xl">
-        {`${hours}h ${minutes}m ${seconds}s`}
+        {days > 0 ? `${days}d ` : ''}
+        {hours > 0 ? `${hours}h ` : ''}
+        {minutes > 0 ? `${minutes}m ` : ''}
+        {seconds > 0 ? `${seconds}s` : ''}
       </Text>
     </div>
   );
