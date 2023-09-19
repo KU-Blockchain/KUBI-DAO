@@ -33,6 +33,7 @@ export const DataBaseProvider = ({ children }) => {
 
     const loadInitialProject = async () => {
       const projectCount = await contract.getProjectIdCounter();
+
       const projectIds = Array.from({ length: projectCount }, (_, i) => i + 1);
   
       // Use batch requests to fetch project data
@@ -73,7 +74,7 @@ export const DataBaseProvider = ({ children }) => {
       
     };
     loadInitialProject();
-    console.log("test")
+
   }
   
   }, [taskLoaded]);
@@ -82,13 +83,16 @@ export const DataBaseProvider = ({ children }) => {
 
   async function addToIpfs(content) {
     try {
-      console.log("adding to ipfs")
-      const { path } = await ipfs.add({content });
-      return path;
+
+      const addedData = await ipfs.add({ content });
+
+      return addedData;
     } catch (error) {
       console.error("An error occurred while adding to IPFS:", error);
+      throw error; // Or return a specific value
     }
   }
+  
   
 
 
@@ -139,7 +143,9 @@ export const DataBaseProvider = ({ children }) => {
     
     //handle creating a new project and uploading to ipfs and smart contract
     const handleCreateProject = async (projectName) => {
-        const newProject = {
+
+      const newProject = {
+        
         id: projects.length + 1,
 
         name: projectName,
@@ -168,9 +174,10 @@ export const DataBaseProvider = ({ children }) => {
     async function fetchFromIpfs(ipfsHash) {
       for await (const file of ipfs.cat(ipfsHash)) {
         const stringData = new TextDecoder().decode(file);
-        console.log("stringData", stringData)
 
-        return JSON.parse(stringData);
+        const parsedData = JSON.parse(stringData);
+
+        return parsedData
       }
     }
     //fetch user details from ipfs and smart contract
@@ -285,6 +292,7 @@ export const DataBaseProvider = ({ children }) => {
           }
           else{
             if (projectHashes instanceof Array) {
+
               for (let i = 0; i < projectHashes.length; i++) {
                 await contract.createProject(projectHashes[i]);
               }
@@ -317,6 +325,7 @@ export const DataBaseProvider = ({ children }) => {
         // Remove the project from the local state
         setProjects((prevProjects) => prevProjects.filter((project) => project.id !== projectId));
         if (selectedProject.id === projectId) {
+
             setSelectedProject(projects.length > 0 ? projects[0] : null);
         }
 

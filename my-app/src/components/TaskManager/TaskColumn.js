@@ -115,6 +115,7 @@ const TaskColumn = ({ title, tasks, columnId }) => {
 
   
         if (item.columnId !== columnId) {
+          console.log("maybe this one")
           const newIndex = tasks.length;
           console.log(item.claimerUsername)
           const claimedByValue = title === 'In Progress' ? account : item.claimedBy;
