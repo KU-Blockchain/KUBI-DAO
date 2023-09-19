@@ -80,7 +80,16 @@ export const DataBaseProvider = ({ children }) => {
 
 
 
-
+  async function addToIpfs(content) {
+    try {
+      console.log("adding to ipfs")
+      const { path } = await ipfs.add({content });
+      return path;
+    } catch (error) {
+      console.error("An error occurred while adding to IPFS:", error);
+    }
+  }
+  
 
 
   //handle updating the project data in the smart contract and ipfs when collumn changes
@@ -120,7 +129,7 @@ export const DataBaseProvider = ({ children }) => {
         name: selectedProject.name,
         columns: mergedColumns,
         };
-        const ipfsResult = await ipfs.add(JSON.stringify(projectDataToUpdate));
+        const ipfsResult = await addToIpfs(JSON.stringify(projectDataToUpdate));
         const newIpfsHash = ipfsResult.path;
         await contract.updateProject(selectedProject.id, newIpfsHash);
         console.log("updated project on smart contract")
@@ -147,7 +156,7 @@ export const DataBaseProvider = ({ children }) => {
         columns: newProject.columns,
         };
         // Save the new project to IPFS
-        const ipfsResult = await ipfs.add(JSON.stringify(projectData));
+        const ipfsResult = await addToIpfs(JSON.stringify(projectData));
         const newIpfsHash = ipfsResult.path;
 
         // Create the project on the smart contract
@@ -214,7 +223,7 @@ export const DataBaseProvider = ({ children }) => {
         };
       
         // Save the updated accounts data to IPFS
-        const ipfsResult = await ipfs.add(JSON.stringify(accountsDataJson));
+        const ipfsResult = await addToIpfs(JSON.stringify(accountsDataJson));
         const newIpfsHash = ipfsResult.path;
       
         console.log("newIpfsHash", newIpfsHash)
@@ -251,7 +260,7 @@ export const DataBaseProvider = ({ children }) => {
       
       const clearData = async () => {
         // Upload an empty JSON object to IPFS
-        const ipfsResult = await ipfs.add(JSON.stringify({}));
+        const ipfsResult = await addToIpfs(JSON.stringify({}));
         const newIpfsHash = ipfsResult.path;
       
         // Loop through all projects and update their project data IPFS hash in the smart contract
