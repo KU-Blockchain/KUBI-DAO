@@ -26,7 +26,7 @@ export const VotingProvider = ({ children }) => {
     const contractXAddress = '0x5205F7977D153f0820c916e9380E39B9c6daDa6a';
     const contractX = new ethers.Contract(contractXAddress, KubixVotingABI.abi, signerUniversal);
     
-    const contractD = new ethers.Contract('0xe3eB7E738C2650C8cD2c0F498f82B3689207a9B9', KubidVotingABI.abi, signerUniversal);
+    const contractD = new ethers.Contract('0x2bdEc5d49F77b8a4FBDf9F3B31dFc10133b8a74E', KubidVotingABI.abi, signerUniversal);
 
     const [contract, setContract] = useState(contractD);
 
@@ -278,12 +278,8 @@ const updateVoteInIPFS = async (pollId, selectedOption) => {
           console.log(selectedPoll.id, account, selectedOption[0])
 
 
-          const nonce = await providerUniversal.getTransactionCount(signerUniversal.address, 'latest');
-          console.log("nonce", nonce);
 
-          const tx = await contract.vote(selectedPoll.id, account, selectedOption[0], {
-            nonce: nonce,
-          });
+          const tx = await contract.vote(selectedPoll.id, account, selectedOption[0]);
           await tx.wait();
 
           await updateVoteInIPFS(selectedPoll.id, selectedOption[0]);
