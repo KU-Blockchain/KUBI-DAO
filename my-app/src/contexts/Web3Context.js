@@ -218,22 +218,26 @@ export const Web3Provider = ({ children }) => {
           const balanceFinal = parseFloat(ethers.utils.formatEther(balance));
     
           accountsDataJson[to].kubixBalance = (Math.round((balanceFinal + amount)));
-          accountsDataJson[to][`kubixBalance${yearSemester}`] = (Math.round((balanceFinal + amount)));
+          accountsDataJson[to][`kubixBalance${yearSemester}`] = (Math.round((accountsDataJson[to][`kubixBalance${yearSemester}`] || 0) + amount));
+
     
           if (taskCompleted) {
             accountsDataJson[to].tasksCompleted = (accountsDataJson[to].tasksCompleted || 0) + 1;
+            accountsDataJson[to][`tasksCompleted${yearSemester}`] = (accountsDataJson[to][`tasksCompleted${yearSemester}`] || 0) + 1;
           }
         } else {
           accountsDataJson[to] = {
             kubixBalance: amount,
             tasksCompleted: taskCompleted ? 1 : 0,
-            [`kubixBalance${yearSemester}`]: amount
+            [`kubixBalance${yearSemester}`]: amount,
+            [`tasksCompleted${yearSemester}`]: taskCompleted ? 1 : 0,
           };
         }
     
         // Save the updated accounts data to IPFS
         const ipfsResult = await ipfs.add(JSON.stringify(accountsDataJson));
         const newIpfsHash = ipfsResult.path;
+        console.log("newIpfsHash", newIpfsHash)
     
         // Update the accounts data IPFS hash in the smart contract
         await contractPM.updateAccountsData(newIpfsHash);
