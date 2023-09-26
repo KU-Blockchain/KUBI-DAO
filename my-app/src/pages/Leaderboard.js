@@ -16,6 +16,7 @@ import {
 import { useLeaderboard } from '../contexts/leaderboardContext';
 
 import '../styles/TaskColumn.module.css';
+import { set } from 'lodash';
 
 
 
@@ -29,19 +30,35 @@ const glassLayerStyle = {
   backgroundColor: 'rgba(0, 0, 0, .8)',
 };
 
+
+
 const Leaderboard = () => {
 
-  const {data, setLeaderboardLoaded} = useLeaderboard();
+  const {semesterData, data, setLeaderboardLoaded} = useLeaderboard();
+
+  const [leaderboardData, setLeaderboardData] = useState(semesterData);
 
   const [timeframe, setTimeframe] = useState('semester');
   
 
   const handleTimeframeChange = (newTimeframe) => {
     setTimeframe(newTimeframe);
+    if (newTimeframe === 'semester') {
+      setLeaderboardData(semesterData);
+    }
+    else {
+      setLeaderboardData(data);
+    }
   };
+
   useEffect(() => {
     setLeaderboardLoaded(true);
+
   }, []);
+
+  useEffect(() => {
+    setLeaderboardData(semesterData);
+  }, [data]);
 
 
 
@@ -93,7 +110,7 @@ const Leaderboard = () => {
                 </Tr>
               </Thead>
               <Tbody>
-                {data.map((entry, index) => {
+                {leaderboardData.map((entry, index) => {
                   const medalColor = getMedalColor(index);
                   return (
                     <Tr
