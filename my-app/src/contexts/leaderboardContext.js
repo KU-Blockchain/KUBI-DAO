@@ -76,12 +76,15 @@ export const LeaderboardProvider = ({ children }) => {
                 tasks: data.tasksCompleted || 0, // Default to total tasksCompleted
             }));
     
-            const semesterLeaderboardData = Object.entries(accountsDataJson).map(([address, data]) => ({
-                id: address,
-                name: data.username || 'Anonymous',
-                kubix: data[kubixKey] || 0, 
-                tasks: data[tasksKey] || 0, 
+            const semesterLeaderboardData = Object.entries(accountsDataJson)
+            .filter(([_, data]) => data[kubixKey] && data[kubixKey] > 0) // filter out entries with kubixKey 0 or undefined
+            .map(([address, data]) => ({
+              id: address,
+              name: data.username || 'Anonymous',
+              kubix: data[kubixKey], 
+              tasks: data[tasksKey] || 0, 
             }));
+          
     
             // Sorting
             const sortedData = leaderboardData.sort((a, b) => (a.kubix > b.kubix ? (sortOrder === 'asc' ? 1 : -1) : a.kubix < b.kubix ? (sortOrder === 'asc' ? -1 : 1) : 0));
