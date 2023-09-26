@@ -174,60 +174,79 @@ export const Web3Provider = ({ children }) => {
       }
     }
 
-  const mintKUBIX = async (to, amount, taskCompleted = false) => {
-    try {
-
-      const contract = new ethers.Contract(KUBIXcontractAddress, KUBIXTokenArtifact.abi, signerUniversal);
-      const contractPM = new ethers.Contract(PMContractAddress, ProjectManagerArtifact.abi, signerUniversal);
-
-
-  
-      // Fetch the accountsData IPFS hash from the smart contract
-      const accountsDataIpfsHash = await contractPM.accountsDataIpfsHash();
-      let accountsDataJson = {};
-      console.log("checking accountsDataIpfsHash")
-      // If the IPFS hash is not empty, fetch the JSON data
-      if (accountsDataIpfsHash !== '') {
-        accountsDataJson = await fetchFromIpfs(accountsDataIpfsHash);
-      }
-  
-      // Add the Kubix wallet balance and task completed data point to the account data
-      if (accountsDataJson[to]) {
-        let currentkubix = await KUBIXcontract.methods.balanceOf(to).call();
-        const balance = ethers.BigNumber.from(currentkubix);
-        const balanceFinal = parseFloat(ethers.utils.formatEther(balance));
-
-        
-        accountsDataJson[to].kubixBalance = (Math.round((balanceFinal + amount)))
-
-
+    const mintKUBIX = async (to, amount, taskCompleted = false) => {
+      try {
+        const contract = new ethers.Contract(KUBIXcontractAddress, KUBIXTokenArtifact.abi, signerUniversal);
+        const contractPM = new ethers.Contract(PMContractAddress, ProjectManagerArtifact.abi, signerUniversal);
     
-        if (taskCompleted) {
-          accountsDataJson[to].tasksCompleted = (accountsDataJson[to].tasksCompleted || 0) + 1;
+        // Fetch the accountsData IPFS hash from the smart contract
+        const accountsDataIpfsHash = await contractPM.accountsDataIpfsHash();
+        let accountsDataJson = {};
+        console.log("checking accountsDataIpfsHash");
+    
+        // If the IPFS hash is not empty, fetch the JSON data
+        if (accountsDataIpfsHash !== '') {
+          accountsDataJson = await fetchFromIpfs(accountsDataIpfsHash);
         }
-      } else {
-
-        accountsDataJson[to] = {
-          kubixBalance: amount,
-          tasksCompleted: taskCompleted ? 1 : 0,
-        };
+    
+        const currentDate = new Date();
+        const currentYear = currentDate.getFullYear();
+        let semester = '';
+    
+        switch (currentDate.getMonth()) {
+          case 0:
+          case 1:
+          case 2:
+          case 3:
+          case 4:
+            semester = 'Spring';
+            break;
+          case 5:
+          case 6:
+          case 7:
+            semester = 'Summer';
+            break;
+          default:
+            semester = 'Fall';
+        }
+    
+        const yearSemester = `${currentYear}${semester}`;
+    
+        if (accountsDataJson[to]) {
+          let currentkubix = await KUBIXcontract.methods.balanceOf(to).call();
+          const balance = ethers.BigNumber.from(currentkubix);
+          const balanceFinal = parseFloat(ethers.utils.formatEther(balance));
+    
+          accountsDataJson[to].kubixBalance = (Math.round((balanceFinal + amount)));
+          accountsDataJson[to][`kubixBalance${yearSemester}`] = (Math.round((balanceFinal + amount)));
+    
+          if (taskCompleted) {
+            accountsDataJson[to].tasksCompleted = (accountsDataJson[to].tasksCompleted || 0) + 1;
+          }
+        } else {
+          accountsDataJson[to] = {
+            kubixBalance: amount,
+            tasksCompleted: taskCompleted ? 1 : 0,
+            [`kubixBalance${yearSemester}`]: amount
+          };
+        }
+    
+        // Save the updated accounts data to IPFS
+        const ipfsResult = await ipfs.add(JSON.stringify(accountsDataJson));
+        const newIpfsHash = ipfsResult.path;
+    
+        // Update the accounts data IPFS hash in the smart contract
+        await contractPM.updateAccountsData(newIpfsHash);
+    
+        // Mint the token
+        const amountToMint = ethers.utils.parseUnits(amount.toString(), 18);
+    
+        await contract.mint(to, amountToMint);
+      } catch (error) {
+        console.error("Error minting KUBIX:", error);
       }
-  
-      // Save the updated accounts data to IPFS
-      const ipfsResult = await ipfs.add(JSON.stringify(accountsDataJson));
-      const newIpfsHash = ipfsResult.path;
-  
-      // Update the accounts data IPFS hash in the smart contract
-      await contractPM.updateAccountsData(newIpfsHash);
-  
-      // Mint the token
-      const amountToMint = ethers.utils.parseUnits(amount.toString(), 18);
-
-      await contract.mint(to, amountToMint);
-    } catch (error) {
-      console.error("Error minting KUBIX:", error);
-    }
-  };
+    };
+    
 
   //fetches kubix balance for acocunt
   const fetchKUBIXBalance = async () => {
@@ -235,6 +254,7 @@ export const Web3Provider = ({ children }) => {
     if (KUBIXcontract && account) {
       temp = await KUBIXcontract.methods.balanceOf(account).call();
     }
+    console.log(ethers.utils)
     setKUBIXBalance(Math.round(ethers.utils.formatEther(temp)));
   };
   
