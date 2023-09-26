@@ -1,6 +1,6 @@
 // this script is used to fix the nonce issue in the polygon testnet
 // if transactions show pending 
-
+// did it 
 const Web3 = require('web3');
 
 // Connect to the Mumbai testnet
