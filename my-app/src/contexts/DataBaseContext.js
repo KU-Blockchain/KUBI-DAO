@@ -48,6 +48,7 @@ export const DataBaseProvider = ({ children }) => {
           projectResults.map(async (projectData, i) => {
             const projectId = i + 1;
             const projectIpfsHash = projectData.ipfsHash;
+            console.log("projectIpfsHash", projectIpfsHash)
       
             const response = await fetchFromIpfs(projectIpfsHash)
             // Check if the response status is not in the range 200-299
@@ -135,7 +136,16 @@ export const DataBaseProvider = ({ children }) => {
         };
         const ipfsResult = await addToIpfs(JSON.stringify(projectDataToUpdate));
         const newIpfsHash = ipfsResult.path;
-        await contract.updateProject(selectedProject.id, newIpfsHash);
+        console.log(newIpfsHash)
+        try{
+           const tx = await contract.updateProject(selectedProject.id, newIpfsHash);
+           console.log(tx)
+
+        }
+        catch(error){
+          console.log(error)
+        }
+
         console.log("updated project on smart contract")
 
         setUpdateInProgress(false);
