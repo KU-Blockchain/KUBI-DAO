@@ -47,22 +47,19 @@ export const LeaderboardProvider = ({ children }) => {
             const currentDate = new Date();
             const currentYear = currentDate.getFullYear();
             let semester = '';
-            switch (currentDate.getMonth()) {
-                case 0:
-                case 1:
-                case 2:
-                case 3:
-                case 4:
-                    semester = 'Spring';
-                    break;
-                case 5:
-                case 6:
-                case 7:
-                    semester = 'Summer';
-                    break;
-                default:
-                    semester = 'Fall';
+            let month = currentDate.getMonth();
+            let date = currentDate.getDate();
+            
+            if (month < 5) {
+                semester = 'Spring';
+            } else if (month < 7 || (month === 7 && date < 16)) { // Before August 16th
+                semester = 'Summer';
+            } else {
+                semester = 'Fall';
             }
+            
+            console.log(semester);
+            
     
             const yearSemester = `${currentYear}${semester}`;
             const kubixKey = `kubixBalance${yearSemester}`;

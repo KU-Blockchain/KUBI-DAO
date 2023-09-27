@@ -40,6 +40,7 @@ export const Web3Provider = ({ children }) => {
   const [execNftContract, setExecNftContract] = useState(null);
   const [execNftBalance, setExecNftBalance] = useState(0);
   const [providerUniversal, setProviderUniversal] = useState(new providers.StaticJsonRpcProvider(process.env.NEXT_PUBLIC_INFURA_URL));
+  const [isConnected, setIsConnected] = useState(false);
   
   const privateKeys = [
     process.env.NEXT_PUBLIC_PRIVATE_KEY,
@@ -79,6 +80,7 @@ export const Web3Provider = ({ children }) => {
         fetchBalance()
         fetchNFTBalance()
         fetchKUBIXBalance() 
+        setIsConnected(true);
         
     
 
@@ -192,24 +194,19 @@ export const Web3Provider = ({ children }) => {
         const currentDate = new Date();
         const currentYear = currentDate.getFullYear();
         let semester = '';
-    
-        switch (currentDate.getMonth()) {
-          case 0:
-          case 1:
-          case 2:
-          case 3:
-          case 4:
+        let month = currentDate.getMonth();
+        let date = currentDate.getDate();
+        
+        if (month < 5) {
             semester = 'Spring';
-            break;
-          case 5:
-          case 6:
-          case 7:
+        } else if (month < 7 || (month === 7 && date < 16)) { // Before August 16th
             semester = 'Summer';
-            break;
-          default:
+        } else {
             semester = 'Fall';
         }
-    
+        
+        console.log(semester);
+        
         const yearSemester = `${currentYear}${semester}`;
     
         if (accountsDataJson[to]) {
@@ -324,6 +321,7 @@ export const Web3Provider = ({ children }) => {
     execNftContract,
     signerUniversal,
     providerUniversal,
+    isConnected,
   };
 
   return <Web3Context.Provider value={value}>{children}</Web3Context.Provider>;
