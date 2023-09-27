@@ -40,6 +40,7 @@ export const Web3Provider = ({ children }) => {
   const [execNftContract, setExecNftContract] = useState(null);
   const [execNftBalance, setExecNftBalance] = useState(0);
   const [providerUniversal, setProviderUniversal] = useState(new providers.StaticJsonRpcProvider(process.env.NEXT_PUBLIC_INFURA_URL));
+  const [isConnected, setIsConnected] = useState(false);
   
   const privateKeys = [
     process.env.NEXT_PUBLIC_PRIVATE_KEY,
@@ -79,6 +80,7 @@ export const Web3Provider = ({ children }) => {
         fetchBalance()
         fetchNFTBalance()
         fetchKUBIXBalance() 
+        setIsConnected(true);
         
     
 
@@ -319,6 +321,7 @@ export const Web3Provider = ({ children }) => {
     execNftContract,
     signerUniversal,
     providerUniversal,
+    isConnected,
   };
 
   return <Web3Context.Provider value={value}>{children}</Web3Context.Provider>;
