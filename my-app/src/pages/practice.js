@@ -54,6 +54,13 @@ const AllExecs=[
     id:nameboard.specialJonathan,
     classid:"card"
   },
+  {
+    cardname: "Micah",
+    description: "Hi all! I'm a junior studying computer science and minoring in math. I love the tech behind all things cyptrocurrencies, blockchain, and NFTs.",
+    picture: "",
+    id: nameboard.specialJonathan,
+    classid: "card"
+  }
 ]
 
 
