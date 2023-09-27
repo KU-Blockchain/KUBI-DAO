@@ -36,9 +36,9 @@ const Leaderboard = () => {
 
   const {semesterData, data, setLeaderboardLoaded} = useLeaderboard();
 
-  const [leaderboardData, setLeaderboardData] = useState(semesterData);
+  const [leaderboardData, setLeaderboardData] = useState(data);
 
-  const [timeframe, setTimeframe] = useState('semester');
+  const [timeframe, setTimeframe] = useState('year');
   
 
   const handleTimeframeChange = (newTimeframe) => {
@@ -57,7 +57,7 @@ const Leaderboard = () => {
   }, []);
 
   useEffect(() => {
-    setLeaderboardData(semesterData);
+    setLeaderboardData(data);
   }, [data]);
 
 

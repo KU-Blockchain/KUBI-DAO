@@ -55,12 +55,22 @@ const AllExecs=[
     classid:"card"
   },
   {
+
     cardname: "Reeny",
     description:"Hey! I'm Reeny. A current sophomore studying IC-Econ and Math. First commmit. Kinda nervous",
     picture:"Headshot_Tej.jpg",
     id:nameboard.specialJonathan,
     classid:"card"
   },
+  {
+
+    cardname: "Micah",
+    description: "Hi all! I'm a junior studying computer science and minoring in math. I love the tech behind all things cyptrocurrencies, blockchain, and NFTs.",
+    picture: "",
+    id: nameboard.specialJonathan,
+    classid: "card"
+  }
+
 ]
 
 
