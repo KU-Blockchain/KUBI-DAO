@@ -167,14 +167,18 @@ export const Web3Provider = ({ children }) => {
     }, [provider, account, signer]);
 
     
-  async function fetchFromIpfs(ipfsHash) {
-      for await (const file of ipfs.cat(ipfsHash)) {
-        const stringData = new TextDecoder().decode(file);
-        console.log("stringData", stringData)
-
-        return JSON.parse(stringData);
+    async function fetchFromIpfs(ipfsHash) {
+      let stringData = '';
+      for await (const chunk of ipfs.cat(ipfsHash)) {
+          stringData += new TextDecoder().decode(chunk);
       }
-    }
+      try {
+          return JSON.parse(stringData);
+      } catch (error) {
+          console.error("Error parsing JSON from IPFS:", error, "stringData:", stringData);
+          throw error;
+      }
+  }
 
     const mintKUBIX = async (to, amount, taskCompleted = false) => {
       try {
@@ -216,6 +220,7 @@ export const Web3Provider = ({ children }) => {
     
           accountsDataJson[to].kubixBalance = (Math.round((balanceFinal + amount)));
           accountsDataJson[to][`kubixBalance${yearSemester}`] = (Math.round((accountsDataJson[to][`kubixBalance${yearSemester}`] || 0) + amount));
+          console.log("old balance", accountsDataJson[to][`kubixBalance${yearSemester}`])
 
     
           if (taskCompleted) {

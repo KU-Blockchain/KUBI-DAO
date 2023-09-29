@@ -67,12 +67,17 @@ export const VotingProvider = ({ children }) => {
     const toast = useToast();
 
     async function fetchFromIpfs(ipfsHash) {
-      for await (const file of ipfs.cat(ipfsHash)) {
-        const stringData = new TextDecoder().decode(file);
-
-        return JSON.parse(stringData);
+      let stringData = '';
+      for await (const chunk of ipfs.cat(ipfsHash)) {
+          stringData += new TextDecoder().decode(chunk);
       }
-    }
+      try {
+          return JSON.parse(stringData);
+      } catch (error) {
+          console.error("Error parsing JSON from IPFS:", error, "stringData:", stringData);
+          throw error;
+      }
+  }
 
     const fetchDataIPFS = async () => {
 
