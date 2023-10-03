@@ -113,5 +113,16 @@ a {
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
 }
 
+.loader {
+    text-align: center;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    background-color: rgba(255, 255, 255, 0.7);
+    opacity: 1;
+    transition: opacity 0.3s ease-in-out;
+}
+
 /* components/TaskManager/FloatingBalls.css */
 
