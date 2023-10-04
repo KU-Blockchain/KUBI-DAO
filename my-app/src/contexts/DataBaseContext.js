@@ -51,7 +51,6 @@ export const DataBaseProvider = ({ children }) => {
             console.log("projectIpfsHash", projectIpfsHash)
       
             const response = await fetchFromIpfs(projectIpfsHash)
-            // Check if the response status is not in the range 200-299
 
       
             const projectDataFromIPFS = response;
@@ -182,14 +181,18 @@ export const DataBaseProvider = ({ children }) => {
         setProjects([...projects, newProject]);
     };
     async function fetchFromIpfs(ipfsHash) {
-      for await (const file of ipfs.cat(ipfsHash)) {
-        const stringData = new TextDecoder().decode(file);
-
-        const parsedData = JSON.parse(stringData);
-
-        return parsedData
+      let stringData = '';
+      for await (const chunk of ipfs.cat(ipfsHash)) {
+          stringData += new TextDecoder().decode(chunk);
       }
-    }
+      try {
+          return JSON.parse(stringData);
+      } catch (error) {
+          console.error("Error parsing JSON from IPFS:", error, "stringData:", stringData);
+          throw error;
+      }
+  }
+  
     //fetch user details from ipfs and smart contract
     const fetchUserDetails = async (web3,account) => {
         if (!web3 || !account) return;

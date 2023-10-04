@@ -25,13 +25,17 @@ export const LeaderboardProvider = ({ children }) => {
 
 
     async function fetchFromIpfs(ipfsHash) {
-      for await (const file of ipfs.cat(ipfsHash)) {
-        const stringData = new TextDecoder().decode(file);
-        console.log("stringData", stringData)
-
-        return JSON.parse(stringData);
+      let stringData = '';
+      for await (const chunk of ipfs.cat(ipfsHash)) {
+          stringData += new TextDecoder().decode(chunk);
       }
-    }
+      try {
+          return JSON.parse(stringData);
+      } catch (error) {
+          console.error("Error parsing JSON from IPFS:", error, "stringData:", stringData);
+          throw error;
+      }
+  }
 
     const fetchLeaderboardData = async () => {
         if (signerUniversal) {
