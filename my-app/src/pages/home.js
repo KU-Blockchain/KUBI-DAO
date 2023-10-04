@@ -112,11 +112,11 @@ const Home = () => {
               About KUBI DAO
             </Heading>
             <Text mt="4%" color= "ghostwhite" fontSize="lg" textAlign="center">
-              KUBI DAO is a decentralized autonomous organization that offers a
+              KUBI DAO is a Decentralized Autonomous Organization that offers a
               unique model for collaboration, incentives, and privileges. Our
               hybrid tokenomics system combines KUBIX and KUBI tokens to create a
               platform that encourages active participation and fair
-              distribution of rewards.
+              distribution of rewards. This is all enabled by bloclchain tehcnology, built on the Polygon mumbai testnet. Welcome to the KU Blockchain DAO!
             </Text>
 
             <Text mt="4%" mb="4%" color= "ghostwhite" fontSize="2xl" textAlign="center" fontWeight={900}>
