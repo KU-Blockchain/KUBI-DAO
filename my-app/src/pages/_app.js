@@ -8,6 +8,8 @@ import { Web3Provider } from "@/contexts/Web3Context";
 import { DataBaseProvider } from "@/contexts/DataBaseContext";
 import { LeaderboardProvider } from "@/contexts/leaderboardContext";
 import { VotingProvider } from "@/contexts/votingContext";
+import GridLoader from "react-spinners/GridLoader";
+import "../styles/globals.css";
 
 const theme = extendTheme({
   config: {
@@ -19,11 +21,29 @@ const theme = extendTheme({
 
 function MyApp({ Component, pageProps }) {
   const router = useRouter(); // Get the router object
+    const [loading, setLoading] = React.useState(false); // Set loading to false on page load
 
-  useEffect(() => {
-    document.title = 'KUBI DAO';
-  }, []);
-  return (
+      useEffect(() => {
+          document.title = 'KUBI DAO';
+          setLoading(true);
+          setTimeout(() => {
+              setLoading(false);
+          }, 1000);
+      }, []);
+
+    return (
+        <div className="app-container">
+            {
+                loading ?
+
+                    <div className="loader">
+                    <GridLoader
+                        size={15}
+                        color={"#123abc"}
+                        loading={loading}
+                    />
+                    </div>
+                :
     <Web3Provider>
       <DataBaseProvider>
         <VotingProvider>
@@ -45,7 +65,9 @@ function MyApp({ Component, pageProps }) {
         </LeaderboardProvider>
         </VotingProvider>
       </DataBaseProvider>
-    </Web3Provider>
+                    </Web3Provider>
+    }
+    </div>
   );
 }
 
