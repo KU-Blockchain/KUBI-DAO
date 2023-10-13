@@ -318,7 +318,9 @@ const Voting = () => {
                     </Flex>
 
                     <Text mb="2" fontSize="xl" fontWeight="extrabold">Winner: {poll.winner}</Text>
+                    
                   </Box>
+                  
                   
                 );
               })  ) : (
@@ -352,11 +354,13 @@ const Voting = () => {
                       No History
                     </Text>
                   </Flex>
+                  
+                  
                 </Box>
-              )}
                 
-              </HStack>
-              <HStack justifyContent="center" spacing={4}>
+              )}
+              <Spacer />
+                <HStack justifyContent="bottom" spacing={4}  >
                   <IconButton
                     aria-label="Previous history polls"
                     icon={<ArrowBackIcon />}
@@ -376,7 +380,12 @@ const Voting = () => {
                     }}
                   />
                 </HStack>
+                
+              </HStack>
+              
+
               </VStack>
+
               </Flex>
               </Flex>
             
