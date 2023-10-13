@@ -7,6 +7,10 @@ import { useVoting } from '@/contexts/votingContext';
 
 import { BarChart, Bar, XAxis, YAxis} from 'recharts';
 import CountDown from '@/components/voting/countDown';
+import { IconButton } from '@chakra-ui/react';
+
+import { ArrowForwardIcon, ArrowBackIcon} from "@chakra-ui/icons";
+
 
 
 
@@ -33,6 +37,13 @@ const Voting = () => {
 
 
   const { isOpen, onOpen, onClose } = useDisclosure();
+
+  const [ongoingStartIndex, setOngoingStartIndex] = useState(0);
+  const [historyStartIndex, setHistoryStartIndex] = useState(0);
+
+  const displayOngoingPollsKubid = ongoingPollsKubid.slice(ongoingStartIndex, ongoingStartIndex + 3);
+  const displayHistoryPollsKubid = [...completedPollsKubid].reverse().slice(historyStartIndex, historyStartIndex + 3);
+
 
 
   const handlePollClick = (poll) => {
@@ -192,7 +203,7 @@ const Voting = () => {
               
               <HStack justifyContent={"flex-start"} w="100%" spacing={4}>
               {ongoingPollsKubid.length > 0 ? (
-                ongoingPollsKubid.map((poll, index) => (
+                displayOngoingPollsKubid.map((poll, index) => (
                   <Box key={index} flexDirection="column"
                   alignItems="center"
                   justifyContent="center"
@@ -264,18 +275,19 @@ const Voting = () => {
               <HStack spacing={4}  w= "100%" justifyContent="flex-start" >
                 
               {completedPollsKubid.length > 0 ? (
-                  [...completedPollsKubid].reverse().map((poll, index) => {
-                  const totalVotes = poll.options.reduce((total, option) => total + ethers.BigNumber.from(option.votes).toNumber(), 0);
-                  
-                  const predefinedColors = ['red', 'darkblue', 'yellow', 'purple'];
-                  
-                  const data = [{ name: 'Options', values: poll.options.map((option, index) => {
+              displayHistoryPollsKubid.map((poll, index) => {
+                const totalVotes = poll.options.reduce((total, option) => total + ethers.BigNumber.from(option.votes).toNumber(), 0);
+                const predefinedColors = ['red', 'darkblue', 'yellow', 'purple'];
+                const data = [{
+                  name: 'Options',
+                  values: poll.options.map((option, index) => {
                     const color = index < predefinedColors.length ? predefinedColors[index] : `rgba(${Math.random() * 255}, ${Math.random() * 255}, ${Math.random() * 255}, 1)`;
                     return {
                       value: (ethers.BigNumber.from(option.votes).toNumber() / totalVotes) * 100,
                       color: color
                     };
-                  }) }];
+                  })
+                }];
 
                 return (
                   <Box key={index} flexDirection="column"
@@ -344,6 +356,26 @@ const Voting = () => {
               )}
                 
               </HStack>
+              <HStack justifyContent="center" spacing={4}>
+                  <IconButton
+                    aria-label="Previous history polls"
+                    icon={<ArrowBackIcon />}
+                    onClick={() => {
+                      if (historyStartIndex - 3 >= 0) {
+                        setHistoryStartIndex(historyStartIndex - 3);
+                      }
+                    }}
+                  />
+                  <IconButton
+                    aria-label="Next history polls"
+                    icon={<ArrowForwardIcon />}
+                    onClick={() => {
+                      if (historyStartIndex + 3 < completedPollsKubid.length) {
+                        setHistoryStartIndex(historyStartIndex + 3);
+                      }
+                    }}
+                  />
+                </HStack>
               </VStack>
               </Flex>
               </Flex>
