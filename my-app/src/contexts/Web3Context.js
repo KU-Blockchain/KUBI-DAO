@@ -5,8 +5,8 @@ import ExecNFTArtifact from "../abi/KUBIExecutiveNFT.json";
 import KUBIXTokenArtifact from "../abi/KUBIX.json";
 import DirectDemocracyTokenArtifact from "../abi/DirectDemocracyToken.json";
 import ProjectManagerArtifact from "../abi/ProjectManager.json";
-import ipfs from '../db/ipfs';
 import Web3 from 'web3';
+import { useIPFScontext } from './IPFScontext';
 
 
 
@@ -24,6 +24,8 @@ const contractAddress = "0x5F9A878411210E1c305cB07d26E50948c84694eA";
 
 
 export const Web3Provider = ({ children }) => {
+  const { fetchFromIpfs, addToIpfs } = useIPFScontext();
+
   const [provider, setProvider] = useState(null);
   const [account, setAccount] = useState(null);
   const [signer, setSigner] = useState(null);
@@ -167,18 +169,7 @@ export const Web3Provider = ({ children }) => {
     }, [provider, account, signer]);
 
     
-    async function fetchFromIpfs(ipfsHash) {
-      let stringData = '';
-      for await (const chunk of ipfs.cat(ipfsHash)) {
-          stringData += new TextDecoder().decode(chunk);
-      }
-      try {
-          return JSON.parse(stringData);
-      } catch (error) {
-          console.error("Error parsing JSON from IPFS:", error, "stringData:", stringData);
-          throw error;
-      }
-  }
+
 
     const mintKUBIX = async (to, amount, taskCompleted = false) => {
       try {
@@ -237,7 +228,7 @@ export const Web3Provider = ({ children }) => {
         }
     
         // Save the updated accounts data to IPFS
-        const ipfsResult = await ipfs.add(JSON.stringify(accountsDataJson));
+        const ipfsResult = await addToIpfs(JSON.stringify(accountsDataJson));
         const newIpfsHash = ipfsResult.path;
         console.log("newIpfsHash", newIpfsHash)
     

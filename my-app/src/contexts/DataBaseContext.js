@@ -1,8 +1,8 @@
 import {ethers } from 'ethers';
-import ipfs from '../db/ipfs';
 import ProjectManagerArtifact from '../abi/ProjectManager.json';
 import { createContext, useContext, useState, useEffect } from 'react';
 import { useWeb3Context } from './Web3Context';
+import { useIPFScontext } from './IPFScontext';
 
 
 //UPDATE THIS FILE TO USE RPC TO UPDTAE THE DATABASE
@@ -18,6 +18,7 @@ export const DataBaseProvider = ({ children }) => {
   const [userDetails, setUserDetails] = useState(null);
   const [updateInProgress, setUpdateInProgress] = useState(false);
   const {signerUniversal} = useWeb3Context()
+  const { addToIpfs, fetchFromIpfs } = useIPFScontext();
   const [contract, setContract] = useState(null);
 
   const PMContract = '0x6a55a93CA73DFC950430aAeDdB902377fE51a8FA';
@@ -81,17 +82,7 @@ export const DataBaseProvider = ({ children }) => {
 
 
 
-  async function addToIpfs(content) {
-    try {
 
-      const addedData = await ipfs.add({ content });
-
-      return addedData;
-    } catch (error) {
-      console.error("An error occurred while adding to IPFS:", error);
-      throw error; // Or return a specific value
-    }
-  }
   
   
 
@@ -180,18 +171,7 @@ export const DataBaseProvider = ({ children }) => {
 
         setProjects([...projects, newProject]);
     };
-    async function fetchFromIpfs(ipfsHash) {
-      let stringData = '';
-      for await (const chunk of ipfs.cat(ipfsHash)) {
-          stringData += new TextDecoder().decode(chunk);
-      }
-      try {
-          return JSON.parse(stringData);
-      } catch (error) {
-          console.error("Error parsing JSON from IPFS:", error, "stringData:", stringData);
-          throw error;
-      }
-  }
+
   
     //fetch user details from ipfs and smart contract
     const fetchUserDetails = async (web3,account) => {

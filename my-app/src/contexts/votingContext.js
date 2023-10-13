@@ -7,6 +7,7 @@ import KubidVotingABI from '../abi/KubidVoting.json';
 
 import { useDataBaseContext } from '@/contexts/DataBaseContext';
 import { useWeb3Context } from '@/contexts/Web3Context';
+import { useIPFScontext } from '@/contexts/IPFScontext';
 
 import { useToast } from '@chakra-ui/react';
 
@@ -22,6 +23,7 @@ export const useVoting = () => {
 export const VotingProvider = ({ children }) => {
     const { hasExecNFT, hasMemberNFT, signerUniversal, providerUniversal, account}= useWeb3Context()
     const {findMinMaxKubixBalance} = useDataBaseContext()
+    const {fetchFromIpfs, addToIpfs} = useIPFScontext();
 
     const contractXAddress = '0x5205F7977D153f0820c916e9380E39B9c6daDa6a';
     const contractX = new ethers.Contract(contractXAddress, KubixVotingABI.abi, signerUniversal);
@@ -66,18 +68,7 @@ export const VotingProvider = ({ children }) => {
 
     const toast = useToast();
 
-    async function fetchFromIpfs(ipfsHash) {
-      let stringData = '';
-      for await (const chunk of ipfs.cat(ipfsHash)) {
-          stringData += new TextDecoder().decode(chunk);
-      }
-      try {
-          return JSON.parse(stringData);
-      } catch (error) {
-          console.error("Error parsing JSON from IPFS:", error, "stringData:", stringData);
-          throw error;
-      }
-  }
+
 
     const fetchDataIPFS = async () => {
 
@@ -155,7 +146,7 @@ export const VotingProvider = ({ children }) => {
       existingVotingData.polls.push(newPollData);
   
       console.log('Uploading updated data to IPFS');
-      const ipfsResult = await ipfs.add(JSON.stringify(existingVotingData));
+      const ipfsResult = await addToIpfs(JSON.stringify(existingVotingData));
       const newIpfsHash = ipfsResult.path;
       
   
@@ -221,7 +212,7 @@ const updateVoteInIPFS = async (pollId, selectedOption) => {
     });
 
     // Upload the updated data to IPFS
-    const ipfsResult = await ipfs.add(JSON.stringify(existingVotingData));
+    const ipfsResult = await addToIpfs(JSON.stringify(existingVotingData));
     const newIpfsHash = ipfsResult.path;
 
     // Update the new IPFS hash in the smart contract
@@ -360,7 +351,7 @@ const updateVoteInIPFS = async (pollId, selectedOption) => {
           existingVotingData.polls = updatedPolls;
       
           // Upload the updated data to IPFS
-          const ipfsResult = await ipfs.add(JSON.stringify(existingVotingData));
+          const ipfsResult = await addToIpfs(JSON.stringify(existingVotingData));
           const newIpfsHash = ipfsResult.path;
 
           // Update local state
