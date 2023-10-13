@@ -359,6 +359,8 @@ const Voting = () => {
                 </Box>
                 
               )}
+              {completedPollsKubid.length > 0 ? (
+              <>
               <Spacer />
                 <HStack justifyContent="bottom" spacing={4}  >
                   <IconButton
@@ -380,8 +382,11 @@ const Voting = () => {
                     }}
                   />
                 </HStack>
+                </>
+              ) : null}
                 
               </HStack>
+              
               
 
               </VStack>
