@@ -321,8 +321,23 @@ const User = () => {
       </VStack>
     </ScaleFade>
    );
+
+  const tiers = [
+    { balance: 1000, name: "Bronze", unlocks: "Basic Features" },
+    { balance: 5000, name: "Silver", unlocks: "Advanced Features" },
+    { balance: 10000, name: "Gold", unlocks: "Premium Features" },
+  ];
+
+  const determineTier = (balance) => {
+    let userTier = "";
+    tiers.forEach(tier => {
+      if (balance >= tier.balance) userTier = tier.name;
+    });
+    return userTier;
+  };
   
   const renderDashboard = () => (
+    
     <ScaleFade initialScale={0.8} in={true}>
     <>
       {isConnected && isMember && (

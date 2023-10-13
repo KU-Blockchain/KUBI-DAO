@@ -3,6 +3,7 @@ import { ethers } from 'ethers';
 import ProjectManagerArtifact from '../abi/ProjectManager.json'; 
 import { useWeb3Context } from './Web3Context';
 import ipfs from '../db/ipfs';
+import { useIPFScontext } from './IPFScontext';
 
 
 const leaderboardContext = createContext();
@@ -21,21 +22,11 @@ export const LeaderboardProvider = ({ children }) => {
     const [sortOrder, setSortOrder] = useState('desc');
     const PMContract = "0x6a55a93CA73DFC950430aAeDdB902377fE51a8FA";
     const {signerUniversal} = useWeb3Context()
+    const {fetchFromIpfs} = useIPFScontext();
     const[leaderboardLoaded, setLeaderboardLoaded] = useState(false);
 
 
-    async function fetchFromIpfs(ipfsHash) {
-      let stringData = '';
-      for await (const chunk of ipfs.cat(ipfsHash)) {
-          stringData += new TextDecoder().decode(chunk);
-      }
-      try {
-          return JSON.parse(stringData);
-      } catch (error) {
-          console.error("Error parsing JSON from IPFS:", error, "stringData:", stringData);
-          throw error;
-      }
-  }
+
 
     const fetchLeaderboardData = async () => {
         if (signerUniversal) {
