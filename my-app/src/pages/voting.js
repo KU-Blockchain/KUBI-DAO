@@ -38,11 +38,17 @@ const Voting = () => {
 
   const { isOpen, onOpen, onClose } = useDisclosure();
 
-  const [ongoingStartIndex, setOngoingStartIndex] = useState(0);
-  const [historyStartIndex, setHistoryStartIndex] = useState(0);
+  const [ongoingStartIndexKubid, setOngoingStartIndexKubid] = useState(0);
+  const [historyStartIndexKubid, setHistoryStartIndexKubid] = useState(0);
 
-  const displayOngoingPollsKubid = ongoingPollsKubid.slice(ongoingStartIndex, ongoingStartIndex + 3);
-  const displayHistoryPollsKubid = [...completedPollsKubid].reverse().slice(historyStartIndex, historyStartIndex + 3);
+  const [ongoingStartIndexKubix, setOngoingStartIndexKubix] = useState(0);
+  const [historyStartIndexKubix, setHistoryStartIndexKubix] = useState(0);
+
+  const displayOngoingPollsKubid = ongoingPollsKubid.slice(ongoingStartIndexKubid, ongoingStartIndexKubid + 3);
+  const displayHistoryPollsKubid = [...completedPollsKubid].reverse().slice(historyStartIndexKubid, historyStartIndexKubid + 3);
+
+  const displayOngoingPollsKubix = ongoingPollsKubix.slice(ongoingStartIndexKubix, ongoingStartIndexKubix + 3);
+  const displayHistoryPollsKubix = [...completedPollsKubix].reverse().slice(historyStartIndexKubix, historyStartIndexKubix + 3);
 
 
 
@@ -273,8 +279,8 @@ const Voting = () => {
                   aria-label="Next polls"
                   icon={<ArrowForwardIcon />}
                   onClick={() => {
-                    if (ongoingStartIndex + 3 < ongoingPollsKubid.length) {
-                      setOngoingStartIndex(ongoingStartIndex + 3);
+                    if (ongoingStartIndexKubid + 3 < ongoingPollsKubid.length) {
+                      setOngoingStartIndexKubid(ongoingStartIndexKubid + 3);
                     }
                   }}
                 />
@@ -282,8 +288,8 @@ const Voting = () => {
                   aria-label="Previous polls"
                   icon={<ArrowBackIcon />}
                   onClick={() => {
-                    if (ongoingStartIndex - 3 >= 0) {
-                      setOngoingStartIndex(ongoingStartIndex - 3);
+                    if (ongoingStartIndexKubid - 3 >= 0) {
+                      setOngoingStartIndexKubid(ongoingStartIndexKubid - 3);
                     }
                   }}
                 />
@@ -511,12 +517,37 @@ const Voting = () => {
                     </Flex>
                   </Box>
                   )}
+                  {ongoingPollsKubix.length > 0 ? (
+              <>
+              <Spacer />
+                <HStack justifyContent="bottom" spacing={4}  >
+                <IconButton
+                  aria-label="Next polls"
+                  icon={<ArrowForwardIcon />}
+                  onClick={() => {
+                    if (ongoingStartIndexKubix + 3 < ongoingPollsKubix.length) {
+                      setOngoingStartIndexKubix(ongoingStartIndexKubix + 3);
+                    }
+                  }}
+                />
+                <IconButton
+                  aria-label="Previous polls"
+                  icon={<ArrowBackIcon />}
+                  onClick={() => {
+                    if (ongoingStartIndexKubix - 3 >= 0) {
+                      setOngoingStartIndexKubid(ongoingStartIndexKubix - 3);
+                    }
+                  }}
+                />
+                </HStack>
+                </>
+              ) : null}
                 </HStack>
              
                 <Heading pl={2} color= "ghostwhite">History </Heading>
                 <HStack spacing={4}  w= "100%" justifyContent="flex-start" >
                 {completedPollsKubix.length > 0 ? (
-                  [...completedPollsKubix].reverse().map((poll, index) => {
+                  displayHistoryPollsKubix.map((poll, index) => {
                   const totalVotes = poll.options.reduce((total, option) => total + ethers.BigNumber.from(option.votes).toNumber(), 0);
                   const predefinedColors = ['red', 'darkblue', 'yellow', 'purple'];
                   const data = [{ name: 'Options', values: poll.options.map((option, index) => {
@@ -588,6 +619,31 @@ const Voting = () => {
                   </Flex>
                 </Box>
               )}
+              {completedPollsKubix.length > 0 ? (
+              <>
+              <Spacer />
+                <HStack justifyContent="bottom" spacing={4}  >
+                <IconButton
+                  aria-label="Next polls"
+                  icon={<ArrowForwardIcon />}
+                  onClick={() => {
+                    if (ongoingStartIndexKubix + 3 < ongoingPollsKubix.length) {
+                      setOngoingStartIndexKubix(ongoingStartIndexKubix + 3);
+                    }
+                  }}
+                />
+                <IconButton
+                  aria-label="Previous polls"
+                  icon={<ArrowBackIcon />}
+                  onClick={() => {
+                    if (ongoingStartIndexKubix - 3 >= 0) {
+                      setOngoingStartIndexKubid(ongoingStartIndexKubix - 3);
+                    }
+                  }}
+                />
+                </HStack>
+                </>
+              ) : null}
               </HStack>
               </VStack>
               </Flex>
