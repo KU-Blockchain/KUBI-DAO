@@ -265,6 +265,31 @@ const Voting = () => {
                   </Box>
 
               )}
+              {ongoingPollsKubid.length > 0 ? (
+              <>
+              <Spacer />
+                <HStack justifyContent="bottom" spacing={4}  >
+                <IconButton
+                  aria-label="Next polls"
+                  icon={<ArrowForwardIcon />}
+                  onClick={() => {
+                    if (ongoingStartIndex + 3 < ongoingPollsKubid.length) {
+                      setOngoingStartIndex(ongoingStartIndex + 3);
+                    }
+                  }}
+                />
+                <IconButton
+                  aria-label="Previous polls"
+                  icon={<ArrowBackIcon />}
+                  onClick={() => {
+                    if (ongoingStartIndex - 3 >= 0) {
+                      setOngoingStartIndex(ongoingStartIndex - 3);
+                    }
+                  }}
+                />
+                </HStack>
+                </>
+              ) : null}
             </HStack>
 
                 {/* List ongoing votes here */}
