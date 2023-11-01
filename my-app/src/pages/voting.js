@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import {HStack, Text, Box, useDisclosure, Flex, Grid, Container, Spacer, VStack, Heading, Tabs, TabList, Tab, TabPanels, TabPanel, Button, Collapse, FormControl, FormLabel, Input, Textarea, RadioGroup, Stack, Radio, Modal, ModalOverlay, ModalContent, ModalHeader, ModalCloseButton, ModalBody, ModalFooter } from '@chakra-ui/react';
 
+import HeadingVote from '@/components/voting/heading';
+
 import { ethers } from 'ethers';
 
 import { useVoting } from '@/contexts/votingContext';
@@ -116,26 +118,8 @@ const Voting = () => {
     <>
     <Container maxW="container.2xl" py={6} px={10} >
       
-      <Flex align="center" mb={6}
-                flexDirection="column"
-                alignItems="center"
-                justifyContent="center"
-                borderRadius="3xl"
-                boxShadow="lg"
-                p="2%"
-                w="100%"
-                
-                bg="transparent"
-                position="relative"
-                display="flex"
-                zIndex={0}
-                >
-      <div className="glass" style={glassLayerStyle} />
-        <Heading color= "ghostwhite"size="2xl">{selectedTab === 0 ? 'Democracy Voting (KUBI)' : 'Polling (KUBIX)'}</Heading>
-        <Text mt={2}color= "ghostwhite" fontSize="md" fontWeight="bold">{selectedTab === 0 ? 'Equal Vote for All: For Critical Decisions' : 'Participation Based Polling: For Casual Decisions'}</Text>
-        <Spacer />
-
-      </Flex>
+      <HeadingVote selectedTab={selectedTab}/>
+      
   
       <Tabs isFitted variant="soft-rounded" onChange={handleTabsChange} mb={6}>
         
@@ -398,8 +382,8 @@ const Voting = () => {
                     aria-label="Previous history polls"
                     icon={<ArrowBackIcon />}
                     onClick={() => {
-                      if (historyStartIndex - 3 >= 0) {
-                        setHistoryStartIndex(historyStartIndex - 3);
+                      if (historyStartIndexKubid - 3 >= 0) {
+                        setHistoryStartIndexKubid(historyStartIndexKubid - 3);
                       }
                     }}
                   />
@@ -407,8 +391,8 @@ const Voting = () => {
                     aria-label="Next history polls"
                     icon={<ArrowForwardIcon />}
                     onClick={() => {
-                      if (historyStartIndex + 3 < completedPollsKubid.length) {
-                        setHistoryStartIndex(historyStartIndex + 3);
+                      if (historyStartIndexKubid + 3 < completedPollsKubid.length) {
+                        setHistoryStartIndexKubid(historyStartIndexKubid + 3);
                       }
                     }}
                   />
