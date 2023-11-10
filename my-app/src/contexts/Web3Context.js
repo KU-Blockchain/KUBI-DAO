@@ -62,10 +62,6 @@ export const Web3Provider = ({ children }) => {
 
 
 
-
-
-
-
   //initalizes provider and signer for the 
   const initProvider = async () => {
     if (window.ethereum) {

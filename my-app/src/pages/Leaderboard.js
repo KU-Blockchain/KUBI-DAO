@@ -34,18 +34,25 @@ const glassLayerStyle = {
 
 const Leaderboard = () => {
 
-  const {semesterData, data, setLeaderboardLoaded} = useLeaderboard();
+  const {semesterData, data, setLeaderboardLoaded, yearLeaderboardData} = useLeaderboard();
 
-  const [leaderboardData, setLeaderboardData] = useState(data);
+  const [leaderboardData, setLeaderboardData] = useState(yearLeaderboardData);
+  console.log("year", yearLeaderboardData)
+  console.log("data", leaderboardData)
 
   const [timeframe, setTimeframe] = useState('year');
   
 
   const handleTimeframeChange = (newTimeframe) => {
+    console.log("newTimeframe", newTimeframe)
     setTimeframe(newTimeframe);
     if (newTimeframe === 'semester') {
       setLeaderboardData(semesterData);
     }
+    else if (newTimeframe === 'year') {
+      setLeaderboardData(yearLeaderboardData);
+    }
+    
     else {
       setLeaderboardData(data);
     }
@@ -57,8 +64,8 @@ const Leaderboard = () => {
   }, []);
 
   useEffect(() => {
-    setLeaderboardData(data);
-  }, [data]);
+    setLeaderboardData(yearLeaderboardData);
+  }, [yearLeaderboardData]);
 
 
 
