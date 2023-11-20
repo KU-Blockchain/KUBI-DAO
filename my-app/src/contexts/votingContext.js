@@ -243,63 +243,93 @@ const updateVoteInIPFS = async (pollId, selectedOption) => {
   
 
 
-    const handleVote = async (onClose) => {
-      if (!hasMemberNFT) {
-        toast({
-            title: 'Error',
-            description: 'You must own a membership NFT to vote',
-            status: 'error',
-            duration: 3000,
-            isClosable: true,
-        });
-        setLoadingVote(false);
-        return;
-    }
-        setLoadingVote(true)
-        if (selectedOption === null) {
-          toast({
-            title: 'Error',
-            description: 'Please select an option to vote',
-            status: 'error',
-            duration: 3000,
-            isClosable: true,
-          });
-    
-          setLoadingVote(false)
-          return;
-        }
-        
-        try {
-          // Call the vote function from the contract
-          console.log(selectedPoll.id, account, selectedOption[0])
+      const ipfsRetryLimit = 3;
+      const voteRetryLimit = 3;
 
-
-
-          const tx = await contract.vote(selectedPoll.id, account, selectedOption[0]);
-          await tx.wait();
-
-          await updateVoteInIPFS(selectedPoll.id, selectedOption[0]);
-          toast({
-            title: 'Vote submitted',
-            description: 'Your vote has been submitted successfully',
-            status: 'success',
-            duration: 3000,
-            isClosable: true,
-          });
-          onClose();
-        } catch (error) {
-          console.error(error);
-          toast({
-            title: 'Error',
-            description: 'There was an error submitting your vote. Please try again.',
-            status: 'error',
-            duration: 3000,
-            isClosable: true,
-          });
-        }
-    
-        setLoadingVote(false)
+      const updateVoteInIPFSWithRetry = async (pollId, option, retryCount = 0) => {
+          try {
+              await updateVoteInIPFS(pollId, option);
+          } catch (error) {
+              if (retryCount < ipfsRetryLimit) {
+                  setTimeout(() => {
+                      updateVoteInIPFSWithRetry(pollId, option, retryCount + 1);
+                  }, 1000 * (retryCount + 1));
+              } else {
+                  throw error;
+              }
+          }
       };
+
+      const submitVoteWithRetry = async (pollId, account, option, retryCount = 0) => {
+          try {
+              const tx = await contract.vote(pollId, account, option);
+              await tx.wait();
+          } catch (error) {
+              if (retryCount < voteRetryLimit) {
+                  setTimeout(() => {
+                      submitVoteWithRetry(pollId, account, option, retryCount + 1);
+                  }, 1250 * (retryCount + 1));
+              } else {
+                  throw error;
+              }
+          }
+      };
+
+      const handleVote = async (onClose) => {
+          if (!hasMemberNFT) {
+              toast({
+                  title: 'Error',
+                  description: 'You must own a membership NFT to vote',
+                  status: 'error',
+                  duration: 3000,
+                  isClosable: true,
+              });
+              setLoadingVote(false);
+              return;
+          }
+          
+          setLoadingVote(true);
+
+          if (selectedOption === null) {
+              toast({
+                  title: 'Error',
+                  description: 'Please select an option to vote',
+                  status: 'error',
+                  duration: 3000,
+                  isClosable: true,
+              });
+          
+              setLoadingVote(false);
+              return;
+          }
+          
+          try {
+              await updateVoteInIPFSWithRetry(selectedPoll.id, selectedOption[0]);
+
+              await submitVoteWithRetry(selectedPoll.id, account, selectedOption[0]);
+
+              toast({
+                  title: 'Vote submitted',
+                  description: 'Your vote has been submitted successfully',
+                  status: 'success',
+                  duration: 3000,
+                  isClosable: true,
+              });
+              onClose();
+          } catch (error) {
+              console.error(error);
+              toast({
+                  title: 'Error',
+                  description: 'There was an error submitting your vote. Please try again.',
+                  status: 'error',
+                  duration: 3000,
+                  isClosable: true,
+              });
+          }
+          
+          setLoadingVote(false);
+      };
+
 
       const createPoll = async () => {
 
