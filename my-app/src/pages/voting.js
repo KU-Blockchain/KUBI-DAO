@@ -258,10 +258,19 @@ const Voting = () => {
               {ongoingPollsKubid.length > 0 ? (
               <>
               <Spacer />
-                <HStack justifyContent="bottom" spacing={4}  >
+              <HStack justifyContent="bottom" spacing={4}>
                 <IconButton
                   aria-label="Next polls"
-                  icon={<ArrowForwardIcon />}
+                  background="transparent"
+                  border="none" 
+                  _hover={{ bg: 'transparent' }} 
+                  _active={{ bg: 'transparent' }} 
+                  icon={
+                    <ArrowForwardIcon 
+                    boxSize="6" // smaller size
+                    color="black"
+                    />
+                  }
                   onClick={() => {
                     if (ongoingStartIndexKubid + 3 < ongoingPollsKubid.length) {
                       setOngoingStartIndexKubid(ongoingStartIndexKubid + 3);
@@ -270,15 +279,24 @@ const Voting = () => {
                 />
                 <IconButton
                   aria-label="Previous polls"
-                  icon={<ArrowBackIcon />}
+                  background="transparent"
+                  border="none" 
+                  _hover={{ bg: 'transparent' }} 
+                  _active={{ bg: 'transparent' }} 
+                  icon={
+                    <ArrowBackIcon 
+                    boxSize="6" // smaller size
+                    color="black"
+                    />
+                  }
                   onClick={() => {
                     if (ongoingStartIndexKubid - 3 >= 0) {
                       setOngoingStartIndexKubid(ongoingStartIndexKubid - 3);
                     }
                   }}
                 />
-                </HStack>
-                </>
+              </HStack>
+            </>
               ) : null}
             </HStack>
 
@@ -377,10 +395,17 @@ const Voting = () => {
               {completedPollsKubid.length > 0 ? (
               <>
               <Spacer />
-                <HStack justifyContent="bottom" spacing={4}  >
+                <HStack justifyContent="bottom" spacing={-2} >
                   <IconButton
+                    background="transparent"
+                    border="none" 
+                    _hover={{ bg: 'transparent' }} 
+                    _active={{ bg: 'transparent' }} 
                     aria-label="Previous history polls"
-                    icon={<ArrowBackIcon />}
+                    icon={<ArrowBackIcon
+                       boxSize="6" // smaller size
+                      color="black"
+                      />}
                     onClick={() => {
                       if (historyStartIndexKubid - 3 >= 0) {
                         setHistoryStartIndexKubid(historyStartIndexKubid - 3);
@@ -388,8 +413,15 @@ const Voting = () => {
                     }}
                   />
                   <IconButton
+                   background="transparent"
+                   border="none" 
+                   _hover={{ bg: 'transparent' }} 
+                   _active={{ bg: 'transparent' }} 
                     aria-label="Next history polls"
-                    icon={<ArrowForwardIcon />}
+                    icon={<ArrowForwardIcon
+                      boxSize="6" // smaller size
+                      color="black"
+                    />}
                     onClick={() => {
                       if (historyStartIndexKubid + 3 < completedPollsKubid.length) {
                         setHistoryStartIndexKubid(historyStartIndexKubid + 3);
@@ -507,7 +539,14 @@ const Voting = () => {
                 <HStack justifyContent="bottom" spacing={4}  >
                 <IconButton
                   aria-label="Next polls"
-                  icon={<ArrowForwardIcon />}
+                  background="transparent"
+                  border="none" 
+                  _hover={{ bg: 'transparent' }} 
+                  _active={{ bg: 'transparent' }} 
+                  icon={<ArrowForwardIcon 
+                    boxSize="6" // smaller size
+                    color="black"
+                  />}
                   onClick={() => {
                     if (ongoingStartIndexKubix + 3 < ongoingPollsKubix.length) {
                       setOngoingStartIndexKubix(ongoingStartIndexKubix + 3);
@@ -516,7 +555,14 @@ const Voting = () => {
                 />
                 <IconButton
                   aria-label="Previous polls"
-                  icon={<ArrowBackIcon />}
+                  background="transparent"
+                  border="none" 
+                  _hover={{ bg: 'transparent' }} 
+                  _active={{ bg: 'transparent' }} 
+                  icon={<ArrowBackIcon 
+                    boxSize="6" // smaller size
+                    color="black"
+                  />}
                   onClick={() => {
                     if (ongoingStartIndexKubix - 3 >= 0) {
                       setOngoingStartIndexKubid(ongoingStartIndexKubix - 3);
@@ -609,7 +655,14 @@ const Voting = () => {
                 <HStack justifyContent="bottom" spacing={4}  >
                 <IconButton
                   aria-label="Next polls"
-                  icon={<ArrowForwardIcon />}
+                  background="transparent"
+                  border="none" 
+                  _hover={{ bg: 'transparent' }} 
+                  _active={{ bg: 'transparent' }} 
+                  icon={<ArrowForwardIcon 
+                    boxSize="6" // smaller size
+                    color="black"
+                  />}
                   onClick={() => {
                     if (ongoingStartIndexKubix + 3 < ongoingPollsKubix.length) {
                       setOngoingStartIndexKubix(ongoingStartIndexKubix + 3);
@@ -618,7 +671,15 @@ const Voting = () => {
                 />
                 <IconButton
                   aria-label="Previous polls"
-                  icon={<ArrowBackIcon />}
+                  background="transparent"
+                  border="none" 
+                  _hover={{ bg: 'transparent' }} 
+                  _active={{ bg: 'transparent' }} 
+                  icon={<ArrowBackIcon
+                    boxSize="6" // smaller size
+                    color="black"
+                    
+                    />}
                   onClick={() => {
                     if (ongoingStartIndexKubix - 3 >= 0) {
                       setOngoingStartIndexKubid(ongoingStartIndexKubix - 3);
