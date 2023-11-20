@@ -192,53 +192,69 @@ export const VotingProvider = ({ children }) => {
 
 
 
-const updateVoteInIPFS = async (pollId, selectedOption) => {
-  try {
-    // Convert BigNumber pollId to a regular number
-
-    let existingVotingData = contract.address === contractXAddress ? votingDataX : votingDataD;
-    console.log(existingVotingData);
-
-    // Update the relevant poll with the new vote count
-    existingVotingData.polls.forEach(poll => {
-      console.log(poll.id, pollId);
-      if (poll.id === pollId) {
-        console.log(poll.options, selectedOption);// the array has [0]
-        if (poll.options[selectedOption]) {
-          console.log(poll.options[selectedOption].votes);
-          poll.options[selectedOption].votes += 1;
+  const updateVoteInIPFS = async (pollId, selectedOption, voterAddress) => {
+    try {
+      let existingVotingData = contract.address === contractXAddress ? votingDataX : votingDataD;
+  
+      let voterAlreadyVoted = false;
+  
+      // Update the relevant poll with the new vote count
+      existingVotingData.polls.forEach(poll => {
+        if (poll.id === pollId) {
+          if (poll.options[selectedOption]) {
+            // Initialize voters array if it doesn't exist
+            if (!poll.voters) {
+              poll.voters = [];
+            }
+  
+            // Check if the voter's address is not already in the list
+            if (!poll.voters.includes(voterAddress)) {
+              poll.voters.push(voterAddress);
+              poll.options[selectedOption].votes += 1;
+            } else {
+              voterAlreadyVoted = true;
+            }
+          }
         }
+      });
+  
+      if (voterAlreadyVoted) {
+        return false; // Indicates that the voter has already voted
       }
-    });
-
-    // Upload the updated data to IPFS
-    const ipfsResult = await addToIpfs(JSON.stringify(existingVotingData));
-    const newIpfsHash = ipfsResult.path;
-
-    // Update the new IPFS hash in the smart contract
-    const tx = await contract.setIPFSHash(newIpfsHash);
-    await tx.wait();
-
-    // Update local state
-    if (contract.address === contractXAddress) {
-      setVoteHashX(newIpfsHash);
-      setVotingDataX(existingVotingData);
-    } else {
-      setVoteHashD(newIpfsHash);
-      setVotingDataD(existingVotingData);
+  
+      // Upload the updated data to IPFS
+      const ipfsResult = await addToIpfs(JSON.stringify(existingVotingData));
+      const newIpfsHash = ipfsResult.path;
+  
+      // Update the new IPFS hash in the smart contract
+      const tx = await contract.setIPFSHash(newIpfsHash);
+      await tx.wait();
+  
+      // Update local state
+      if (contract.address === contractXAddress) {
+        setVoteHashX(newIpfsHash);
+        setVotingDataX(existingVotingData);
+      } else {
+        setVoteHashD(newIpfsHash);
+        setVotingDataD(existingVotingData);
+      }
+  
+      return true; // Indicates a successful update
+    } catch (error) {
+      console.error(error);
+  
+      toast({
+        title: 'Error Updating Vote',
+        description: 'There was an error updating the vote in IPFS. Please try again.',
+        status: 'error',
+        duration: 3000,
+        isClosable: true,
+      });
+  
+      return false; // Indicates an error occurred
     }
-  } catch (error) {
-    console.error(error);
-
-    toast({
-      title: 'Error Updating Vote',
-      description: 'There was an error updating the vote in IPFS. Please try again.',
-      status: 'error',
-      duration: 3000,
-      isClosable: true,
-    });
-  }
-};
+  };
+  
 
   
 
@@ -246,19 +262,32 @@ const updateVoteInIPFS = async (pollId, selectedOption) => {
       const ipfsRetryLimit = 3;
       const voteRetryLimit = 3;
 
-      const updateVoteInIPFSWithRetry = async (pollId, option, retryCount = 0) => {
-          try {
-              await updateVoteInIPFS(pollId, option);
-          } catch (error) {
-              if (retryCount < ipfsRetryLimit) {
-                  setTimeout(() => {
-                      updateVoteInIPFSWithRetry(pollId, option, retryCount + 1);
-                  }, 1000 * (retryCount + 1));
-              } else {
-                  throw error;
-              }
-          }
-      };
+      const updateVoteInIPFSWithRetry = async (pollId, option, voterAddress, retryCount = 0) => {
+        try {
+            const result = await updateVoteInIPFS(pollId, option, voterAddress);
+            if (result === false) {
+                // Voter has already voted, stop retrying and show message
+                toast({
+                    title: 'Vote not submitted',
+                    description: 'You have already voted in this poll.',
+                    status: 'info',
+                    duration: 3000,
+                    isClosable: true,
+                });
+                return false; // Indicates that the process should not continue
+            }
+            return true; // Indicates successful vote update
+        } catch (error) {
+            if (retryCount < ipfsRetryLimit) {
+                setTimeout(() => {
+                    updateVoteInIPFSWithRetry(pollId, option, voterAddress, retryCount + 1);
+                }, 1000 * (retryCount + 1));
+            } else {
+                throw error;
+            }
+        }
+    };
+    
 
       const submitVoteWithRetry = async (pollId, account, option, retryCount = 0) => {
           try {
