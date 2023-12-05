@@ -21,15 +21,28 @@ export const useVoting = () => {
   
   
 export const VotingProvider = ({ children }) => {
-    const { hasExecNFT, hasMemberNFT, signerUniversal, providerUniversal, account}= useWeb3Context()
+    const { hasExecNFT, hasMemberNFT, signerUniversal, providerUniversal, account}= useWeb3Context();
     const {findMinMaxKubixBalance} = useDataBaseContext()
     const {fetchFromIpfs, addToIpfs} = useIPFScontext();
 
-    const contractXAddress = '0x5205F7977D153f0820c916e9380E39B9c6daDa6a';
-    const contractX = new ethers.Contract(contractXAddress, KubixVotingABI.abi, signerUniversal);
-    
-    const contractD = new ethers.Contract('0x2bdEc5d49F77b8a4FBDf9F3B31dFc10133b8a74E', KubidVotingABI.abi, signerUniversal);
+    //set random signer from privat keys
+    const privateKeys = [
+      process.env.NEXT_PUBLIC_PRIVATE_KEY,
+      process.env.NEXT_PUBLIC_PRIVATE_KEY_2,
+      process.env.NEXT_PUBLIC_PRIVATE_KEY_3,
+    ];
+  
+    // Generate a random index between 0 and the array length - 1
+    const randomIndex = Math.floor(Math.random() * privateKeys.length);
 
+    const [signer, setSigner] = useState(new ethers.Wallet(privateKeys[randomIndex], providerUniversal));
+
+    const contractXAddress = '0x5205F7977D153f0820c916e9380E39B9c6daDa6a';
+    const contractX = new ethers.Contract(contractXAddress, KubixVotingABI.abi, signer);
+    
+    console.log(signer.address)
+    
+    const contractD = new ethers.Contract('0x64Ffa5c0D3d67DCb12eCd2E29F2De53C1D8F7227', KubidVotingABI.abi, signer);
     const [contract, setContract] = useState(contractD);
 
     const [loadingVote, setLoadingVote] = useState(false)
@@ -94,6 +107,8 @@ export const VotingProvider = ({ children }) => {
   
 
       setHashLoaded(true)
+
+
 
   };
   
@@ -192,114 +207,206 @@ export const VotingProvider = ({ children }) => {
 
 
 
-const updateVoteInIPFS = async (pollId, selectedOption) => {
-  try {
-    // Convert BigNumber pollId to a regular number
+  const updateVoteInIPFS = async (pollId, selectedOption, voterAddress) => {
+    try {
+      console.log("updating vote in ipfs")
+      let existingVotingData = contract.address === contractXAddress ? votingDataX : votingDataD;
+  
+      let voterAlreadyVoted = false;
+  
+      // Update the relevant poll with the new vote count
+      existingVotingData.polls.forEach(poll => {
+        if (poll.id === pollId) {
+          if (poll.options[selectedOption]) {
+            // Initialize voters array if it doesn't exist
+            if (!poll.voters) {
+              poll.voters = [];
+            }
 
-    let existingVotingData = contract.address === contractXAddress ? votingDataX : votingDataD;
-    console.log(existingVotingData);
-
-    // Update the relevant poll with the new vote count
-    existingVotingData.polls.forEach(poll => {
-      console.log(poll.id, pollId);
-      if (poll.id === pollId) {
-        console.log(poll.options, selectedOption);// the array has [0]
-        if (poll.options[selectedOption]) {
-          console.log(poll.options[selectedOption].votes);
-          poll.options[selectedOption].votes += 1;
+            console.log("voter address", voterAddress)
+  
+            // Check if the voter's address is not already in the list
+            if (!poll.voters.includes(voterAddress)) {
+              poll.voters.push(voterAddress);
+              poll.options[selectedOption].votes += 1;
+            } else {
+              voterAlreadyVoted = true;
+            }
+          }
         }
+      });
+  
+      if (voterAlreadyVoted) {
+        return false; // Indicates that the voter has already voted
       }
-    });
-
-    // Upload the updated data to IPFS
-    const ipfsResult = await addToIpfs(JSON.stringify(existingVotingData));
-    const newIpfsHash = ipfsResult.path;
-
-    // Update the new IPFS hash in the smart contract
-    const tx = await contract.setIPFSHash(newIpfsHash);
-    await tx.wait();
-
-    // Update local state
-    if (contract.address === contractXAddress) {
-      setVoteHashX(newIpfsHash);
-      setVotingDataX(existingVotingData);
-    } else {
-      setVoteHashD(newIpfsHash);
-      setVotingDataD(existingVotingData);
+  
+      // Upload the updated data to IPFS
+      const ipfsResult = await addToIpfs(JSON.stringify(existingVotingData));
+      const newIpfsHash = ipfsResult.path;
+  
+      // Update the new IPFS hash in the smart contract
+      const tx = await contract.setIPFSHash(newIpfsHash);
+      await tx.wait();
+  
+      // Update local state
+      if (contract.address === contractXAddress) {
+        setVoteHashX(newIpfsHash);
+        setVotingDataX(existingVotingData);
+      } else {
+        setVoteHashD(newIpfsHash);
+        setVotingDataD(existingVotingData);
+      }
+  
+      return true; // Indicates a successful update
+    } catch (error) {
+      console.error(error);
+  
+      toast({
+        title: 'Error Updating Vote',
+        description: 'There was an error updating the vote in IPFS. Please try again.',
+        status: 'error',
+        duration: 3000,
+        isClosable: true,
+      });
+  
+      return false; // Indicates an error occurred
     }
-  } catch (error) {
-    console.error(error);
-
-    toast({
-      title: 'Error Updating Vote',
-      description: 'There was an error updating the vote in IPFS. Please try again.',
-      status: 'error',
-      duration: 3000,
-      isClosable: true,
-    });
-  }
-};
-
+  };
   
 
 
-    const handleVote = async (onClose) => {
-      if (!hasMemberNFT) {
-        toast({
-            title: 'Error',
-            description: 'You must own a membership NFT to vote',
-            status: 'error',
-            duration: 3000,
-            isClosable: true,
+      const ipfsRetryLimit = 3;
+      const voteRetryLimit = 3;
+
+      const updateVoteInIPFSWithRetry = (pollId, option, voterAddress, retryCount = 0) => {
+        return new Promise((resolve, reject) => {
+            const attemptUpdate = async () => {
+                try {
+                    const result = await updateVoteInIPFS(pollId, option, voterAddress);
+                    if (result === false) {
+                        toast({
+                            title: 'Vote not submitted',
+                            description: 'You have already voted in this poll.',
+                            status: 'info',
+                            duration: 3000,
+                            isClosable: true,
+                        });
+                        resolve(false); // Stop the retrying process
+                    } else {
+                        resolve(true); // Vote updated successfully
+                    }
+                } catch (error) {
+                    if (retryCount < ipfsRetryLimit) {
+                        setTimeout(() => {
+                            updateVoteInIPFSWithRetry(pollId, option, voterAddress, retryCount + 1)
+                                .then(resolve)
+                                .catch(reject);
+                        }, 1000 * (retryCount + 1));
+                    } else {
+                        reject(error);
+                    }
+                }
+            };
+    
+            attemptUpdate();
         });
-        setLoadingVote(false);
-        return;
-    }
-        setLoadingVote(true)
-        if (selectedOption === null) {
-          toast({
-            title: 'Error',
-            description: 'Please select an option to vote',
-            status: 'error',
-            duration: 3000,
-            isClosable: true,
-          });
+    };
     
-          setLoadingVote(false)
-          return;
-        }
-        
-        try {
-          // Call the vote function from the contract
-          console.log(selectedPoll.id, account, selectedOption[0])
-
-
-
-          const tx = await contract.vote(selectedPoll.id, account, selectedOption[0]);
-          await tx.wait();
-
-          await updateVoteInIPFS(selectedPoll.id, selectedOption[0]);
-          toast({
-            title: 'Vote submitted',
-            description: 'Your vote has been submitted successfully',
-            status: 'success',
-            duration: 3000,
-            isClosable: true,
-          });
-          onClose();
-        } catch (error) {
-          console.error(error);
-          toast({
-            title: 'Error',
-            description: 'There was an error submitting your vote. Please try again.',
-            status: 'error',
-            duration: 3000,
-            isClosable: true,
-          });
-        }
     
-        setLoadingVote(false)
+
+    const submitVoteWithRetry = (pollId, account, option, retryCount = 0) => {
+      return new Promise((resolve, reject) => {
+          const attemptVote = async () => {
+              try {
+                  console.log("submitting vote", pollId, account, option);
+                  const tx = await contract.vote(pollId-4, account, option);
+                  console.log("tx", tx);
+
+                  await tx.wait();
+                  resolve(true); // Vote submitted successfully
+              } catch (error) {
+                  if (retryCount < voteRetryLimit) {
+                      setTimeout(() => {
+                          submitVoteWithRetry(pollId, account, option, retryCount + 1)
+                              .then(resolve)
+                              .catch(reject);
+                      }, 1250 * (retryCount + 1));
+                  } else {
+                      reject(error);
+                  }
+              }
+          };
+  
+          attemptVote();
+      });
+  };
+  
+
+      const handleVote = async (onClose) => {
+          if (!hasMemberNFT) {
+              toast({
+                  title: 'Error',
+                  description: 'You must own a membership NFT to vote',
+                  status: 'error',
+                  duration: 3000,
+                  isClosable: true,
+              });
+              setLoadingVote(false);
+              return;
+          }
+          
+          setLoadingVote(true);
+
+          if (selectedOption === null) {
+              toast({
+                  title: 'Error',
+                  description: 'Please select an option to vote',
+                  status: 'error',
+                  duration: 3000,
+                  isClosable: true,
+              });
+          
+              setLoadingVote(false);
+              return;
+          }
+          
+          try {
+            console.log("voting");
+    
+            const ipfsResult = await updateVoteInIPFSWithRetry(selectedPoll.id, selectedOption[0], account);
+            if (!ipfsResult) {
+                throw new Error("IPFS voting failed");
+            }
+    
+            const voteResult = await submitVoteWithRetry(selectedPoll.id, account, selectedOption[0]);
+            if (!voteResult) {
+                throw new Error("Voting failed");
+            }
+            onClose();
+
+
+              toast({
+                  title: 'Vote submitted',
+                  description: 'Your vote has been submitted successfully',
+                  status: 'success',
+                  duration: 3000,
+                  isClosable: true,
+              });
+              onClose();
+          } catch (error) {
+              console.error(error);
+              toast({
+                  title: 'Error',
+                  description: 'There was an error submitting your vote. Please try again.',
+                  status: 'error',
+                  duration: 3000,
+                  isClosable: true,
+              });
+          }
+          
+          setLoadingVote(false);
       };
+
 
       const createPoll = async () => {
 

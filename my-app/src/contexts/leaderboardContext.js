@@ -27,10 +27,13 @@ export const LeaderboardProvider = ({ children }) => {
         if (signerUniversal) {
             const contractPM = new ethers.Contract(PMContract, ProjectManagerArtifact.abi, signerUniversal);
             const accountsDataIpfsHash = await contractPM.accountsDataIpfsHash();
+            console.log('accountsDataIpfsHash', accountsDataIpfsHash);
             let accountsDataJson = {};
             if (accountsDataIpfsHash !== '') {
                 accountsDataJson = await fetchFromIpfs(accountsDataIpfsHash);
             }
+
+            console.log('accountsDataJson', accountsDataJson);
 
             // Calculate the current yearSemester
             const currentDate = new Date();

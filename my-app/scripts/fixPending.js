@@ -4,11 +4,11 @@
 const Web3 = require('web3');
 
 // Connect to the Mumbai testnet
-const web3 = new Web3('https://polygon-mumbai.infura.io/v3/28befd10668047fa9448143d82eb8de5');
+const web3 = new Web3('');
 
 // Replace with your account address
 const accountAddress = '0x06e6620C67255d308A466293070206176288A67B';
-const privateKey = '2b33392279e320006460bb30e91245bba6a7aa7462dbc307ad93067db291f9bc';
+const privateKey = '';
 
 // Define the starting nonce and ending nonce (exclusive)
 const startNonce = 4778; // Replace with the nonce of the first pending transaction // Replace with the nonce of the first pending transaction
