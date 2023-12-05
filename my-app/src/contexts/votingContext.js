@@ -256,8 +256,6 @@ export const VotingProvider = ({ children }) => {
   };
   
 
-  
-
 
       const ipfsRetryLimit = 3;
       const voteRetryLimit = 3;
