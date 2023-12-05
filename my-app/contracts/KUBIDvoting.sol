@@ -34,11 +34,13 @@ contract KubidVoting {
     event ProposalCompleted(uint256 indexed proposalId);
     event NewIPFSHash(string indexed newHash);
 
-    constructor(address _kubidToken, address _dao, string memory _ipfsHash) {
+    constructor(address _kubidToken, address _dao, string memory _ipfsHash, address _owner1, address _owner2) {
         kubidToken = IERC20(_kubidToken);
         dao = _dao;
         ipfsHash = _ipfsHash; 
         isOwner[msg.sender] = true; 
+        isOwner[_owner1] = true;
+        isOwner[_owner2] = true;
         activeProposalIndices.push(0); 
     }
 

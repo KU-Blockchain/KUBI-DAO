@@ -47,6 +47,7 @@ export const Web3Provider = ({ children }) => {
   const privateKeys = [
     process.env.NEXT_PUBLIC_PRIVATE_KEY,
     process.env.NEXT_PUBLIC_PRIVATE_KEY_2,
+    process.env.NEXT_PUBLIC_PRIVATE_KEY_3,
   ];
 
   // Generate a random index between 0 and the array length - 1

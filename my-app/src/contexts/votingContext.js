@@ -25,11 +25,24 @@ export const VotingProvider = ({ children }) => {
     const {findMinMaxKubixBalance} = useDataBaseContext()
     const {fetchFromIpfs, addToIpfs} = useIPFScontext();
 
-    const contractXAddress = '0x5205F7977D153f0820c916e9380E39B9c6daDa6a';
-    const contractX = new ethers.Contract(contractXAddress, KubixVotingABI.abi, signerUniversal);
-    
-    const contractD = new ethers.Contract('0x5284fdE2Aa94B9614A75346A69cBb633B2b55262', KubidVotingABI.abi, signerUniversal);
+    //set random signer from privat keys
+    const privateKeys = [
+      process.env.NEXT_PUBLIC_PRIVATE_KEY,
+      process.env.NEXT_PUBLIC_PRIVATE_KEY_2,
+      process.env.NEXT_PUBLIC_PRIVATE_KEY_3,
+    ];
+  
+    // Generate a random index between 0 and the array length - 1
+    const randomIndex = Math.floor(Math.random() * privateKeys.length);
 
+    const [signer, setSigner] = useState(new ethers.Wallet(privateKeys[randomIndex], providerUniversal));
+
+    const contractXAddress = '0x5205F7977D153f0820c916e9380E39B9c6daDa6a';
+    const contractX = new ethers.Contract(contractXAddress, KubixVotingABI.abi, signer);
+    
+    console.log(signer.address)
+    
+    const contractD = new ethers.Contract('0x64Ffa5c0D3d67DCb12eCd2E29F2De53C1D8F7227', KubidVotingABI.abi, signer);
     const [contract, setContract] = useState(contractD);
 
     const [loadingVote, setLoadingVote] = useState(false)
