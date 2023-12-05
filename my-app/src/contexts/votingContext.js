@@ -21,14 +21,14 @@ export const useVoting = () => {
   
   
 export const VotingProvider = ({ children }) => {
-    const { hasExecNFT, hasMemberNFT, signerUniversal, providerUniversal, account}= useWeb3Context()
+    const { hasExecNFT, hasMemberNFT, signerUniversal, providerUniversal, account}= useWeb3Context();
     const {findMinMaxKubixBalance} = useDataBaseContext()
     const {fetchFromIpfs, addToIpfs} = useIPFScontext();
 
     const contractXAddress = '0x5205F7977D153f0820c916e9380E39B9c6daDa6a';
     const contractX = new ethers.Contract(contractXAddress, KubixVotingABI.abi, signerUniversal);
     
-    const contractD = new ethers.Contract('0x2bdEc5d49F77b8a4FBDf9F3B31dFc10133b8a74E', KubidVotingABI.abi, signerUniversal);
+    const contractD = new ethers.Contract('0x5284fdE2Aa94B9614A75346A69cBb633B2b55262', KubidVotingABI.abi, signerUniversal);
 
     const [contract, setContract] = useState(contractD);
 
@@ -94,6 +94,8 @@ export const VotingProvider = ({ children }) => {
   
 
       setHashLoaded(true)
+
+      
 
   };
   
@@ -289,6 +291,7 @@ export const VotingProvider = ({ children }) => {
 
       const submitVoteWithRetry = async (pollId, account, option, retryCount = 0) => {
           try {
+              console.log("submitting vote", pollId, account, option)
               const tx = await contract.vote(pollId, account, option);
               await tx.wait();
           } catch (error) {
@@ -331,6 +334,7 @@ export const VotingProvider = ({ children }) => {
           }
           
           try {
+              console.log("voting")
               await updateVoteInIPFSWithRetry(selectedPoll.id, selectedOption[0]);
 
               await submitVoteWithRetry(selectedPoll.id, account, selectedOption[0]);

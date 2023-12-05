@@ -26,6 +26,7 @@ import KubixButton from "@/components/userPage/KubixButton";
 import DeployMenu from "@/components/userPage/DeployMenu";
 import MintMenu from "@/components/userPage/MintMenu";
 import DataMenu from "@/components/userPage/DataMenu";
+import { set } from "lodash";
 
 
 const glassLayerStyle = {
@@ -222,7 +223,7 @@ const User = () => {
       return;
     }
   
-    setPhrase("Join");
+    setLoading(false);
     e.target.disabled = false;
   };
   

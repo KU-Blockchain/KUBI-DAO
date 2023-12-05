@@ -34,15 +34,28 @@ contract KubidVoting {
     event ProposalCompleted(uint256 indexed proposalId);
     event NewIPFSHash(string indexed newHash);
 
-    constructor(address _kubidToken, address _dao) {
+    constructor(address _kubidToken, address _dao, string memory _ipfsHash) {
         kubidToken = IERC20(_kubidToken);
         dao = _dao;
-        activeProposalIndices.push(0); // Initialize with a dummy value
+        ipfsHash = _ipfsHash; 
+        isOwner[msg.sender] = true; 
+        activeProposalIndices.push(0); 
     }
 
-    modifier onlyDAO() {
-        require(msg.sender == dao, "Only DAO can call this function");
+    mapping(address => bool) public isOwner;
+
+   modifier onlyOwner() {
+        require(isOwner[msg.sender], "Caller is not an owner");
         _;
+    }
+
+    function addOwner(address _newOwner) public onlyOwner {
+        isOwner[_newOwner] = true;
+    }
+
+    // Function to remove an existing owner
+    function removeOwner(address _owner) public onlyOwner {
+        isOwner[_owner] = false;
     }
 
     modifier whenNotExpired(uint256 _proposalId) {
@@ -61,7 +74,7 @@ contract KubidVoting {
         string memory _execution,
         uint256 _timeInMinutes,
         string[] memory _options
-    ) external onlyDAO {
+    ) external onlyOwner {
         uint256 newId = activeProposals.length;
 
         activeProposalIndices.push(newId);
@@ -115,7 +128,7 @@ contract KubidVoting {
         return proposal.options[winningOptionIndex].optionName;
     }
 
-    function moveToCompleted() public onlyDAO {
+    function moveToCompleted() public onlyOwner {
         uint256 i = 1; // Start from 1 because 0 is a dummy value
         while (i < activeProposalIndices.length) {
             uint256 proposalId = activeProposalIndices[i];
@@ -159,7 +172,7 @@ contract KubidVoting {
         return proposal.options.length;
     }
 
-    function setIPFSHash(string memory _ipfsHash) external onlyDAO { 
+    function setIPFSHash(string memory _ipfsHash) external onlyOwner { 
         ipfsHash = _ipfsHash;
         emit NewIPFSHash(_ipfsHash);
     }
