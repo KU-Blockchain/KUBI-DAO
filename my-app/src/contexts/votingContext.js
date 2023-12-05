@@ -95,7 +95,7 @@ export const VotingProvider = ({ children }) => {
 
       setHashLoaded(true)
 
-      
+
 
   };
   
@@ -196,6 +196,7 @@ export const VotingProvider = ({ children }) => {
 
   const updateVoteInIPFS = async (pollId, selectedOption, voterAddress) => {
     try {
+      console.log("updating vote in ipfs")
       let existingVotingData = contract.address === contractXAddress ? votingDataX : votingDataD;
   
       let voterAlreadyVoted = false;
@@ -208,6 +209,8 @@ export const VotingProvider = ({ children }) => {
             if (!poll.voters) {
               poll.voters = [];
             }
+
+            console.log("voter address", voterAddress)
   
             // Check if the voter's address is not already in the list
             if (!poll.voters.includes(voterAddress)) {
@@ -262,48 +265,69 @@ export const VotingProvider = ({ children }) => {
       const ipfsRetryLimit = 3;
       const voteRetryLimit = 3;
 
-      const updateVoteInIPFSWithRetry = async (pollId, option, voterAddress, retryCount = 0) => {
-        try {
-            const result = await updateVoteInIPFS(pollId, option, voterAddress);
-            if (result === false) {
-                // Voter has already voted, stop retrying and show message
-                toast({
-                    title: 'Vote not submitted',
-                    description: 'You have already voted in this poll.',
-                    status: 'info',
-                    duration: 3000,
-                    isClosable: true,
-                });
-                return false; // Indicates that the process should not continue
-            }
-            return true; // Indicates successful vote update
-        } catch (error) {
-            if (retryCount < ipfsRetryLimit) {
-                setTimeout(() => {
-                    updateVoteInIPFSWithRetry(pollId, option, voterAddress, retryCount + 1);
-                }, 1000 * (retryCount + 1));
-            } else {
-                throw error;
-            }
-        }
+      const updateVoteInIPFSWithRetry = (pollId, option, voterAddress, retryCount = 0) => {
+        return new Promise((resolve, reject) => {
+            const attemptUpdate = async () => {
+                try {
+                    const result = await updateVoteInIPFS(pollId, option, voterAddress);
+                    if (result === false) {
+                        toast({
+                            title: 'Vote not submitted',
+                            description: 'You have already voted in this poll.',
+                            status: 'info',
+                            duration: 3000,
+                            isClosable: true,
+                        });
+                        resolve(false); // Stop the retrying process
+                    } else {
+                        resolve(true); // Vote updated successfully
+                    }
+                } catch (error) {
+                    if (retryCount < ipfsRetryLimit) {
+                        setTimeout(() => {
+                            updateVoteInIPFSWithRetry(pollId, option, voterAddress, retryCount + 1)
+                                .then(resolve)
+                                .catch(reject);
+                        }, 1000 * (retryCount + 1));
+                    } else {
+                        reject(error);
+                    }
+                }
+            };
+    
+            attemptUpdate();
+        });
     };
     
+    
 
-      const submitVoteWithRetry = async (pollId, account, option, retryCount = 0) => {
-          try {
-              console.log("submitting vote", pollId, account, option)
-              const tx = await contract.vote(pollId, account, option);
-              await tx.wait();
-          } catch (error) {
-              if (retryCount < voteRetryLimit) {
-                  setTimeout(() => {
-                      submitVoteWithRetry(pollId, account, option, retryCount + 1);
-                  }, 1250 * (retryCount + 1));
-              } else {
-                  throw error;
+    const submitVoteWithRetry = (pollId, account, option, retryCount = 0) => {
+      return new Promise((resolve, reject) => {
+          const attemptVote = async () => {
+              try {
+                  console.log("submitting vote", pollId, account, option);
+                  const tx = await contract.vote(pollId-4, account, option);
+                  console.log("tx", tx);
+
+                  await tx.wait();
+                  resolve(true); // Vote submitted successfully
+              } catch (error) {
+                  if (retryCount < voteRetryLimit) {
+                      setTimeout(() => {
+                          submitVoteWithRetry(pollId, account, option, retryCount + 1)
+                              .then(resolve)
+                              .catch(reject);
+                      }, 1250 * (retryCount + 1));
+                  } else {
+                      reject(error);
+                  }
               }
-          }
-      };
+          };
+  
+          attemptVote();
+      });
+  };
+  
 
       const handleVote = async (onClose) => {
           if (!hasMemberNFT) {
@@ -334,10 +358,19 @@ export const VotingProvider = ({ children }) => {
           }
           
           try {
-              console.log("voting")
-              await updateVoteInIPFSWithRetry(selectedPoll.id, selectedOption[0]);
+            console.log("voting");
+    
+            const ipfsResult = await updateVoteInIPFSWithRetry(selectedPoll.id, selectedOption[0], account);
+            if (!ipfsResult) {
+                throw new Error("IPFS voting failed");
+            }
+    
+            const voteResult = await submitVoteWithRetry(selectedPoll.id, account, selectedOption[0]);
+            if (!voteResult) {
+                throw new Error("Voting failed");
+            }
+            onClose();
 
-              await submitVoteWithRetry(selectedPoll.id, account, selectedOption[0]);
 
               toast({
                   title: 'Vote submitted',

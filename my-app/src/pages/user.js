@@ -418,7 +418,7 @@ const User = () => {
             Developer Menu
         </Heading>
 
-        <DeployMenu / >
+        <DeployMenu />
         <MintMenu />
         <DataMenu />
         <Button mt ={4} colorScheme="purple" _hover={{ bg: "purple.600", boxShadow: "md", transform: "scale(1.05)"}}>
