@@ -21,7 +21,7 @@ export const DataBaseProvider = ({ children }) => {
   const { addToIpfs, fetchFromIpfs } = useIPFScontext();
   const [contract, setContract] = useState(null);
 
-  const PMContract = '0x6a55a93CA73DFC950430aAeDdB902377fE51a8FA';
+  const PMContract = '0x07F22B57dF0b19c7Abb0A4317CfBE737FDF79b38';
 
   const [taskLoaded, setTaskLoaded] = useState(false);
 
@@ -277,17 +277,28 @@ export const DataBaseProvider = ({ children }) => {
         setUserDetails(null);
       };
       
+      // MANUALLY UPDATE project hashes below 
       const pushProjectHashes = async (projectHashes, accountsDataHash) => {
         try {
+          const projectHashes = [
+            "QmRfFfNCwjGK8j295K9HGTx9khDh4yw5Z7niBBDzUFi13G", // DAO hash
+            "QmVxxsmY8LHQFmDiSJz9VpFYiGboixMuhMxV4xsR2PeaiT", // Research hash
+            "QmYkhvkoXE9QoAGmhWRrgKcb6sZ7HEkARW34ttdz9djFLi", // Spencer collab
+            "QmPD83bvajUN1N3k9PMSGLXuqHqXuMVK65XVTXeRcMdZLV", // Content marketing
+            "QmdgXa6kRShPSz6Upof4qYwS5XP6tZAGrqNnx4gYh2JXLR"  // Miscellaneous hash
+        ];
           if (projectHashes == ""){
             await contract.updateAccountsData(accountsDataHash);
 
           }
+          
           else{
             if (projectHashes instanceof Array) {
 
               for (let i = 0; i < projectHashes.length; i++) {
-                await contract.createProject(projectHashes[i]);
+                const tx = await contract.createProject(projectHashes[i]);
+                tx.wait();
+
               }
   
             }
