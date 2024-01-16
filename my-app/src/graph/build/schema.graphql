@@ -1,0 +1,23 @@
+type Proposal @entity {
+    id: ID!
+    name: String!
+    description: String!
+    execution: String!
+    totalVotes: BigInt!
+    timeInMinutes: BigInt!
+    creationTimestamp: BigInt!
+    options: [PollOption!]! @derivedFrom(field: "proposal")
+}
+type PollOption @entity {
+    id: ID!
+    proposal: Proposal! @link
+    optionIndex: BigInt!
+    name: String
+    votes: BigInt!
+}
+type Vote @entity {
+    id: ID!
+    proposal: Proposal! @link
+    voter: Bytes!
+    optionIndex: BigInt!
+}

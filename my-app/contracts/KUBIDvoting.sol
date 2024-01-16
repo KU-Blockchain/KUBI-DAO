@@ -20,7 +20,7 @@ contract KubidVoting {
 
     Proposal[] private proposals;
 
-    event NewProposal(uint256 indexed proposalId, string name, string description, string execution);
+    event NewProposal(uint256 indexed proposalId, string name, string description, string execution, uint256 timeInMinutes, uint256 creationTimestamp);
     event Voted(uint256 indexed proposalId, address indexed voter, uint256 optionIndex);
     event PollOptionNames(uint256 indexed proposalId, uint256 indexed optionIndex, string name);
 
@@ -67,7 +67,7 @@ contract KubidVoting {
         newProposal.creationTimestamp = block.timestamp;
 
         uint256 proposalId = proposals.length - 1;
-        emit NewProposal(proposalId, _name, _description, _execution);
+        emit NewProposal(proposalId, _name, _description, _execution, _timeInMinutes, block.timestamp);
 
         for (uint256 i = 0; i < _optionNames.length; i++) {
             newProposal.options.push(PollOption(0));

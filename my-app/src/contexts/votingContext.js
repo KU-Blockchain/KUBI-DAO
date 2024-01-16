@@ -42,7 +42,7 @@ export const VotingProvider = ({ children }) => {
     
     console.log(signer.address)
     
-    const contractD = new ethers.Contract('0x77535012ab7f95e340ce9E80c0604710c5c0249D', KubidVotingABI.abi, signer);
+    const contractD = new ethers.Contract('0xd0f8ef815d4F48fAc7722a64292d0EEb6b18Ec59', KubidVotingABI.abi, signer);
     const [contract, setContract] = useState(contractD);
 
     const [loadingVote, setLoadingVote] = useState(false)
@@ -355,16 +355,11 @@ export const VotingProvider = ({ children }) => {
         setBlockTimestamp(currentBlock.timestamp);
       }
 
-      useEffect(() => {
-        if (votingLoaded) {
-            console.log("fetching voting data")
-          fetchDataIPFS()
-        }
-      }, [votingLoaded]);
+
 
 
     return (
-        <votingContext.Provider value={{setVotingLoaded,hashLoaded, fetchPollsIPFS, fetchDataIPFS, contractX, contractD, contract, setContract,loadingVote, setLoadingVote, selectedPoll, setSelectedPoll,selectedOption, setSelectedOption, ongoingPollsKubix, setOngoingPollsKubix, completedPollsKubix, setCompletedPollsKubix, ongoingPollsKubid, setOngoingPollsKubid, completedPollsKubid, setCompletedPollsKubid, completedEnd, setCompletedEnd, totalCompletedCount, setTotalCompletedCount, proposal, setProposal, showCreateVote, setShowCreateVote, blockTimestamp, setBlockTimestamp, loadingSubmit, setLoadingSubmit, handleVote, createPoll, fetchPolls, fetchPollsData, loadMoreCompleted, handleSubmit, showCreatePoll, setShowCreatePoll  }}>
+        <votingContext.Provider value={{setVotingLoaded,hashLoaded, contractX, contractD, contract, setContract,loadingVote, setLoadingVote, selectedPoll, setSelectedPoll,selectedOption, setSelectedOption, ongoingPollsKubix, setOngoingPollsKubix, completedPollsKubix, setCompletedPollsKubix, ongoingPollsKubid, setOngoingPollsKubid, completedPollsKubid, setCompletedPollsKubid, completedEnd, setCompletedEnd, totalCompletedCount, setTotalCompletedCount, proposal, setProposal, showCreateVote, setShowCreateVote, blockTimestamp, setBlockTimestamp, loadingSubmit, setLoadingSubmit, handleVote, createPoll, handleSubmit, showCreatePoll, setShowCreatePoll  }}>
           {children}
         </votingContext.Provider>
       );
