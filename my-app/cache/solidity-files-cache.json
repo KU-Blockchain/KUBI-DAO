@@ -1002,8 +1002,8 @@
       ]
     },
     "/Users/hudsonheadley/Desktop/Code/KUBI-DAO/my-app/contracts/KUBIDvoting.sol": {
-      "lastModificationDate": 1701819030927,
-      "contentHash": "260ec2959d44db01e76842b012251654",
+      "lastModificationDate": 1705360990598,
+      "contentHash": "827184ddb99b94c8d365d5a41de0dbd4",
       "sourceName": "contracts/KUBIDvoting.sol",
       "solcConfig": {
         "version": "0.8.18",
@@ -1029,8 +1029,7 @@
         }
       },
       "imports": [
-        "@openzeppelin/contracts/token/ERC20/IERC20.sol",
-        "@openzeppelin/contracts/utils/math/SafeMath.sol"
+        "@openzeppelin/contracts/token/ERC20/IERC20.sol"
       ],
       "versionPragmas": [
         "^0.8.0"

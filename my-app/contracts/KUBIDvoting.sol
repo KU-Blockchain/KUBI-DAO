@@ -18,13 +18,11 @@ contract KubidVoting {
         PollOption[] options;
     }
 
-    Proposal[] private activeProposals;
-    uint256[] public activeProposalIndices;
-    uint256[] public completedProposalIndices;
+    Proposal[] private proposals;
 
     event NewProposal(uint256 indexed proposalId, string name, string description, string execution);
     event Voted(uint256 indexed proposalId, address indexed voter, uint256 optionIndex);
-    event ProposalCompleted(uint256 indexed proposalId);
+    event PollOptionNames(uint256 indexed proposalId, uint256 indexed optionIndex, string name);
 
     mapping(address => bool) public isOwner;
 
@@ -39,7 +37,6 @@ contract KubidVoting {
         isOwner[msg.sender] = true;
         isOwner[_owner1] = true;
         isOwner[_owner2] = true;
-        activeProposalIndices.push(0); 
     }
 
     function addOwner(address _newOwner) public onlyOwner {
@@ -51,7 +48,8 @@ contract KubidVoting {
     }
 
     modifier whenNotExpired(uint256 _proposalId) {
-        Proposal storage proposal = activeProposals[_proposalId];
+        require(_proposalId < proposals.length, "Invalid proposal ID");
+        Proposal storage proposal = proposals[_proposalId];
         require(block.timestamp <= proposal.creationTimestamp + proposal.timeInMinutes * 1 minutes, "Voting time expired");
         _;
     }
@@ -60,43 +58,44 @@ contract KubidVoting {
         string memory _name,
         string memory _description,
         string memory _execution,
-        uint256 _timeInMinutes
+        uint256 _timeInMinutes,
+        string[] memory _optionNames
     ) external onlyOwner {
-        uint256 newId = activeProposals.length;
-        activeProposalIndices.push(newId);
-        activeProposals.push();
-
-        Proposal storage newProposal = activeProposals[newId];
+        Proposal storage newProposal = proposals.push();
         newProposal.totalVotes = 0;
         newProposal.timeInMinutes = _timeInMinutes;
         newProposal.creationTimestamp = block.timestamp;
 
-        emit NewProposal(newId, _name, _description, _execution);
-    }
+        uint256 proposalId = proposals.length - 1;
+        emit NewProposal(proposalId, _name, _description, _execution);
 
-    function addOptions(uint256 _proposalId, uint256 _optionsCount) external onlyOwner {
-        Proposal storage proposal = activeProposals[_proposalId];
-        for (uint256 i = 0; i < _optionsCount; i++) {
-            proposal.options.push(PollOption(0));
+        for (uint256 i = 0; i < _optionNames.length; i++) {
+            newProposal.options.push(PollOption(0));
+            emit PollOptionNames(proposalId, i, _optionNames[i]);
         }
     }
 
-    function vote(uint256 _proposalId, uint256 _optionIndex) external whenNotExpired(_proposalId) {
-        Proposal storage proposal = activeProposals[_proposalId];
-        require(!proposal.hasVoted[msg.sender], "Already voted");
+    function vote(
+        uint256 _proposalId,
+        address _voter,
+        uint256 _optionIndex
+    ) external whenNotExpired(_proposalId) {
+        require(_proposalId < proposals.length, "Invalid proposal ID");
+        Proposal storage proposal = proposals[_proposalId];
+        require(!proposal.hasVoted[_voter], "Already voted");
 
-        uint256 balance = kubidToken.balanceOf(msg.sender);
+        uint256 balance = kubidToken.balanceOf(_voter);
         require(balance > 0, "No KUBID tokens");
-        proposal.hasVoted[msg.sender] = true;
+        proposal.hasVoted[_voter] = true;
         proposal.totalVotes += 1;
         proposal.options[_optionIndex].votes += 1;
-        
-        emit Voted(_proposalId, msg.sender, _optionIndex);
+
+        emit Voted(_proposalId, _voter, _optionIndex);
     }
 
-    function getWinner(uint256 _completedProposalIndex) external view returns (uint256 winningOptionIndex) {
-        uint256 _completedProposalId = completedProposalIndices[_completedProposalIndex];
-        Proposal storage proposal = activeProposals[_completedProposalId];
+    function getWinner(uint256 _proposalId) external view returns (uint256 winningOptionIndex) {
+        require(_proposalId < proposals.length, "Invalid proposal ID");
+        Proposal storage proposal = proposals[_proposalId];
         uint256 highestVotes = 0;
 
         for (uint256 i = 0; i < proposal.options.length; i++) {
@@ -107,49 +106,20 @@ contract KubidVoting {
         }
     }
 
-    function moveToCompleted() public onlyOwner {
-        uint256 i = 1;
-        while (i < activeProposalIndices.length) {
-            uint256 proposalId = activeProposalIndices[i];
-            Proposal storage proposal = activeProposals[proposalId];
-            if (block.timestamp > proposal.creationTimestamp + proposal.timeInMinutes * 1 minutes) {
-                completedProposalIndices.push(proposalId);
-                emit ProposalCompleted(proposalId);
-                removeProposalIndex(i);
-            } else {
-                i++;
-            }
-        }
+    function getOptionsCount(uint256 _proposalId) public view returns (uint256) {
+        require(_proposalId < proposals.length, "Invalid proposal ID");
+        Proposal storage proposal = proposals[_proposalId];
+        return proposal.options.length;
     }
 
-    function removeProposalIndex(uint256 index) private {
-        for (uint256 j = index; j < activeProposalIndices.length - 1; j++) {
-            activeProposalIndices[j] = activeProposalIndices[j + 1];
-        }
-        activeProposalIndices.pop();
-    }
-
-    function activeProposalsCount() public view returns (uint256) {
-        return activeProposalIndices.length - 1;
-    }
-
-    function completedProposalsCount() public view returns (uint256) {
-        return completedProposalIndices.length;
-    }
-
-    function getOption(uint256 _proposalId, uint256 _optionIndex)
+    function getOptionVotes(uint256 _proposalId, uint256 _optionIndex)
         public
         view
         returns (uint256 votes)
     {
-        Proposal storage proposal = activeProposals[_proposalId];
-        PollOption storage option = proposal.options[_optionIndex];
-        return option.votes;
+        require(_proposalId < proposals.length, "Invalid proposal ID");
+        Proposal storage proposal = proposals[_proposalId];
+        require(_optionIndex < proposal.options.length, "Invalid option index");
+        return proposal.options[_optionIndex].votes;
     }
-
-    function getOptionsCount(uint256 _proposalId) public view returns (uint256) {
-        Proposal storage proposal = activeProposals[_proposalId];
-        return proposal.options.length;
-    }
-
 }

@@ -42,7 +42,7 @@ export const VotingProvider = ({ children }) => {
     
     console.log(signer.address)
     
-    const contractD = new ethers.Contract('0x64Ffa5c0D3d67DCb12eCd2E29F2De53C1D8F7227', KubidVotingABI.abi, signer);
+    const contractD = new ethers.Contract('0x77535012ab7f95e340ce9E80c0604710c5c0249D', KubidVotingABI.abi, signer);
     const [contract, setContract] = useState(contractD);
 
     const [loadingVote, setLoadingVote] = useState(false)
@@ -83,34 +83,7 @@ export const VotingProvider = ({ children }) => {
 
 
 
-    const fetchDataIPFS = async () => {
 
-      const ipfsHashD = await contractD.getIPFSHash();
-      setVoteHashD(ipfsHashD);
-      console.log(ipfsHashD)
-  
-      // Fetch data for contractD only if ipfsHashD is not null
-      if (ipfsHashD) {
-        const votingDataD = await fetchFromIpfs(ipfsHashD);
-        setVotingDataD(votingDataD);
-      }
-
-      const ipfsHashX = await contractX.getIPFSHash();
-      setVoteHashX(ipfsHashX);
-      console.log(ipfsHashX)
-  
-      // Fetch data for contractX only if ipfsHashX is not null
-      if (ipfsHashX) {
-        const votingDataX = await fetchFromIpfs(ipfsHashX);
-        setVotingDataX(votingDataX);
-      }
-  
-
-      setHashLoaded(true)
-
-
-
-  };
   
 
     
@@ -201,116 +174,6 @@ export const VotingProvider = ({ children }) => {
   
   
 
-
-    
-
-
-
-
-  const updateVoteInIPFS = async (pollId, selectedOption, voterAddress) => {
-    try {
-      console.log("updating vote in ipfs")
-      let existingVotingData = contract.address === contractXAddress ? votingDataX : votingDataD;
-  
-      let voterAlreadyVoted = false;
-  
-      // Update the relevant poll with the new vote count
-      existingVotingData.polls.forEach(poll => {
-        if (poll.id === pollId) {
-          if (poll.options[selectedOption]) {
-            // Initialize voters array if it doesn't exist
-            if (!poll.voters) {
-              poll.voters = [];
-            }
-
-            console.log("voter address", voterAddress)
-  
-            // Check if the voter's address is not already in the list
-            if (!poll.voters.includes(voterAddress)) {
-              poll.voters.push(voterAddress);
-              poll.options[selectedOption].votes += 1;
-            } else {
-              voterAlreadyVoted = true;
-            }
-          }
-        }
-      });
-  
-      if (voterAlreadyVoted) {
-        return false; // Indicates that the voter has already voted
-      }
-  
-      // Upload the updated data to IPFS
-      const ipfsResult = await addToIpfs(JSON.stringify(existingVotingData));
-      const newIpfsHash = ipfsResult.path;
-  
-      // Update the new IPFS hash in the smart contract
-      const tx = await contract.setIPFSHash(newIpfsHash);
-      await tx.wait();
-  
-      // Update local state
-      if (contract.address === contractXAddress) {
-        setVoteHashX(newIpfsHash);
-        setVotingDataX(existingVotingData);
-      } else {
-        setVoteHashD(newIpfsHash);
-        setVotingDataD(existingVotingData);
-      }
-  
-      return true; // Indicates a successful update
-    } catch (error) {
-      console.error(error);
-  
-      toast({
-        title: 'Error Updating Vote',
-        description: 'There was an error updating the vote in IPFS. Please try again.',
-        status: 'error',
-        duration: 3000,
-        isClosable: true,
-      });
-  
-      return false; // Indicates an error occurred
-    }
-  };
-  
-
-
-      const ipfsRetryLimit = 3;
-      const voteRetryLimit = 3;
-
-      const updateVoteInIPFSWithRetry = (pollId, option, voterAddress, retryCount = 0) => {
-        return new Promise((resolve, reject) => {
-            const attemptUpdate = async () => {
-                try {
-                    const result = await updateVoteInIPFS(pollId, option, voterAddress);
-                    if (result === false) {
-                        toast({
-                            title: 'Vote not submitted',
-                            description: 'You have already voted in this poll.',
-                            status: 'info',
-                            duration: 3000,
-                            isClosable: true,
-                        });
-                        resolve(false); // Stop the retrying process
-                    } else {
-                        resolve(true); // Vote updated successfully
-                    }
-                } catch (error) {
-                    if (retryCount < ipfsRetryLimit) {
-                        setTimeout(() => {
-                            updateVoteInIPFSWithRetry(pollId, option, voterAddress, retryCount + 1)
-                                .then(resolve)
-                                .catch(reject);
-                        }, 1000 * (retryCount + 1));
-                    } else {
-                        reject(error);
-                    }
-                }
-            };
-    
-            attemptUpdate();
-        });
-    };
     
     
 
@@ -423,7 +286,7 @@ export const VotingProvider = ({ children }) => {
         
           const tx = await contract.createProposal(proposal.name, proposal.description, proposal.execution, balances.maxBalance, balances.minBalance, proposal.time, optionsArray);
           await tx.wait();
-          await newPollIPFS();
+          //await newPollIPFS();
         } 
         else {
     
@@ -436,197 +299,14 @@ export const VotingProvider = ({ children }) => {
           const tx = await contract.createProposal(proposal.name, proposal.description, proposal.execution, proposal.time, optionsArray);
           await tx.wait();
           console.log("poll created snart contract")
-          await newPollIPFS();
+          //await newPollIPFS();
     
         }
         
     
       };
-      const updatePollIPFS = async (pollToUpdate) => {
-        try {
-          let existingVotingData = contract.address === contractXAddress ? votingDataX : votingDataD;
       
-          // Find the poll with the given ID and update the winner
-          const updatedPolls = existingVotingData.polls.map(poll => {
-            if (poll.id === pollToUpdate.id) {
-              return { ...poll, winner: pollToUpdate.winner };
-            }
-            return poll;
-          });
-      
-          // Update the existing voting data
-          existingVotingData.polls = updatedPolls;
-      
-          // Upload the updated data to IPFS
-          const ipfsResult = await addToIpfs(JSON.stringify(existingVotingData));
-          const newIpfsHash = ipfsResult.path;
-
-          // Update local state
-          if (contract.address === contractXAddress) {
-            setVoteHashX(newIpfsHash);
-            setVotingDataX(existingVotingData);
-          } else {
-            setVoteHashD(newIpfsHash);
-            setVotingDataD(existingVotingData);
-          }
-      
-          // Update the new IPFS hash in the smart contract
-          const tx = await contract.setIPFSHash(newIpfsHash);
-          await tx.wait();
-      
-
-      
-          toast({
-            title: 'Poll Updated',
-            description: 'The poll has been successfully updated on IPFS and the smart contract.',
-            status: 'success',
-            duration: 3000,
-            isClosable: true,
-          });
-        } catch (error) {
-          console.error(error);
-      
-          toast({
-            title: 'Error Updating Poll',
-            description: 'There was an error updating the poll on IPFS. Please try again.',
-            status: 'error',
-            duration: 3000,
-            isClosable: true,
-          });
-        }
-      };
-      
-
-      const fetchPollsIPFS = async (selectedContract, setOngoingPollsFunc, setCompletedPollsFunc) => {
-        try {
-          console.log("fetching polls ipfs");
-      
-          let ongoingPolls = [];
-          let completedPolls = [];
-          let existingVotingData = selectedContract.address === contractXAddress ? votingDataX : votingDataD;
-          console.log(existingVotingData);
-          console.log(selectedContract.address)
-      
-          await Promise.all(existingVotingData.polls.map(async (poll) => {
-            const currentTime = new Date();
-            const completionDate = new Date(poll.completionDate);
-            console.log(completionDate, currentTime);
-      
-            if (poll.winner) {
-              completedPolls.push(poll);
-            } else if (currentTime > completionDate) {
-              console.log("poll completed");
-              const tx = await selectedContract.moveToCompleted();
-              await tx.wait();  // Wait for the transaction to be confirmed
-              console.log("moved to completed");
-              
-              console.log("poll id",poll.id);
-              const completedProposalsCount = await contract.completedProposalsCount();
-              
-    
-              const winner = await selectedContract.getWinner(completedProposalsCount-1);
-              console.log(winner, "got winner");
-              poll.winner = winner;
-              await updatePollIPFS(poll);
-              completedPolls.push({ ...poll, winner });
-            } else {
-              ongoingPolls.push(poll);
-            }
-          }));
-      
-          // Update states after all promises have resolved
-          setOngoingPollsFunc([...ongoingPolls]);
-          setCompletedPollsFunc([...completedPolls]);
-      
-        } catch (error) {
-          console.error(error);
-        }
-      };
-      
-      
-      
-
-      const fetchPolls = async (selectedContract, setOngoingPollsFunc, setCompletedPollsFunc, completedStart = 0, completedEnd = 3) => {
-        try {
-            await selectedContract.moveToCompleted();
-    
-            // Fetch both active and completed poll counts in parallel
-            const [ongoingPollsCount, completedPollsCount] = await Promise.all([
-                selectedContract.activeProposalsCount(),
-                selectedContract.completedProposalsCount() // Replace with your actual function if different
-            ]);
-    
-            // Calculate how many polls to fetch
-            const completedEndModified = Math.min(completedEnd, completedPollsCount);
-    
-            // Fetch ongoing and completed polls
-            const [ongoingPolls, completedPolls] = await Promise.all([
-              fetchPollsData(selectedContract, 0, ongoingPollsCount, false),
-              fetchPollsData(selectedContract, completedStart, completedEndModified, true)
-            ]);
-    
-            setOngoingPollsFunc(ongoingPolls);
-            setCompletedPollsFunc(completedPolls);
-            
-        } catch (error) {
-            console.error(error);
-        }
-      };
-
-      const fetchPollsData = async (selectedContract, start, end, completed) => {
-        const pollsPromises = Array.from({ length: end - start }, async (_, i) => {
-            
-            var index = start + i;
-            if (!completed){
-              index++
-            }
-    
-            // Aligning the index to start from 0 for both completed and ongoing polls
-            const proposalId = await selectedContract[completed ? "completedProposalIndices" : "activeProposalIndices"](index);
-    
-    
-            const [proposal, optionsCount] = await Promise.all([
-                selectedContract.activeProposals(proposalId),
-                selectedContract.getOptionsCount(proposalId)
-            ]);
-    
-            const pollOptionsPromises = Array.from({ length: optionsCount }, (_, j) => selectedContract.getOption(proposalId, j));
-    
-            const pollOptions = await Promise.all(pollOptionsPromises);
-    
-    
-            let pollWithOptions = {
-                ...proposal,
-                options: pollOptions,
-                id: proposalId,
-                remainingTime: proposal.timeInMinutes * 60 - (Math.floor(Date.now() / 1000) - proposal.creationTimestamp)
-            };
-            
-            if (completed) {
-                const winner = await selectedContract.getWinner(index);
-                pollWithOptions = { ...pollWithOptions, winner };
-            }
-            
-            return pollWithOptions;
-        });
-    
-        return await Promise.all(pollsPromises);
-    };
-
-    const loadMoreCompleted = () => {
-        setCompletedEnd(prevCompletedEnd => prevCompletedEnd + 5);  // Increment completedEnd
-        try{
-        if (selectedTab === 0) {
-          fetchPolls(contractD, setOngoingPollsKubid, setCompletedPollsKubid, 0, completedEnd);
-    
-        } else if (selectedTab === 1) {
-          fetchPolls(contractX, setOngoingPollsKubix, setCompletedPollsKubix, 0, completedEnd);
-    
-        }
-      } catch (error) {
-        console.error(error);
-      }
-    };
+     
 
     const handleSubmit = async (e) => {
       if (!hasExecNFT) {

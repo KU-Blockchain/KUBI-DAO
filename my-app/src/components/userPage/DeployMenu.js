@@ -104,7 +104,7 @@ const DeployMenu = () => {
     const kubidVotingContract = new web3.eth.Contract(KubidVotingArtifact.abi);
     const deployOptions = {
       data: KubidVotingArtifact.bytecode,
-      arguments: [KUBIDcontractAddress, account, "QmPagfyBKpDiEnLk1uS9VCRj1p9n9i4HyL9X5LHXCusQ3j", "0xE5518c6b16F475191489C876Ef9cd85A6EAB3C6C", "0x256C9213d94b90Bf5458079cFA48373dC0000fEb"],
+      arguments: [KUBIDcontractAddress, account, "0xE5518c6b16F475191489C876Ef9cd85A6EAB3C6C", "0x256C9213d94b90Bf5458079cFA48373dC0000fEb"],
     };
   
     try {

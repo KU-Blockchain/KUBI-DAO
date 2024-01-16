@@ -1,0 +1,31 @@
+specVersion: 0.0.4
+description: Subgraph for KUBI DAO
+repository: <URL to your repository>
+schema:
+  file: ./schema.graphql
+dataSources:
+  - kind: ethereum/contract
+    name: KubidVoting
+    network: mumbai
+    source:
+      address: <your_contract_address>
+      abi: KubidVoting
+      startBlock: 42441232
+    mapping:
+      kind: ethereum/events
+      apiVersion: 0.0.4
+      language: wasm/assemblyscript
+      entities:
+        - Proposal
+        - PollOption
+        - Vote
+      abis:
+        - name: KubidVoting
+          file: ./abis/KubidVoting.json
+      eventHandlers:
+        - event: NewProposal(uint256,string,string,string)
+          handler: handleNewProposal
+        - event: Voted(uint256,address,uint256)
+          handler: handleVoted
+        - event: PollOptionNames(uint256,uint256,string)
+          handler: handlePollOptionNames
