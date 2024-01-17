@@ -18,7 +18,7 @@ export const LeaderboardProvider = ({ children }) => {
 
     const [sortField, setSortField] = useState('kubix');
     const [sortOrder, setSortOrder] = useState('desc');
-    const PMContract = "0x6a55a93CA73DFC950430aAeDdB902377fE51a8FA";
+    const PMContract = "0x07F22B57dF0b19c7Abb0A4317CfBE737FDF79b38";
     const { signerUniversal } = useWeb3Context()
     const { fetchFromIpfs } = useIPFScontext();
     const [leaderboardLoaded, setLeaderboardLoaded] = useState(false);

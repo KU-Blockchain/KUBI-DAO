@@ -9,6 +9,7 @@ import { DataBaseProvider } from "@/contexts/DataBaseContext";
 import { LeaderboardProvider } from "@/contexts/leaderboardContext";
 import { VotingProvider } from "@/contexts/votingContext";
 import { IPFSprovider } from "@/contexts/IPFScontext";
+import { GraphVotingProvider } from "@/contexts/graphVotingContext";
 
 const theme = extendTheme({
   config: {
@@ -29,6 +30,7 @@ function MyApp({ Component, pageProps }) {
       <Web3Provider>
         <DataBaseProvider>
           <VotingProvider>
+          <GraphVotingProvider>
           <LeaderboardProvider>
             <ChakraProvider theme={theme}>
               <Flex 
@@ -45,6 +47,7 @@ function MyApp({ Component, pageProps }) {
               </Flex>
             </ChakraProvider>
           </LeaderboardProvider>
+          </GraphVotingProvider>
           </VotingProvider>
         </DataBaseProvider>
       </Web3Provider>
