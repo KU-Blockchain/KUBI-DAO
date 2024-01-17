@@ -148,6 +148,23 @@ export class Proposal extends Entity {
       "options"
     );
   }
+
+  get winnerName(): string | null {
+    let value = this.get("winnerName");
+    if (!value || value.kind == ValueKind.NULL) {
+      return null;
+    } else {
+      return value.toString();
+    }
+  }
+
+  set winnerName(value: string | null) {
+    if (!value) {
+      this.unset("winnerName");
+    } else {
+      this.set("winnerName", Value.fromString(<string>value));
+    }
+  }
 }
 
 export class PollOption extends Entity {

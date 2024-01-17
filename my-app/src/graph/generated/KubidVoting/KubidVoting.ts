@@ -100,6 +100,28 @@ export class Voted__Params {
   }
 }
 
+export class WinnerAnnounced extends ethereum.Event {
+  get params(): WinnerAnnounced__Params {
+    return new WinnerAnnounced__Params(this);
+  }
+}
+
+export class WinnerAnnounced__Params {
+  _event: WinnerAnnounced;
+
+  constructor(event: WinnerAnnounced) {
+    this._event = event;
+  }
+
+  get proposalId(): BigInt {
+    return this._event.parameters[0].value.toBigInt();
+  }
+
+  get winningOptionIndex(): BigInt {
+    return this._event.parameters[1].value.toBigInt();
+  }
+}
+
 export class KubidVoting extends ethereum.SmartContract {
   static bind(address: Address): KubidVoting {
     return new KubidVoting("KubidVoting", address);
@@ -168,25 +190,6 @@ export class KubidVoting extends ethereum.SmartContract {
       "getOptionsCount(uint256):(uint256)",
       [ethereum.Value.fromUnsignedBigInt(_proposalId)]
     );
-    if (result.reverted) {
-      return new ethereum.CallResult();
-    }
-    let value = result.value;
-    return ethereum.CallResult.fromValue(value[0].toBigInt());
-  }
-
-  getWinner(_proposalId: BigInt): BigInt {
-    let result = super.call("getWinner", "getWinner(uint256):(uint256)", [
-      ethereum.Value.fromUnsignedBigInt(_proposalId)
-    ]);
-
-    return result[0].toBigInt();
-  }
-
-  try_getWinner(_proposalId: BigInt): ethereum.CallResult<BigInt> {
-    let result = super.tryCall("getWinner", "getWinner(uint256):(uint256)", [
-      ethereum.Value.fromUnsignedBigInt(_proposalId)
-    ]);
     if (result.reverted) {
       return new ethereum.CallResult();
     }
@@ -297,6 +300,36 @@ export class AddOwnerCall__Outputs {
   _call: AddOwnerCall;
 
   constructor(call: AddOwnerCall) {
+    this._call = call;
+  }
+}
+
+export class AnnounceWinnerCall extends ethereum.Call {
+  get inputs(): AnnounceWinnerCall__Inputs {
+    return new AnnounceWinnerCall__Inputs(this);
+  }
+
+  get outputs(): AnnounceWinnerCall__Outputs {
+    return new AnnounceWinnerCall__Outputs(this);
+  }
+}
+
+export class AnnounceWinnerCall__Inputs {
+  _call: AnnounceWinnerCall;
+
+  constructor(call: AnnounceWinnerCall) {
+    this._call = call;
+  }
+
+  get _proposalId(): BigInt {
+    return this._call.inputValues[0].value.toBigInt();
+  }
+}
+
+export class AnnounceWinnerCall__Outputs {
+  _call: AnnounceWinnerCall;
+
+  constructor(call: AnnounceWinnerCall) {
     this._call = call;
   }
 }

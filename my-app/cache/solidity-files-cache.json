@@ -1002,8 +1002,8 @@
       ]
     },
     "/Users/hudsonheadley/Desktop/Code/KUBI-DAO/my-app/contracts/KUBIDvoting.sol": {
-      "lastModificationDate": 1705373262038,
-      "contentHash": "0e0d7ffdeb83e2568b689656ff2bd016",
+      "lastModificationDate": 1705465546509,
+      "contentHash": "70d0f5fc934d9db6c72ba4410dcb3144",
       "sourceName": "contracts/KUBIDvoting.sol",
       "solcConfig": {
         "version": "0.8.18",

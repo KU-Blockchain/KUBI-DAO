@@ -119,6 +119,25 @@
     "type": "event"
   },
   {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": true,
+        "internalType": "uint256",
+        "name": "proposalId",
+        "type": "uint256"
+      },
+      {
+        "indexed": false,
+        "internalType": "uint256",
+        "name": "winningOptionIndex",
+        "type": "uint256"
+      }
+    ],
+    "name": "WinnerAnnounced",
+    "type": "event"
+  },
+  {
     "inputs": [
       {
         "internalType": "address",
@@ -127,6 +146,19 @@
       }
     ],
     "name": "addOwner",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "uint256",
+        "name": "_proposalId",
+        "type": "uint256"
+      }
+    ],
+    "name": "announceWinner",
     "outputs": [],
     "stateMutability": "nonpayable",
     "type": "function"
@@ -214,25 +246,6 @@
       {
         "internalType": "uint256",
         "name": "",
-        "type": "uint256"
-      }
-    ],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "inputs": [
-      {
-        "internalType": "uint256",
-        "name": "_proposalId",
-        "type": "uint256"
-      }
-    ],
-    "name": "getWinner",
-    "outputs": [
-      {
-        "internalType": "uint256",
-        "name": "winningOptionIndex",
         "type": "uint256"
       }
     ],

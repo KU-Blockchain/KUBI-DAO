@@ -42,7 +42,7 @@ export const VotingProvider = ({ children }) => {
     
     console.log(signer.address)
     
-    const contractD = new ethers.Contract('0xd0f8ef815d4F48fAc7722a64292d0EEb6b18Ec59', KubidVotingABI.abi, signer);
+    const contractD = new ethers.Contract('0xBaE9BDd35904ad365ba6Efb028661241226acd16', KubidVotingABI.abi, signer);
     const [contract, setContract] = useState(contractD);
 
     const [loadingVote, setLoadingVote] = useState(false)

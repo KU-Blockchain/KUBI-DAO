@@ -3,7 +3,8 @@ import {
   KubidVoting,
   NewProposal,
   Voted,
-  PollOptionNames
+  PollOptionNames,
+  WinnerAnnounced
 } from "./generated/KubidVoting/KubidVoting"
 import { Proposal, PollOption, Vote } from "./generated/schema"
 
@@ -16,6 +17,7 @@ export function handleNewProposal(event: NewProposal): void {
   proposal.timeInMinutes = event.params.timeInMinutes // Assuming this is BigInt in your schema
   proposal.creationTimestamp = event.block.timestamp
   proposal.expirationTimestamp = event.block.timestamp.plus(proposal.timeInMinutes.times(BigInt.fromI32(60)));
+  proposal.winnerName = null;
   proposal.save()
 }
 
@@ -36,3 +38,18 @@ export function handlePollOptionNames(event: PollOptionNames): void {
   option.votes = BigInt.fromI32(0)
   option.save()
 }
+
+export function handleWinnerAnnounced(event: WinnerAnnounced): void {
+    let proposalId = event.params.proposalId.toString();
+    let proposal = Proposal.load(proposalId);
+    if (proposal == null) return;
+  
+    let winningOptionIndex = event.params.winningOptionIndex;
+    let optionId = proposalId + "-" + winningOptionIndex.toString();
+    let option = PollOption.load(optionId);
+    if (option == null) return;
+  
+    proposal.winnerName = option.name;
+    proposal.save();
+  }
+  

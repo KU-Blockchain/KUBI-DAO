@@ -8,9 +8,9 @@ dataSources:
     name: KubidVoting
     network: mumbai
     source:
-      address: "0xd0f8ef815d4F48fAc7722a64292d0EEb6b18Ec59"
+      address: "0xBaE9BDd35904ad365ba6Efb028661241226acd16"
       abi: KubidVoting
-      startBlock: 43841632
+      startBlock: 44858300
     mapping:
       kind: ethereum/events
       apiVersion: 0.0.6
@@ -30,3 +30,5 @@ dataSources:
           handler: handleVoted
         - event: PollOptionNames(indexed uint256,indexed uint256,string)
           handler: handlePollOptionNames
+        - event: WinnerAnnounced(indexed uint256,uint256)
+          handler: handleWinnerAnnounced
