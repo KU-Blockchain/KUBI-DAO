@@ -42,6 +42,8 @@ export const GraphVotingProvider = ({ children }) => {
         return data.data;
     }
 
+    // change this to load more ongoing and completed
+    // also need to update how skip count works for each 
     async function queryKubidVotes() {
         
         const KUBID_VOTES_QUERY = `
@@ -143,14 +145,29 @@ export const GraphVotingProvider = ({ children }) => {
             }
         }
         `;
-
+    
         const fetchedData = await querySubgraph(KUBID_VOTES_QUERY);
-
-        setKubidCompletedProposals(fetchedData);
+    
+        if (fetchedData && fetchedData.proposals) {
+            for (const proposal of fetchedData.proposals) {
+                if (!proposal.winnerName) {
+                    await getWinner(proposal.id);
+                }
+            }
+    
+            setKubidCompletedProposals(fetchedData.proposals);
+        }
         setSkipCount(10);
         console.log('completed', fetchedData);
-        
     }
+    
+    // Define the getWinner function. Need to implment fully 
+    async function getWinner(proposalId) {
+
+        console.log(`Getting winner for proposal ${proposalId}`);
+
+    }
+    
 
     const loadMore = useCallback(() => {
         queryKubidVotes();
