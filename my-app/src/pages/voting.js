@@ -209,7 +209,7 @@ const Voting = () => {
                     onClick={() => handlePollClick(proposal)}>
                     <div className="glass" style={glassLayerStyle} />
                     <Text mb ="4" fontSize="xl" fontWeight="extrabold">{proposal.name}</Text>
-                    <CountDown duration={Math.floor((proposal?.experiationTimestamp - (new Date()).getTime())/1000)} />
+                    <CountDown duration={proposal?.expirationTimestamp- Math.floor(Date.now() / 1000)} />
                     <Text mt="2"> Voting Options:</Text>
                     <HStack spacing={6}>
                       {proposal.options.map((option, index) => (
@@ -796,6 +796,9 @@ const Voting = () => {
     
     {/* Time Details Section */}
     <VStack spacing={2} alignItems="start">
+    <Text fontWeight="bold" fontSize="lg">Time Details:</Text>
+    <CountDown duration={selectedPoll?.expirationTimestamp- Math.floor(Date.now() / 1000)} />
+
     </VStack>
 
     {/* Voting Options Section */}
