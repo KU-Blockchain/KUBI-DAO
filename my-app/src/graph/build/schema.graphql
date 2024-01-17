@@ -6,6 +6,7 @@ type Proposal @entity {
     totalVotes: BigInt!
     timeInMinutes: BigInt!
     creationTimestamp: BigInt!
+    expirationTimestamp: BigInt!
     options: [PollOption!]! @derivedFrom(field: "proposal")
 }
 type PollOption @entity {

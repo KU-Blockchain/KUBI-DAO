@@ -15,6 +15,7 @@ export function handleNewProposal(event: NewProposal): void {
   proposal.totalVotes = BigInt.fromI32(0)
   proposal.timeInMinutes = event.params.timeInMinutes // Assuming this is BigInt in your schema
   proposal.creationTimestamp = event.block.timestamp
+  proposal.expirationTimestamp = event.block.timestamp.plus(proposal.timeInMinutes.times(BigInt.fromI32(60)));
   proposal.save()
 }
 

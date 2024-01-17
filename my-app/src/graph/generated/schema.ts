@@ -128,6 +128,19 @@ export class Proposal extends Entity {
     this.set("creationTimestamp", Value.fromBigInt(value));
   }
 
+  get expirationTimestamp(): BigInt {
+    let value = this.get("expirationTimestamp");
+    if (!value || value.kind == ValueKind.NULL) {
+      throw new Error("Cannot return null for a required field.");
+    } else {
+      return value.toBigInt();
+    }
+  }
+
+  set expirationTimestamp(value: BigInt) {
+    this.set("expirationTimestamp", Value.fromBigInt(value));
+  }
+
   get options(): PollOptionLoader {
     return new PollOptionLoader(
       "Proposal",

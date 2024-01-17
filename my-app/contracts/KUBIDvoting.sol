@@ -23,6 +23,8 @@ contract KubidVoting {
     event NewProposal(uint256 indexed proposalId, string name, string description, string execution, uint256 timeInMinutes, uint256 creationTimestamp);
     event Voted(uint256 indexed proposalId, address indexed voter, uint256 optionIndex);
     event PollOptionNames(uint256 indexed proposalId, uint256 indexed optionIndex, string name);
+    event WinnerAnnounced(uint256 indexed proposalId, uint256 winningOptionIndex);
+
 
     mapping(address => bool) public isOwner;
 
@@ -54,6 +56,14 @@ contract KubidVoting {
         _;
     }
 
+    modifier whenExpired(uint256 _proposalId) {
+        require(_proposalId < proposals.length, "Invalid proposal ID");
+        Proposal storage proposal = proposals[_proposalId];
+        require(block.timestamp > proposal.creationTimestamp + proposal.timeInMinutes * 1 minutes, "Voting is not yet closed");
+        _;
+    }
+
+
     function createProposal(
         string memory _name,
         string memory _description,
@@ -79,7 +89,7 @@ contract KubidVoting {
         uint256 _proposalId,
         address _voter,
         uint256 _optionIndex
-    ) external whenNotExpired(_proposalId) {
+    ) external onlyOwner whenNotExpired(_proposalId) {
         require(_proposalId < proposals.length, "Invalid proposal ID");
         Proposal storage proposal = proposals[_proposalId];
         require(!proposal.hasVoted[_voter], "Already voted");
@@ -93,7 +103,18 @@ contract KubidVoting {
         emit Voted(_proposalId, _voter, _optionIndex);
     }
 
-    function getWinner(uint256 _proposalId) external view returns (uint256 winningOptionIndex) {
+    function announceWinner(uint256 _proposalId) external whenExpired(_proposalId) {
+        require(_proposalId < proposals.length, "Invalid proposal ID");
+        Proposal storage proposal = proposals[_proposalId];
+        require(block.timestamp > proposal.creationTimestamp + proposal.timeInMinutes * 1 minutes, "Voting is not yet closed");
+
+        uint256 winningOptionIndex = getWinner(_proposalId);
+
+        emit WinnerAnnounced(_proposalId, winningOptionIndex);
+    }
+
+
+    function getWinner(uint256 _proposalId) internal view returns (uint256 winningOptionIndex) {
         require(_proposalId < proposals.length, "Invalid proposal ID");
         Proposal storage proposal = proposals[_proposalId];
         uint256 highestVotes = 0;
