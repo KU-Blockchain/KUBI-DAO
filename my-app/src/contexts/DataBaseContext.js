@@ -21,7 +21,7 @@ export const DataBaseProvider = ({ children }) => {
   const { addToIpfs, fetchFromIpfs } = useIPFScontext();
   const [contract, setContract] = useState(null);
 
-  const PMContract = '0x07F22B57dF0b19c7Abb0A4317CfBE737FDF79b38';
+  const PMContract = '0x50a07e25780A6cBfF63c8B96fd756D736C48CE11';
 
   const [taskLoaded, setTaskLoaded] = useState(false);
 
