@@ -17,9 +17,6 @@ import { useGraphVotingContext } from '@/contexts/graphVotingContext';
 
 
 
-
-
-
 const glassLayerStyle = {
   position: "absolute",
   height: "100%",
@@ -40,7 +37,11 @@ const Voting = () => {
 
   const [selectedTab, setSelectedTab] = useState(0);
 
-  const {kubidProposals, queryKubidVotesInitial, loadMore} = useGraphVotingContext();
+  const {loadMore,
+    kubidOngoingProposals,
+    kubidCompletedProposals,
+    loadOngoingKubidInitial,
+    loadCompletedKubidInitial,} = useGraphVotingContext();
 
 
 
@@ -68,7 +69,8 @@ const Voting = () => {
 
 
   useEffect(() => {
-    queryKubidVotesInitial();
+    loadCompletedKubidInitial();
+    loadOngoingKubidInitial();
   }, []);
 
 
@@ -89,23 +91,6 @@ const Voting = () => {
       setContract(contractX);
     }
   };
-
-  useEffect(() => {
-
-    setVotingLoaded(true);
-
-  }, []);
-
-  
-  useEffect(() => {
-    async function loadPolls() {
-    if (hashLoaded) {
-    await fetchPollsIPFS(contractX, setOngoingPollsKubix, setCompletedPollsKubix);
-    await fetchPollsIPFS(contractD, setOngoingPollsKubid, setCompletedPollsKubid);
-    }
-  }
-  loadPolls() 
-  }, [hashLoaded]);
   
 
   

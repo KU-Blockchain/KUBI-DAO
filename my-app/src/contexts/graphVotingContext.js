@@ -1,4 +1,5 @@
 import { createContext, useContext, useState, useCallback } from "react";
+import { useWeb3Context } from "./Web3Context";
 
 const graphVotingContext = createContext();
 
@@ -7,10 +8,19 @@ export const useGraphVotingContext = () => {
 };
 
 export const GraphVotingProvider = ({ children }) => {
+    const {providerUniversal} = useWeb3Context();
     const SUBGRAPH_URL = 'https://api.thegraph.com/subgraphs/name/hudsonhrh/kubidao';
 
     const [skipCount, setSkipCount] = useState(0); // For pagination
-    const [kubidProposals, setKubidProposals] = useState([]); 
+    const [kubidOngoingProposals, setKubidOngoingProposals] = useState([]); 
+    const [kubidCompletedProposals, setKubidCompletedProposals] = useState([]); 
+
+    async function getCurrentBlockTime(){
+        console.log('provider', providerUniversal);
+
+        const block = await providerUniversal.getBlock('latest');
+        return block.timestamp;
+    }
 
 
     async function querySubgraph(query) {
@@ -33,6 +43,7 @@ export const GraphVotingProvider = ({ children }) => {
     }
 
     async function queryKubidVotes() {
+        
         const KUBID_VOTES_QUERY = `
         {
             proposals(
@@ -48,6 +59,8 @@ export const GraphVotingProvider = ({ children }) => {
                 totalVotes
                 timeInMinutes
                 creationTimestamp
+                expirationTimestamp
+                winnerName
                 options {
                     id
                     optionIndex
@@ -65,13 +78,15 @@ export const GraphVotingProvider = ({ children }) => {
         }
     }
 
-    async function queryKubidVotesInitial() {
+    async function loadOngoingKubidInitial() {
+        const currentBlockTime = await getCurrentBlockTime();
         const KUBID_VOTES_QUERY = `
         {
             proposals(
                 first: 10
                 orderBy: creationTimestamp
                 orderDirection: desc
+                where: {expirationTimestamp_gt: "${currentBlockTime}"}
             ) {
                 id
                 name
@@ -80,6 +95,8 @@ export const GraphVotingProvider = ({ children }) => {
                 totalVotes
                 timeInMinutes
                 creationTimestamp
+                expirationTimestamp
+                winnerName
                 options {
                     id
                     optionIndex
@@ -92,9 +109,46 @@ export const GraphVotingProvider = ({ children }) => {
 
         const fetchedData = await querySubgraph(KUBID_VOTES_QUERY);
 
-        setKubidProposals(fetchedData);
+        setKubidOngoingProposals(fetchedData);
         setSkipCount(10);
-        console.log('fetchedData', fetchedData);
+        console.log('ongoing', fetchedData);
+        
+    }
+
+    async function loadCompletedKubidInitial() {
+        const currentBlockTime = await getCurrentBlockTime();
+        const KUBID_VOTES_QUERY = `
+        {
+            proposals(
+                first: 10
+                orderBy: creationTimestamp
+                orderDirection: desc
+                where: {expirationTimestamp_lte: "${currentBlockTime}"}
+            ) {
+                id
+                name
+                description
+                execution
+                totalVotes
+                timeInMinutes
+                creationTimestamp
+                expirationTimestamp
+                winnerName
+                options {
+                    id
+                    optionIndex
+                    name
+                    votes
+                }
+            }
+        }
+        `;
+
+        const fetchedData = await querySubgraph(KUBID_VOTES_QUERY);
+
+        setKubidCompletedProposals(fetchedData);
+        setSkipCount(10);
+        console.log('completed', fetchedData);
         
     }
 
@@ -105,8 +159,10 @@ export const GraphVotingProvider = ({ children }) => {
 
     const value = {
         loadMore,
-        queryKubidVotesInitial,
-        kubidProposals,
+        kubidOngoingProposals,
+        kubidCompletedProposals,
+        loadOngoingKubidInitial,
+        loadCompletedKubidInitial,
     };
 
     return (
