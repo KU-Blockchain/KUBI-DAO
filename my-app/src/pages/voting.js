@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, use } from 'react';
 import {HStack, Text, Box, useDisclosure, Flex, Grid, Container, Spacer, VStack, Heading, Tabs, TabList, Tab, TabPanels, TabPanel, Button, Collapse, FormControl, FormLabel, Input, Textarea, RadioGroup, Stack, Radio, Modal, ModalOverlay, ModalContent, ModalHeader, ModalCloseButton, ModalBody, ModalFooter } from '@chakra-ui/react';
 
 import HeadingVote from '@/components/voting/heading';
@@ -12,6 +12,10 @@ import CountDown from '@/components/voting/countDown';
 import { IconButton } from '@chakra-ui/react';
 
 import { ArrowForwardIcon, ArrowBackIcon} from "@chakra-ui/icons";
+
+import { useGraphVotingContext } from '@/contexts/graphVotingContext';
+
+
 
 
 
@@ -36,6 +40,8 @@ const Voting = () => {
 
   const [selectedTab, setSelectedTab] = useState(0);
 
+  const {kubidProposals, queryKubidVotesInitial, loadMore} = useGraphVotingContext();
+
 
 
   const { isOpen, onOpen, onClose } = useDisclosure();
@@ -59,6 +65,11 @@ const Voting = () => {
     setSelectedPoll(poll);
     onOpen();
   };
+
+
+  useEffect(() => {
+    queryKubidVotesInitial();
+  }, []);
 
 
 
