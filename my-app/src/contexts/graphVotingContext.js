@@ -111,7 +111,7 @@ export const GraphVotingProvider = ({ children }) => {
 
         const fetchedData = await querySubgraph(KUBID_VOTES_QUERY);
 
-        setKubidOngoingProposals(fetchedData);
+        setKubidOngoingProposals(fetchedData.proposals);
         setSkipCount(10);
         console.log('ongoing', fetchedData);
         
