@@ -8,7 +8,7 @@ dataSources:
     name: KubidVoting
     network: mumbai
     source:
-      address: "0xBaE9BDd35904ad365ba6Efb028661241226acd16"
+      address: "0x819AAcC4536Fe556AF4aB10cCdfcDf3F9224115A"
       abi: KubidVoting
       startBlock: 44858300
     mapping:
