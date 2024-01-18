@@ -30,24 +30,24 @@ function MyApp({ Component, pageProps }) {
       <Web3Provider>
         <DataBaseProvider>
           <VotingProvider>
-          <GraphVotingProvider>
-          <LeaderboardProvider>
-            <ChakraProvider theme={theme}>
-              <Flex 
-                direction="column" 
-                minH="100vh" 
-                bg={router.pathname === "/tasks" ? "clear" : "#1285ff"} // Set the background based on the current route
-              >
-                <Box as="header">
-                  <NavBar />
-                </Box>
-                <Flex as="main" direction="column" flex="1" overflow="hidden">
-                  <Component {...pageProps} />
+            <GraphVotingProvider>
+            <LeaderboardProvider>
+              <ChakraProvider theme={theme}>
+                <Flex 
+                  direction="column" 
+                  minH="100vh" 
+                  bg={router.pathname === "/tasks" ? "clear" : "#1285ff"} // Set the background based on the current route
+                >
+                  <Box as="header">
+                    <NavBar />
+                  </Box>
+                  <Flex as="main" direction="column" flex="1" overflow="hidden">
+                    <Component {...pageProps} />
+                  </Flex>
                 </Flex>
-              </Flex>
-            </ChakraProvider>
-          </LeaderboardProvider>
-          </GraphVotingProvider>
+              </ChakraProvider>
+            </LeaderboardProvider>
+            </GraphVotingProvider>
           </VotingProvider>
         </DataBaseProvider>
       </Web3Provider>

@@ -54,7 +54,7 @@ const Voting = () => {
   const [historyStartIndexKubix, setHistoryStartIndexKubix] = useState(0);
 
   const displayOngoingPollsKubid = kubidOngoingProposals.slice(ongoingStartIndexKubid, ongoingStartIndexKubid + 3);
-  const displayHistoryPollsKubid = [...kubidCompletedProposals].reverse().slice(historyStartIndexKubid, historyStartIndexKubid + 3);
+  const displayHistoryPollsKubid = [...kubidCompletedProposals].slice(historyStartIndexKubid, historyStartIndexKubid + 3);
 
   const displayOngoingPollsKubix = ongoingPollsKubix.slice(ongoingStartIndexKubix, ongoingStartIndexKubix + 3);
   const displayHistoryPollsKubix = [...completedPollsKubix].reverse().slice(historyStartIndexKubix, historyStartIndexKubix + 3);
@@ -347,7 +347,7 @@ const Voting = () => {
 
                     </Flex>
 
-                    <Text mb="2" fontSize="xl" fontWeight="extrabold">Winner: {proposal.winner}</Text>
+                    <Text mb="2" fontSize="xl" fontWeight="extrabold">Winner: {proposal.winnerName}</Text>
                     
                   </Box>
                   
