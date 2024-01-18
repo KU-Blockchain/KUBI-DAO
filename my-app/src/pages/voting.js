@@ -37,11 +37,14 @@ const Voting = () => {
 
   const [selectedTab, setSelectedTab] = useState(0);
 
-  const {loadMore,
+  const {
     kubidOngoingProposals,
     kubidCompletedProposals,
     loadOngoingKubidInitial,
-    loadCompletedKubidInitial,} = useGraphVotingContext();
+    loadCompletedKubidInitial,
+    loadMoreKubidOngoing,
+    loadMoreKubidCompleted,
+  } = useGraphVotingContext();
 
 
 
@@ -252,29 +255,11 @@ const Voting = () => {
                   </Box>
 
               )}
-              {ongoingPollsKubid.length > 0 ? (
+              {kubidOngoingProposals.length > 0 ? (
               <>
               <Spacer />
               <HStack justifyContent="bottom" spacing={4}>
-                <IconButton
-                  aria-label="Next polls"
-                  background="transparent"
-                  border="none" 
-                  _hover={{ bg: 'transparent' }} 
-                  _active={{ bg: 'transparent' }} 
-                  icon={
-                    <ArrowForwardIcon 
-                    boxSize="6" // smaller size
-                    color="black"
-                    />
-                  }
-                  onClick={() => {
-                    if (ongoingStartIndexKubid + 3 < ongoingPollsKubid.length) {
-                      setOngoingStartIndexKubid(ongoingStartIndexKubid + 3);
-                    }
-                  }}
-                />
-                <IconButton
+              <IconButton
                   aria-label="Previous polls"
                   background="transparent"
                   border="none" 
@@ -288,10 +273,31 @@ const Voting = () => {
                   }
                   onClick={() => {
                     if (ongoingStartIndexKubid - 3 >= 0) {
+
                       setOngoingStartIndexKubid(ongoingStartIndexKubid - 3);
                     }
                   }}
                 />
+                <IconButton
+                  aria-label="Next polls"
+                  background="transparent"
+                  border="none" 
+                  _hover={{ bg: 'transparent' }} 
+                  _active={{ bg: 'transparent' }} 
+                  icon={
+                    <ArrowForwardIcon 
+                    boxSize="6" // smaller size
+                    color="black"
+                    />
+                  }
+                  onClick={() => {
+                    if (ongoingStartIndexKubid + 3 < kubidOngoingProposals.length) {
+                      loadMoreKubidOngoing();
+                      setOngoingStartIndexKubid(ongoingStartIndexKubid + 3);
+                    }
+                  }}
+                />
+                
               </HStack>
             </>
               ) : null}
@@ -389,7 +395,7 @@ const Voting = () => {
                 </Box>
                 
               )}
-              {completedPollsKubid.length > 0 ? (
+              {kubidCompletedProposals.length > 0 ? (
               <>
               <Spacer />
                 <HStack justifyContent="bottom" spacing={-2} >
@@ -420,7 +426,8 @@ const Voting = () => {
                       color="black"
                     />}
                     onClick={() => {
-                      if (historyStartIndexKubid + 3 < completedPollsKubid.length) {
+                      if (historyStartIndexKubid + 3 < kubidCompletedProposals.length) {
+                        loadMoreKubidCompleted();
                         setHistoryStartIndexKubid(historyStartIndexKubid + 3);
                       }
                     }}
@@ -533,7 +540,7 @@ const Voting = () => {
                   {ongoingPollsKubix.length > 0 ? (
               <>
               <Spacer />
-                <HStack justifyContent="bottom" spacing={4}  >
+                <HStack justifyContent="bottom" spacing={-2}  >
                 <IconButton
                   aria-label="Next polls"
                   background="transparent"
@@ -833,3 +840,4 @@ const Voting = () => {
 };
 
 export default Voting;
+
