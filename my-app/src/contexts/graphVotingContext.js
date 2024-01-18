@@ -23,7 +23,6 @@ export const GraphVotingProvider = ({ children }) => {
     const {getWinnerFromContract} = useVoting();
 
     async function getCurrentBlockTime(){
-        console.log('provider', providerUniversal);
 
         const block = await providerUniversal.getBlock('latest');
         return block.timestamp;
@@ -52,6 +51,7 @@ export const GraphVotingProvider = ({ children }) => {
     // change this to load more ongoing and completed
     // also need to update how skip count works for each 
     async function loadMoreKubidOngoing() {
+        console.log('load more ongoing');
         const currentBlockTime = await getCurrentBlockTime();
         
         const KUBID_VOTES_QUERY = `
@@ -91,6 +91,7 @@ export const GraphVotingProvider = ({ children }) => {
     }
 
     async function loadMoreKubidCompleted() {
+        console.log('load more completed');
         const currentBlockTime = await getCurrentBlockTime();
         
         const KUBID_VOTES_QUERY = `
@@ -135,8 +136,8 @@ export const GraphVotingProvider = ({ children }) => {
         {
             proposals(
                 first: 10
-                orderBy: creationTimestamp
-                orderDirection: desc
+                orderBy: expirationTimestamp
+                orderDirection: asc
                 where: {expirationTimestamp_gt: "${currentBlockTime}"}
             ) {
                 id

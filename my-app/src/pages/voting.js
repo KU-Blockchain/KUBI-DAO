@@ -37,11 +37,14 @@ const Voting = () => {
 
   const [selectedTab, setSelectedTab] = useState(0);
 
-  const {loadMore,
+  const {
     kubidOngoingProposals,
     kubidCompletedProposals,
     loadOngoingKubidInitial,
-    loadCompletedKubidInitial,} = useGraphVotingContext();
+    loadCompletedKubidInitial,
+    loadMoreKubidOngoing,
+    loadMoreKubidCompleted,
+  } = useGraphVotingContext();
 
 
 
@@ -270,6 +273,7 @@ const Voting = () => {
                   }
                   onClick={() => {
                     if (ongoingStartIndexKubid - 3 >= 0) {
+
                       setOngoingStartIndexKubid(ongoingStartIndexKubid - 3);
                     }
                   }}
@@ -288,6 +292,7 @@ const Voting = () => {
                   }
                   onClick={() => {
                     if (ongoingStartIndexKubid + 3 < kubidOngoingProposals.length) {
+                      loadMoreKubidOngoing();
                       setOngoingStartIndexKubid(ongoingStartIndexKubid + 3);
                     }
                   }}
@@ -422,6 +427,7 @@ const Voting = () => {
                     />}
                     onClick={() => {
                       if (historyStartIndexKubid + 3 < kubidCompletedProposals.length) {
+                        loadMoreKubidCompleted();
                         setHistoryStartIndexKubid(historyStartIndexKubid + 3);
                       }
                     }}
