@@ -14,8 +14,8 @@ export const GraphVotingProvider = ({ children }) => {
     const SUBGRAPH_URL = 'https://api.thegraph.com/subgraphs/name/hudsonhrh/kubidao';
 
 
-    const [skipCountKubidOngoing, setSkipCountKubidOngoing] = useState(0); // For pagination
-    const [skipCountKubidCompleted, setSkipCountKubidCompleted] = useState(0); // For pagination
+    const [skipCountKubidOngoing, setSkipCountKubidOngoing] = useState(0); 
+    const [skipCountKubidCompleted, setSkipCountKubidCompleted] = useState(0); 
     const [kubidOngoingProposals, setKubidOngoingProposals] = useState([]); 
 
     const [kubidCompletedProposals, setKubidCompletedProposals] = useState([]); 
