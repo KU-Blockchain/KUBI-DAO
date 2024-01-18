@@ -53,8 +53,8 @@ const Voting = () => {
   const [ongoingStartIndexKubix, setOngoingStartIndexKubix] = useState(0);
   const [historyStartIndexKubix, setHistoryStartIndexKubix] = useState(0);
 
-  const displayOngoingPollsKubid = ongoingPollsKubid.slice(ongoingStartIndexKubid, ongoingStartIndexKubid + 3);
-  const displayHistoryPollsKubid = [...completedPollsKubid].reverse().slice(historyStartIndexKubid, historyStartIndexKubid + 3);
+  const displayOngoingPollsKubid = kubidOngoingProposals.slice(ongoingStartIndexKubid, ongoingStartIndexKubid + 3);
+  const displayHistoryPollsKubid = [...kubidCompletedProposals].slice(historyStartIndexKubid, historyStartIndexKubid + 3);
 
   const displayOngoingPollsKubix = ongoingPollsKubix.slice(ongoingStartIndexKubix, ongoingStartIndexKubix + 3);
   const displayHistoryPollsKubix = [...completedPollsKubix].reverse().slice(historyStartIndexKubix, historyStartIndexKubix + 3);
@@ -71,6 +71,7 @@ const Voting = () => {
   useEffect(() => {
     loadCompletedKubidInitial();
     loadOngoingKubidInitial();
+    
   }, []);
 
 
@@ -188,8 +189,8 @@ const Voting = () => {
 
               
               <HStack justifyContent={"flex-start"} w="100%" spacing={4}>
-              {ongoingPollsKubid.length > 0 ? (
-                displayOngoingPollsKubid.map((poll, index) => (
+              {kubidOngoingProposals.length > 0 ? (
+                displayOngoingPollsKubid.map((proposal, index) => (
                   <Box key={index} flexDirection="column"
                   alignItems="center"
                   justifyContent="center"
@@ -205,13 +206,13 @@ const Voting = () => {
                   p={2}
                   zIndex={1} 
                     _hover={{ bg: "black", boxShadow: "md", transform: "scale(1.05)"}}
-                    onClick={() => handlePollClick(poll)}>
+                    onClick={() => handlePollClick(proposal)}>
                     <div className="glass" style={glassLayerStyle} />
-                    <Text mb ="4" fontSize="xl" fontWeight="extrabold">{poll.name}</Text>
-                    <CountDown duration={Math.floor((poll?.completionDate - (new Date()).getTime())/1000)} />
+                    <Text mb ="4" fontSize="xl" fontWeight="extrabold">{proposal.name}</Text>
+                    <CountDown duration={proposal?.expirationTimestamp- Math.floor(Date.now() / 1000)} />
                     <Text mt="2"> Voting Options:</Text>
                     <HStack spacing={6}>
-                      {poll.options.map((option, index) => (
+                      {proposal.options.map((option, index) => (
                         <Text fontSize= "lg" fontWeight="extrabold" key={index}>{option.name}</Text>
                       ))}
                     </HStack>            
@@ -303,13 +304,13 @@ const Voting = () => {
               <Heading pl={2} color= "ghostwhite">History </Heading>
               <HStack spacing={4}  w= "100%" justifyContent="flex-start" >
                 
-              {completedPollsKubid.length > 0 ? (
-              displayHistoryPollsKubid.map((poll, index) => {
-                const totalVotes = poll.options.reduce((total, option) => total + ethers.BigNumber.from(option.votes).toNumber(), 0);
+              {kubidCompletedProposals.length > 0 ? (
+              displayHistoryPollsKubid.map((proposal, index) => {
+                const totalVotes = proposal.options.reduce((total, option) => total + ethers.BigNumber.from(option.votes).toNumber(), 0);
                 const predefinedColors = ['red', 'darkblue', 'yellow', 'purple'];
                 const data = [{
                   name: 'Options',
-                  values: poll.options.map((option, index) => {
+                  values: proposal.options.map((option, index) => {
                     const color = index < predefinedColors.length ? predefinedColors[index] : `rgba(${Math.random() * 255}, ${Math.random() * 255}, ${Math.random() * 255}, 1)`;
                     return {
                       value: (ethers.BigNumber.from(option.votes).toNumber() / totalVotes) * 100,
@@ -334,7 +335,7 @@ const Voting = () => {
                   zIndex={1}>
 
                     <div className="glass" style={glassLayerStyle} />
-                    <Text mr="2" mt="4" ml="2 "mb ="2" fontSize={"xl"} fontWeight="extrabold">{poll.name}</Text>
+                    <Text mr="2" mt="4" ml="2 "mb ="2" fontSize={"xl"} fontWeight="extrabold">{proposal.name}</Text>
                     <Flex  justifyContent="center">
                       <BarChart  width={200} height={30} layout="vertical" data={data}>
                         <XAxis type="number" hide="true" />
@@ -346,7 +347,7 @@ const Voting = () => {
 
                     </Flex>
 
-                    <Text mb="2" fontSize="xl" fontWeight="extrabold">Winner: {poll.winner}</Text>
+                    <Text mb="2" fontSize="xl" fontWeight="extrabold">Winner: {proposal.winnerName}</Text>
                     
                   </Box>
                   
@@ -795,6 +796,9 @@ const Voting = () => {
     
     {/* Time Details Section */}
     <VStack spacing={2} alignItems="start">
+    <Text fontWeight="bold" fontSize="lg">Time Details:</Text>
+    <CountDown duration={selectedPoll?.expirationTimestamp- Math.floor(Date.now() / 1000)} />
+
     </VStack>
 
     {/* Voting Options Section */}

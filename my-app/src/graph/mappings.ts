@@ -14,7 +14,7 @@ export function handleNewProposal(event: NewProposal): void {
   proposal.description = event.params.description
   proposal.execution = event.params.execution
   proposal.totalVotes = BigInt.fromI32(0)
-  proposal.timeInMinutes = event.params.timeInMinutes // Assuming this is BigInt in your schema
+  proposal.timeInMinutes = event.params.timeInMinutes 
   proposal.creationTimestamp = event.block.timestamp
   proposal.expirationTimestamp = event.block.timestamp.plus(proposal.timeInMinutes.times(BigInt.fromI32(60)));
   proposal.winnerName = null;
@@ -25,15 +25,29 @@ export function handleVoted(event: Voted): void {
   let vote = new Vote(event.transaction.hash.toHex() + "-" + event.logIndex.toString())
   vote.proposal = event.params.proposalId.toString()
   vote.voter = event.params.voter
-  vote.optionIndex = event.params.optionIndex // Assuming this is BigInt in your schema
+  vote.optionIndex = event.params.optionIndex 
   vote.save()
+
+    let proposal = Proposal.load(event.params.proposalId.toString())
+    if (proposal == null) return;
+    proposal.totalVotes = proposal.totalVotes.plus(BigInt.fromI32(1))
+    proposal.save()
+
+    //load option
+    let optionId = event.params.proposalId.toString() + "-" + event.params.optionIndex.toString()
+    let option = PollOption.load(optionId)
+    if (option == null) return;
+
+    option.votes = option.votes.plus(BigInt.fromI32(1))
+    option.save()
+
 }
 
 export function handlePollOptionNames(event: PollOptionNames): void {
   let optionId = event.params.proposalId.toString() + "-" + event.params.optionIndex.toString()
   let option = new PollOption(optionId)
   option.proposal = event.params.proposalId.toString()
-  option.optionIndex = event.params.optionIndex // Assuming this is BigInt in your schema
+  option.optionIndex = event.params.optionIndex 
   option.name = event.params.name
   option.votes = BigInt.fromI32(0)
   option.save()

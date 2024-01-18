@@ -42,7 +42,8 @@ export const VotingProvider = ({ children }) => {
     
     console.log(signer.address)
     
-    const contractD = new ethers.Contract('0xBaE9BDd35904ad365ba6Efb028661241226acd16', KubidVotingABI.abi, signer);
+    //contract adress for testing 0xBaE9BDd35904ad365ba6Efb028661241226acd16
+    const contractD = new ethers.Contract('0x819AAcC4536Fe556AF4aB10cCdfcDf3F9224115A', KubidVotingABI.abi, signer);
     const [contract, setContract] = useState(contractD);
 
     const [loadingVote, setLoadingVote] = useState(false)
@@ -83,8 +84,22 @@ export const VotingProvider = ({ children }) => {
 
 
 
-
-  
+    const getWinnerFromContract = async (proposalId) => {
+      try {
+          const winningOptionIndex = await contract.announceWinner(proposalId);
+          return winningOptionIndex;
+      } catch (error) {
+          console.error('Error fetching winner:', error);
+          toast({
+              title: 'Error',
+              description: 'There was an error fetching the winning option.',
+              status: 'error',
+              duration: 3000,
+              isClosable: true,
+          });
+          return null;
+      }
+  };
 
     
 
@@ -175,14 +190,17 @@ export const VotingProvider = ({ children }) => {
   
 
     
+    const voteRetryLimit = 3;
     
 
     const submitVoteWithRetry = (pollId, account, option, retryCount = 0) => {
+      console.log("submitting vote with retry")
+      console.log(pollId, account, option)
       return new Promise((resolve, reject) => {
           const attemptVote = async () => {
               try {
                   console.log("submitting vote", pollId, account, option);
-                  const tx = await contract.vote(pollId-4, account, option);
+                  const tx = await contract.vote(pollId, account, option);
                   console.log("tx", tx);
 
                   await tx.wait();
@@ -236,10 +254,10 @@ export const VotingProvider = ({ children }) => {
           try {
             console.log("voting");
     
-            const ipfsResult = await updateVoteInIPFSWithRetry(selectedPoll.id, selectedOption[0], account);
-            if (!ipfsResult) {
-                throw new Error("IPFS voting failed");
-            }
+            // const ipfsResult = await updateVoteInIPFSWithRetry(selectedPoll.id, selectedOption[0], account);
+            // if (!ipfsResult) {
+            //     throw new Error("IPFS voting failed");
+            // }
     
             const voteResult = await submitVoteWithRetry(selectedPoll.id, account, selectedOption[0]);
             if (!voteResult) {
@@ -359,7 +377,7 @@ export const VotingProvider = ({ children }) => {
 
 
     return (
-        <votingContext.Provider value={{setVotingLoaded,hashLoaded, contractX, contractD, contract, setContract,loadingVote, setLoadingVote, selectedPoll, setSelectedPoll,selectedOption, setSelectedOption, ongoingPollsKubix, setOngoingPollsKubix, completedPollsKubix, setCompletedPollsKubix, ongoingPollsKubid, setOngoingPollsKubid, completedPollsKubid, setCompletedPollsKubid, completedEnd, setCompletedEnd, totalCompletedCount, setTotalCompletedCount, proposal, setProposal, showCreateVote, setShowCreateVote, blockTimestamp, setBlockTimestamp, loadingSubmit, setLoadingSubmit, handleVote, createPoll, handleSubmit, showCreatePoll, setShowCreatePoll  }}>
+        <votingContext.Provider value={{ getWinnerFromContract, setVotingLoaded,hashLoaded, contractX, contractD, contract, setContract,loadingVote, setLoadingVote, selectedPoll, setSelectedPoll,selectedOption, setSelectedOption, ongoingPollsKubix, setOngoingPollsKubix, completedPollsKubix, setCompletedPollsKubix, ongoingPollsKubid, setOngoingPollsKubid, completedPollsKubid, setCompletedPollsKubid, completedEnd, setCompletedEnd, totalCompletedCount, setTotalCompletedCount, proposal, setProposal, showCreateVote, setShowCreateVote, blockTimestamp, setBlockTimestamp, loadingSubmit, setLoadingSubmit, handleVote, createPoll, handleSubmit, showCreatePoll, setShowCreatePoll  }}>
           {children}
         </votingContext.Provider>
       );

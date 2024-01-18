@@ -1,5 +1,6 @@
 import { createContext, useContext, useState, useCallback } from "react";
 import { useWeb3Context } from "./Web3Context";
+import {useVoting} from "./votingContext";
 
 const graphVotingContext = createContext();
 
@@ -13,7 +14,10 @@ export const GraphVotingProvider = ({ children }) => {
 
     const [skipCount, setSkipCount] = useState(0); // For pagination
     const [kubidOngoingProposals, setKubidOngoingProposals] = useState([]); 
+
     const [kubidCompletedProposals, setKubidCompletedProposals] = useState([]); 
+
+    const {getWinnerFromContract} = useVoting();
 
     async function getCurrentBlockTime(){
         console.log('provider', providerUniversal);
@@ -111,7 +115,7 @@ export const GraphVotingProvider = ({ children }) => {
 
         const fetchedData = await querySubgraph(KUBID_VOTES_QUERY);
 
-        setKubidOngoingProposals(fetchedData);
+        setKubidOngoingProposals(fetchedData.proposals);
         setSkipCount(10);
         console.log('ongoing', fetchedData);
         
@@ -165,6 +169,8 @@ export const GraphVotingProvider = ({ children }) => {
     async function getWinner(proposalId) {
 
         console.log(`Getting winner for proposal ${proposalId}`);
+        const tx= await getWinnerFromContract(proposalId);
+
 
     }
     
