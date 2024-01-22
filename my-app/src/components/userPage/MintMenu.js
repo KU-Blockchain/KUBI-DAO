@@ -15,6 +15,7 @@ import {
 } from "@chakra-ui/react";
 import { useWeb3Context } from "@/contexts/Web3Context";
 import { useToast } from "@chakra-ui/react";
+import { useDataBaseContext } from "@/contexts/DataBaseContext";
 
 const MintMenu = memo(() => {
   const [showMintMenu, setShowMintMenu] = useState(false);
@@ -22,6 +23,8 @@ const MintMenu = memo(() => {
   const [mintAddress, setMintAddress] = useState("");
   const [mintAmount, setMintAmount] = useState("");
   const [mintType, setMintType] = useState("");
+
+  const {getAddressByName} = useDataBaseContext();
 
   const { contract, execNftContract, account, kubiMembershipNFTContract, mintKUBIX } = useWeb3Context();
   const toast = useToast();
@@ -61,6 +64,22 @@ const MintMenu = memo(() => {
     }
     closeMintModal();
   };
+
+  const mintAttednance = async () => {
+    const fullname ='Hudson Headley'
+    const address = await getAddressByName(fullname);
+    try{
+      if (address) {
+        await mintKUBIX(address, 1);
+      }
+    } catch (error) {
+      console.error(error);
+      toast({ title: "Error", description: "Error minting KUBIX token", status: "error", duration: 5000, isClosable: true });
+    }
+    closeMintModal();
+    
+  }
+
 
   const mintKUBIXToken = async () => {
     if (!mintKUBIX) return;
@@ -110,6 +129,9 @@ return (
         </Button>
         <Button colorScheme="red" onClick={() => openMintModal("kubid")}>
             Mint KUBID Token
+        </Button>
+        <Button colorScheme="black" onClick={() => mintAttednance()}>
+            Mint Attendance
         </Button>
       </>
     )}
@@ -170,7 +192,6 @@ return (
   </VStack>
 );
 
-// ... Rest of your code
 
 });
 
