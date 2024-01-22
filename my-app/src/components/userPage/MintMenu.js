@@ -11,11 +11,14 @@ import {
   ModalFooter,
   FormControl,
   FormLabel,
-  Input
+  Input,
+  FormHelperText,
 } from "@chakra-ui/react";
 import { useWeb3Context } from "@/contexts/Web3Context";
 import { useToast } from "@chakra-ui/react";
 import { useDataBaseContext } from "@/contexts/DataBaseContext";
+
+import Papa from 'papaparse';
 
 const MintMenu = memo(() => {
   const [showMintMenu, setShowMintMenu] = useState(false);
@@ -65,20 +68,34 @@ const MintMenu = memo(() => {
     closeMintModal();
   };
 
-  const mintAttednance = async () => {
-    const fullname ='Hudson Headley'
-    const address = await getAddressByName(fullname);
-    try{
-      if (address) {
-        await mintKUBIX(address, 1);
+  const mintAttendance = async (csvFile) => {
+    Papa.parse(csvFile, {
+      header: true,
+      complete: async (results) => {
+        for (const row of results.data) {
+          const fullName = row['First and Last Name'].trim();
+          if (fullName) {
+            try {
+              const address = await getAddressByName(fullName);
+              if (address) {
+                const tx =await mintKUBIX(address, 15);
+
+                console.log(`Minted KUBIX token for ${fullName} at address ${address}`);
+              } else {
+                console.log(`No address found for ${fullName}`);
+              }
+            } catch (error) {
+              console.error(`Error minting KUBIX token for ${fullName}:`, error);
+            }
+          }
+        }
+        toast({ title: "Success", description: "Successfully minted KUBIX tokens for Attendnance", status: "success", duration: 6000, isClosable: true });
+        closeMintModal();
+        
       }
-    } catch (error) {
-      console.error(error);
-      toast({ title: "Error", description: "Error minting KUBIX token", status: "error", duration: 5000, isClosable: true });
-    }
-    closeMintModal();
-    
-  }
+    });
+
+  };
 
 
   const mintKUBIXToken = async () => {
@@ -110,87 +127,110 @@ const MintMenu = memo(() => {
 
 
 
-return (
-  <VStack spacing={4}>
-    <Button mt={4} colorScheme="blue" onClick={() => setShowMintMenu(!showMintMenu)}>
-      Mint Menu
-    </Button>
-
-    {showMintMenu && (
-      <>
-        <Button colorScheme="purple" onClick={() => openMintModal("executive")}>
-          Mint Executive NFT
-        </Button>
-        <Button colorScheme="green" onClick={() => openMintModal("member")}>
-          Mint Membership NFT
-        </Button>
-        <Button colorScheme="orange" onClick={() => openMintModal("kubix")}>
-          Mint KUBIX Token
-        </Button>
-        <Button colorScheme="red" onClick={() => openMintModal("kubid")}>
-            Mint KUBID Token
-        </Button>
-        <Button colorScheme="black" onClick={() => mintAttednance()}>
-            Mint Attendance
-        </Button>
-      </>
-    )}
-
-    <Modal isOpen={isMintModalOpen} onClose={closeMintModal}>
-      <ModalOverlay />
-      <ModalContent>
-        <ModalHeader>
-          Mint {
-            mintType === "executive" ? "Executive NFT" : 
-            mintType === "member" ? "Membership NFT" :
-            "KUBIX Token"
-          }
-        </ModalHeader>
-        <ModalCloseButton />
-        <ModalBody>
-          <FormControl id="mintAddress">
-            <FormLabel>Address</FormLabel>
-            <Input
-              type="text"
-              placeholder="Enter address to mint to"
-              value={mintAddress}
-              onChange={(event) => setMintAddress(event.target.value)}
-            />
-          </FormControl>
-
-          {mintType === "kubix" && (
-            <FormControl mt={4} id="mintAmount">
-              <FormLabel>Amount</FormLabel>
-              <Input
-                type="number"
-                placeholder="Enter amount to mint"
-                value={mintAmount}
-                onChange={(event) => setMintAmount(event.target.value)}
-              />
-            </FormControl>
-          )}
-          
-        </ModalBody>
-        <ModalFooter>
-          <Button colorScheme={
-            mintType === "executive" ? "blue" : 
-            mintType === "member" ? "green" :
-            mintType === "kubix" ? "orange" :
-            "red"
-          } mr={3} onClick={
-            mintType === "executive" ? mintExecutiveNFT : 
-            mintType === "member" ? mintMemberNFT :
-            mintType === "kubix" ? mintKUBIXToken :
-            mintKUBIDToken
-          }>
-            Mint
+  return (
+    <VStack spacing={4}>
+      <Button mt={4} colorScheme="blue" onClick={() => setShowMintMenu(!showMintMenu)}>
+        Mint Menu
+      </Button>
+  
+      {showMintMenu && (
+        <>
+          <Button colorScheme="purple" onClick={() => openMintModal("executive")}>
+            Mint Executive NFT
           </Button>
-          <Button onClick={closeMintModal}>Cancel</Button>
-        </ModalFooter>
-      </ModalContent>
-    </Modal>
-  </VStack>
-);
+          <Button colorScheme="green" onClick={() => openMintModal("member")}>
+            Mint Membership NFT
+          </Button>
+          <Button colorScheme="orange" onClick={() => openMintModal("kubix")}>
+            Mint KUBIX Token
+          </Button>
+          <Button colorScheme="red" onClick={() => openMintModal("kubid")}>
+            Mint KUBID Token
+          </Button>
+          <Button colorScheme="yellow" onClick={() => openMintModal("attendance")}>
+            Mint Attendance
+          </Button>
+        </>
+      )}
+  
+      <Modal isOpen={isMintModalOpen} onClose={closeMintModal}>
+        <ModalOverlay />
+        <ModalContent>
+          <ModalHeader>
+            Mint {
+              mintType === "executive" ? "Executive NFT" : 
+              mintType === "member" ? "Membership NFT" :
+              mintType === "kubix" ? "KUBIX Token" :
+              mintType === "attendance" ? "Attendance" :
+              "Token"
+            }
+          </ModalHeader>
+          <ModalCloseButton />
+          <ModalBody>
+            {mintType !== "attendance" && (
+              <FormControl id="mintAddress">
+                <FormLabel>Address</FormLabel>
+                <Input
+                  type="text"
+                  placeholder="Enter address to mint to"
+                  value={mintAddress}
+                  onChange={(event) => setMintAddress(event.target.value)}
+                />
+              </FormControl>
+            )}
+  
+            {mintType === "kubix" && (
+              <FormControl mt={4} id="mintAmount">
+                <FormLabel>Amount</FormLabel>
+                <Input
+                  type="number"
+                  placeholder="Enter amount to mint"
+                  value={mintAmount}
+                  onChange={(event) => setMintAmount(event.target.value)}
+                />
+              </FormControl>
+            )}
+  
+            {mintType === "attendance" && (
+              <FormControl mt={4}>
+                <FormLabel>Upload Attendance CSV</FormLabel>
+                <Input
+                  type="file"
+                  accept=".csv"
+                  onChange={(event) => {
+                    const file = event.target.files[0];
+                    mintAttendance(file); 
+                  }}
+                />
+                <FormHelperText>Upload a CSV file with a column named "First and Last Name" containing the names of the members to mint to.
+                Minting Starts automatically and the modal will close when complete. Please wait for the toast to confirm completion.
+                </FormHelperText>
+
+              </FormControl>
+            )}
+          </ModalBody>
+          <ModalFooter>
+            <Button colorScheme={
+              mintType === "executive" ? "blue" : 
+              mintType === "member" ? "green" :
+              mintType === "kubix" ? "orange" :
+              mintType === "attendance" ? "black" :
+              "red"
+            } mr={3} onClick={
+              mintType === "executive" ? mintExecutiveNFT : 
+              mintType === "member" ? mintMemberNFT :
+              mintType === "kubix" ? mintKUBIXToken :
+              mintType === "attendance" ? () => {} : 
+              mintKUBIDToken
+            }>
+              Mint
+            </Button>
+            <Button onClick={closeMintModal}>Cancel</Button>
+          </ModalFooter>
+        </ModalContent>
+      </Modal>
+    </VStack>
+  );
 
 
 });

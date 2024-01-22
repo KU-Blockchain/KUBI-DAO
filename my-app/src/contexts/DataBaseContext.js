@@ -199,12 +199,10 @@ export const DataBaseProvider = ({ children }) => {
       const getAddressByName = async (fullName)=> { 
         const accountsDataIpfsHash = await contract.accountsDataIpfsHash();
         const accountsDataJson = await fetchFromIpfs(accountsDataIpfsHash)
-        console.log("accountsDataJson", accountsDataJson)
 
         //search through account data to see if full name exists and find address associated with name
         for (const [address, userData] of Object.entries(accountsDataJson)) {
-          console.log("userData", userData.name);
-          if (userData.name === fullName) {
+          if (userData.name.trim() === fullName) {
               console.log("Found user data", userData);
               return address; // Return the Ethereum address associated with the full name
           }
