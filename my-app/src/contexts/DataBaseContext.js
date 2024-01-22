@@ -196,6 +196,23 @@ export const DataBaseProvider = ({ children }) => {
         }
       };
 
+      const getAddressByName = async (fullName)=> { 
+        const accountsDataIpfsHash = await contract.accountsDataIpfsHash();
+        const accountsDataJson = await fetchFromIpfs(accountsDataIpfsHash)
+
+        //search through account data to see if full name exists and find address associated with name
+        for (const [address, userData] of Object.entries(accountsDataJson)) {
+          if (userData.name.trim() === fullName) {
+              console.log("Found user data", userData);
+              return address; // Return the Ethereum address associated with the full name
+          }
+      }
+        return null;
+      }
+
+
+
+
       const addUserData = async (account, name, username, email) => {
         // Fetch the accounts data IPFS hash from the smart contract
         const accountsDataIpfsHash = await contract.accountsDataIpfsHash();
@@ -409,7 +426,8 @@ export const DataBaseProvider = ({ children }) => {
             pushProjectHashes,
             handleDeleteProject,
             findMinMaxKubixBalance,
-            setTaskLoaded
+            setTaskLoaded,
+            getAddressByName
         }}
         >
         {children}

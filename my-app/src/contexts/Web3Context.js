@@ -231,12 +231,15 @@ export const Web3Provider = ({ children }) => {
         console.log("newIpfsHash", newIpfsHash)
     
         // Update the accounts data IPFS hash in the smart contract
-        await contractPM.updateAccountsData(newIpfsHash);
+       const tx1= await contractPM.updateAccountsData(newIpfsHash);
+      await tx1.wait();
     
         // Mint the token
         const amountToMint = ethers.utils.parseUnits(amount.toString(), 18);
     
-        await contract.mint(to, amountToMint);
+        const tx= await contract.mint(to, amountToMint);
+        await tx.wait();
+
       } catch (error) {
         console.error("Error minting KUBIX:", error);
       }
