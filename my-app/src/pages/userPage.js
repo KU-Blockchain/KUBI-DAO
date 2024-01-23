@@ -12,19 +12,40 @@ import {
   keyframes,
   usePrefersReducedMotion,
   chakra,
+  Image,
+  Progress,
+  Spacer
 } from '@chakra-ui/react';
 import { SettingsIcon } from '@chakra-ui/icons';
 import CountUp from 'react-countup';
 
+import imgNFT from '../../public/images/KUBC-logo-RGB-1200.png';
+
 const glowAnimation = keyframes`
   from { text-shadow: 0 0 0px white; }
-  to { text-shadow: 0 0 5px white; }
+  to { text-shadow: 0 0 6px gold; }
+`;
+
+const progressBarAnimation = keyframes`
+  0% { width: 0%; }
+  100% { width: 100%; }
 `;
 
 const UserDashboard = () => {
   const { colorMode, toggleColorMode } = useColorMode();
   const prefersReducedMotion = usePrefersReducedMotion();
   const [countFinished, setCountFinished] = useState(false);
+
+
+  const glassLayerStyle = {
+    position: 'absolute',
+    height: '100%',
+    width: '100%',
+    zIndex: -1,
+    borderRadius: 'inherit',
+    backdropFilter: 'blur(20px)',
+    backgroundColor: 'rgba(0, 0, 0, .8)',
+  };
 
   const userDetails = {
     name: 'User Name',
@@ -35,7 +56,6 @@ const UserDashboard = () => {
     nextReward: 'Shirt',
   };
 
-  // Chakra UI animation props
   const animationProps = prefersReducedMotion
     ? {}
     : {
@@ -43,6 +63,21 @@ const UserDashboard = () => {
       };
 
 
+      const nextTierKUBIX = 1500;
+
+    const progressPercentage = (userDetails.kubixEarned / nextTierKUBIX) * 100;
+
+
+    const getProgressBarAnimation = (percentage) => keyframes`
+        0% { width: 0%; }
+        100% { width: ${percentage}%; }
+    `;
+
+    const progressAnimation = prefersReducedMotion
+    ? {}
+    : {
+        animation: `${getProgressBarAnimation(progressPercentage)} 2s ease-out forwards`,
+      };
   return (
     <Box p={5}>
       <Grid
@@ -55,7 +90,7 @@ const UserDashboard = () => {
         gap={6}
       >
         <GridItem area={'welcome'}>
-          <Text fontWeight="extrabold" fontSize="6xl">Welcome, {userDetails.name}</Text>
+          <Text fontWeight="extrabold" fontSize="5xl">Welcome, {userDetails.name}</Text>
           <IconButton
           icon={<SettingsIcon />}
           isRound={true}
@@ -66,19 +101,30 @@ const UserDashboard = () => {
           justifySelf="end"
           position="absolute"
           top="12%"
-          right={5}
+          right={8}
           color="black"
         />
         </GridItem>
         <GridItem area={'userinfo'}>
-          <VStack align="flex-start" spacing={0}>
-            <Text fontSize="4xl" id="kubix-earned" fontWeight="bold">KUBIX Earned: {' '}
+        <Box
+            w="100%"
+            borderRadius="2xl"
+            bg="transparent"
+            boxShadow="lg"
+            position="relative"
+            zIndex={2}
+            
+          >
+        <div style={glassLayerStyle} />
+          <VStack  ml={6} align="flex-start" spacing={0}>
+            <Text mt={2} fontSize="4xl" id="kubix-earned" fontWeight="bold">KUBIX Earned: {' '}
             {countFinished ? (
-              <chakra.span {...animationProps}>{userDetails.kubixEarned}</chakra.span>
+                <chakra.span {...animationProps}>{userDetails.kubixEarned}</chakra.span>
+
             ) : (
               <CountUp
                 end={userDetails.kubixEarned}
-                duration={1.5}
+                duration={1.7}
                 onEnd={() => setCountFinished(true)}
                 preserveValue
               />
@@ -86,12 +132,38 @@ const UserDashboard = () => {
           </Text>
             <Text fontSize="xl">This makes you top 1% of Contributors</Text>
           </VStack>
-          <VStack pt={20} align="flex-start" spacing={4}>
-            <Text fontSize="2xl" fontWeight="bold">{userDetails.tier}</Text>
-            <Button colorScheme="blue">Upgrade Tier</Button>
-            <Text fontWeight="bold">Next Reward: {userDetails.nextReward}</Text>
-            <Button colorScheme="teal">Browse all</Button>
-          </VStack>
+            <VStack p={6}  pt={14} align="center" >
+                <Text fontSize="3xl" fontWeight="bold">{userDetails.tier}</Text>
+                <Image src="/images/KUBC-logo-RGB-1200.png" alt="KUBC Logo"  maxW="50%" />
+                <Progress
+                    value={progressPercentage}
+                    max={100} 
+                    width="70%"
+                    colorScheme="green"
+                    height="20px"
+                    borderRadius="md"
+                    sx={{
+                        '& > div': {
+                        ...progressAnimation,
+                        },
+                    }}
+                    
+                    />
+
+                
+                <HStack>
+                    <Text fontSize="xl" fontWeight="bold">Next Tier: Diamond</Text>
+                    <Text>({userDetails.kubixEarned}/{nextTierKUBIX})</Text>
+                </HStack>
+                <Spacer />
+                <Button mt={6}colorScheme="blue">Upgrade Tier</Button>
+            </VStack>
+            <VStack p={6} align="flex-start" spacing={2}>
+                <Text fontSize= "3xl" fontWeight="bold">Next Reward: {userDetails.nextReward}</Text>
+                <Button colorScheme="teal">Browse all</Button>
+            </VStack>
+
+        </Box>
         </GridItem>
         <GridItem area={'tierinfo'}>
           
@@ -102,6 +174,14 @@ const UserDashboard = () => {
                 <Button colorScheme="purple" size="md">Dev Menu</Button>
             </HStack>
             <Text fontWeight="bold" fontSize="2xl" pt={10}>Current Tasks: {' '}</Text>
+            {/* Make into commpnent that grabs claimed task cards */}
+            <HStack pt={4}>
+                <Button colorScheme="green" size="md">Task 1</Button>
+                <Button colorScheme="green" size="md">Task 2</Button>
+                <Button colorScheme="green" size="md">Task 3</Button>
+            </HStack>
+
+        
         </GridItem>
         
       </Grid>
