@@ -13,14 +13,23 @@ import {
   chakra,
   Image,
   Progress,
-  Spacer
+  Spacer,
+  Flex,
+  Link
 } from '@chakra-ui/react';
 import { SettingsIcon } from '@chakra-ui/icons';
 import CountUp from 'react-countup';
 import AccountSettingsModal from '@/components/userPage/AccountSettingsModal';
+import NextLink from 'next/link';
 
 import { useWeb3Context } from '@/contexts/Web3Context';
 import { useDataBaseContext } from '@/contexts/DataBaseContext';
+
+import DeployMenu from "@/components/userPage/DeployMenu";
+import MintMenu from "@/components/userPage/MintMenu";
+import DataMenu from "@/components/userPage/DataMenu";
+
+
 
 const glowAnimation = keyframes`
   from { text-shadow: 0 0 0px white; }
@@ -32,12 +41,32 @@ const progressBarAnimation = keyframes`
   100% { width: 100%; }
 `;
 
+const renderDevMenu = () => (
+    <>
+
+        <DeployMenu />
+        <MintMenu />
+        <DataMenu />
+        <Button mt ={4} colorScheme="purple" _hover={{ bg: "purple.600", boxShadow: "md", transform: "scale(1.05)"}}>
+        <Link as={NextLink} href="/practice" color="white" fontWeight="bold" fontSize="l" mx={"2%"}> 
+            Practice
+          </Link>
+        </Button>
+  </>
+  );
+
 const UserPage= () => {
     
   const prefersReducedMotion = usePrefersReducedMotion();
   const [countFinished, setCountFinished] = useState(false);
 
   const[upgradeAvailable, setUpgradeAvailable] = useState(false);
+
+  const [showDevMenu, setShowDevMenu] = useState(false);
+
+  const toggleDevMenu = () => {
+    setShowDevMenu(prevShowDevMenu => !prevShowDevMenu);
+};
 
   const [isSettingsModalOpen, setSettingsModalOpen] = useState(false);
 
@@ -77,7 +106,7 @@ const UserPage= () => {
     memberStatus: hasExecNFT ? 'Executive' : 'Member',
     semesterKubix: userDetails && userDetails.kubixBalance2024Spring ? userDetails.kubixBalance2024Spring : 0,
     yearKubix: userDetails && userDetails.kubixBalance2024Spring && userDetails.kubixBalance2023Fall ? userDetails.kubixBalance2023Fall+ userDetails.kubixBalance2024Spring : 0,
-    joinDate: 'Dec 1, 1991',
+    accountAddress: account ? account : '0x000',
     tier: 'Gold Tier Member',
     nextReward: 'Shirt',
     tasksCompleted: userDetails && userDetails.tasksCompleted ? userDetails.tasksCompleted : 0,
@@ -223,15 +252,25 @@ const UserPage= () => {
       />
         <HStack pb={4} pt={2}  spacing="27%">
             <VStack align={'flex-start'} ml="6%" spacing={1}>
-                <Text mt={2}  fontWeight="bold" fontSize="md">Joined {userInfo.joinDate}</Text>
                 <Text   fontWeight="bold" fontSize="md">Semester KUBIX: {userInfo.semesterKubix}</Text>
                 <Text  fontWeight="bold" fontSize="md">Year KUBIX: {userInfo.yearKubix}</Text>
                 <Text  fontWeight="bold"  fontSize="md">Tasks Completed: {userInfo.tasksCompleted}</Text>
             </VStack>
             <VStack align={'center'} spacing={2}>
+
                 <Text fontWeight="extrabold" fontSize="lg">Menu</Text>
-                <Button colorScheme="red" size="sm">Become Dev</Button>
-                <Button colorScheme="purple" size="sm">Dev Menu</Button>
+                {hasExecNFT && (
+                <Button colorScheme="green" onClick={toggleDevMenu} size="sm">Dev Menu</Button>
+                )}
+                {!hasExecNFT &&(<Button colorScheme="red" size="sm">Become Dev</Button>)}
+                {showDevMenu && (
+                <>
+                    <DeployMenu />
+                    <MintMenu />
+                    <DataMenu />
+                </>
+            )}
+               
             </VStack>
             </HStack>
         </Box>

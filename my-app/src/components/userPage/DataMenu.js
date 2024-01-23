@@ -19,8 +19,8 @@ const DataMenu = ( ) => {
   const {clearData, pushProjectHashes } = useDataBaseContext();
 
   return (
-    <VStack spacing={4}>
-      <Button mt={4} colorScheme="red" onClick={() => setShowMintMenu(!showMintMenu)} _hover={{ bg: "red.600", boxShadow: "md", transform: "scale(1.05)"}}>
+    <VStack spacing={2}>
+      <Button mt={2} size="md" colorScheme="red" onClick={() => setShowMintMenu(!showMintMenu)} _hover={{ bg: "red.600", boxShadow: "md", transform: "scale(1.05)"}}>
         Data Menu
       </Button>
       {showMintMenu && (
