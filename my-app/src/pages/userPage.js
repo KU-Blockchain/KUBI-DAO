@@ -18,8 +18,7 @@ import {
 } from '@chakra-ui/react';
 import { SettingsIcon } from '@chakra-ui/icons';
 import CountUp from 'react-countup';
-
-import imgNFT from '../../public/images/KUBC-logo-RGB-1200.png';
+import AccountSettingsModal from '@/components/userPage/AccountSettingsModal';
 
 const glowAnimation = keyframes`
   from { text-shadow: 0 0 0px white; }
@@ -36,6 +35,13 @@ const UserDashboard = () => {
   const prefersReducedMotion = usePrefersReducedMotion();
   const [countFinished, setCountFinished] = useState(false);
 
+  const[upgradeAvailable, setUpgradeAvailable] = useState(false);
+
+  const [isSettingsModalOpen, setSettingsModalOpen] = useState(false);
+
+  const openSettingsModal = () => setSettingsModalOpen(true);
+  const closeSettingsModal = () => setSettingsModalOpen(false);
+
 
   const glassLayerStyle = {
     position: 'absolute',
@@ -49,7 +55,7 @@ const UserDashboard = () => {
 
   const userDetails = {
     name: 'User Name',
-    kubixEarned: 1000,
+    kubixEarned: 1900,
     memberStatus: 'Member',
     joinDate: 'Dec 1, 1991',
     tier: 'Gold Tier Member',
@@ -65,7 +71,14 @@ const UserDashboard = () => {
 
       const nextTierKUBIX = 1500;
 
-    const progressPercentage = (userDetails.kubixEarned / nextTierKUBIX) * 100;
+    let progressPercentage = (userDetails.kubixEarned / nextTierKUBIX) * 100;
+
+    useEffect(() => {
+        if ((userDetails.kubixEarned / nextTierKUBIX) * 100 > 100) {
+          setUpgradeAvailable(true);
+          progressPercentage = 100;
+        }
+      }, [userDetails.kubixEarned, nextTierKUBIX]);
 
 
     const getProgressBarAnimation = (percentage) => keyframes`
@@ -89,10 +102,7 @@ const UserDashboard = () => {
         templateColumns="repeat(2, 1fr)"
         gap={4}
       >
-        <GridItem area={'welcome'}>
-          <Text ml={2} letterSpacing="-1%" fontWeight="extrabold" fontSize="5xl">Welcome, {userDetails.name}</Text>
-          
-        </GridItem>
+
         <GridItem area={'userinfo'}>
         <Box
             w="100%"
@@ -121,7 +131,7 @@ const UserDashboard = () => {
           </Text>
             <Text pl={6} pb={6} fontSize="xl">This makes you top 1% of Contributors</Text>
           </VStack>
-            <VStack p={6}  pt={8} align="center" >
+            <VStack p={6}  pt={6} align="center" >
                 <Text fontSize="3xl" fontWeight="bold">{userDetails.tier}</Text>
                 <Image src="/images/KUBC-logo-RGB-1200.png" alt="KUBC Logo"  maxW="50%" />
                 <Progress
@@ -145,10 +155,11 @@ const UserDashboard = () => {
                     <Text>({userDetails.kubixEarned}/{nextTierKUBIX})</Text>
                 </HStack>
                 <Spacer />
-                <Button mt={6}colorScheme="blue">Upgrade Tier</Button>
+                {upgradeAvailable && (
+                <Button mt={6}colorScheme="blue">Upgrade Tier</Button>)}
             </VStack>
-            <VStack p={6} align="flex-start" spacing={2}>
-                <Text fontSize= "3xl" fontWeight="bold">Next Reward: {userDetails.nextReward}</Text>
+            <VStack  pl={6} pb={4} align="flex-start" spacing={2}>
+                <Text fontSize= "3xl" fontWeight="bold">Next Reward: Coming Soon...</Text>
                 <Button colorScheme="teal">Browse all</Button>
             </VStack>
 
@@ -175,7 +186,7 @@ const UserDashboard = () => {
           isRound={true}
           size="md"
           aria-label="Settings"
-          onClick={toggleColorMode}
+          onClick={openSettingsModal}
           alignSelf="start"
           justifySelf="end"
           position="absolute"
@@ -183,6 +194,10 @@ const UserDashboard = () => {
           right="4%"
           color="black"
         />
+        <AccountSettingsModal
+        isOpen={isSettingsModalOpen}
+        onClose={closeSettingsModal}
+      />
         <HStack pb={4} pt={2}  spacing="25%">
             <VStack align={'flex-start'} ml="6%" spacing={1}>
                 <Text mt={2}  fontWeight="bold" fontSize="md">Joined {userDetails.joinDate}</Text>
@@ -197,7 +212,16 @@ const UserDashboard = () => {
             </VStack>
             </HStack>
         </Box>
-            <Text ml={6} fontWeight="bold" fontSize="2xl" pt={10}>Claimed Tasks: {' '}</Text>
+        <Box w="100%"
+            pt={4}
+            borderRadius="2xl"
+            bg="transparent"
+            boxShadow="lg"
+            position="relative"
+            zIndex={2}>
+        <div style={glassLayerStyle} />
+        
+            <Text ml={6} fontWeight="bold" fontSize="2xl" pt={4}>Claimed Tasks {' '}</Text>
             {/* Make into commpnent that grabs claimed task cards */}
             <HStack pb={6} ml={6} pt={4}>
                 <Button colorScheme="green" size="md">Task 1</Button>
@@ -210,13 +234,23 @@ const UserDashboard = () => {
                 <Button colorScheme="green" size="md">Task 2</Button>
                 <Button colorScheme="green" size="md">Task 3</Button>
             </HStack>
+            </Box>
+            <Box w="100%"
+            pt={8}
+            borderRadius="2xl"
+            bg="transparent"
+            boxShadow="lg"
+            position="relative"
+            zIndex={2}>
+        <div style={glassLayerStyle} />
 
-            <Text ml={6} fontWeight="bold" fontSize="2xl" pt={10}>Ongoing Polls: {' '}</Text>
+            <Text ml={6} fontWeight="bold" fontSize="2xl" pt={4}>Ongoing Polls: {' '}</Text>
             <HStack pb={6} ml={6} pt={4}>
                 <Button colorScheme="green" size="md">Task 1</Button>
                 <Button colorScheme="green" size="md">Task 2</Button>
                 <Button colorScheme="green" size="md">Task 3</Button>
             </HStack>
+        </Box>
         
 
         </GridItem>
