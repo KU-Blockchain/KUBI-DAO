@@ -7,7 +7,6 @@ import {
   GridItem,
   Text,
   IconButton,
-  useColorMode,
   HStack,
   keyframes,
   usePrefersReducedMotion,
@@ -34,7 +33,7 @@ const progressBarAnimation = keyframes`
 `;
 
 const UserDashboard = () => {
-  const { colorMode, toggleColorMode } = useColorMode();
+    
   const prefersReducedMotion = usePrefersReducedMotion();
   const [countFinished, setCountFinished] = useState(false);
 
