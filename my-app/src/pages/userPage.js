@@ -20,6 +20,9 @@ import { SettingsIcon } from '@chakra-ui/icons';
 import CountUp from 'react-countup';
 import AccountSettingsModal from '@/components/userPage/AccountSettingsModal';
 
+import { useWeb3Context } from '@/contexts/Web3Context';
+import { useDataBaseContext } from '@/contexts/DataBaseContext';
+
 const glowAnimation = keyframes`
   from { text-shadow: 0 0 0px white; }
   to { text-shadow: 0 0 6px gold; }
@@ -43,6 +46,21 @@ const UserDashboard = () => {
   const closeSettingsModal = () => setSettingsModalOpen(false);
 
 
+    const { web3, account,KUBIXbalance, hasExecNFT} = useWeb3Context();
+    const {userDetails, fetchUserDetails} = useDataBaseContext();
+
+    useEffect(() => {
+        async function fetch(){
+            await fetchUserDetails(web3,account);
+            
+        }
+        fetch();
+        
+      }, [web3, account]);
+
+    
+
+
   const glassLayerStyle = {
     position: 'absolute',
     height: '100%',
@@ -53,10 +71,10 @@ const UserDashboard = () => {
     backgroundColor: 'rgba(0, 0, 0, .8)',
   };
 
-  const userDetails = {
-    name: 'User Name',
-    kubixEarned: 1900,
-    memberStatus: 'Member',
+  const userInfo = {
+    username: userDetails && userDetails.username ? userDetails.username : 'User',
+    kubixEarned: KUBIXbalance,
+    memberStatus: hasExecNFT ? 'Executive' : 'Member',
     joinDate: 'Dec 1, 1991',
     tier: 'Gold Tier Member',
     nextReward: 'Shirt',
@@ -71,14 +89,14 @@ const UserDashboard = () => {
 
       const nextTierKUBIX = 1500;
 
-    let progressPercentage = (userDetails.kubixEarned / nextTierKUBIX) * 100;
+    let progressPercentage = (userInfo.kubixEarned / nextTierKUBIX) * 100;
 
     useEffect(() => {
-        if ((userDetails.kubixEarned / nextTierKUBIX) * 100 > 100) {
+        if ((userInfo.kubixEarned / nextTierKUBIX) * 100 > 100) {
           setUpgradeAvailable(true);
           progressPercentage = 100;
         }
-      }, [userDetails.kubixEarned, nextTierKUBIX]);
+      }, [userInfo.kubixEarned, nextTierKUBIX]);
 
 
     const getProgressBarAnimation = (percentage) => keyframes`
@@ -118,11 +136,11 @@ const UserDashboard = () => {
           <div style={glassLayerStyle} />
             <Text pl={6} letterSpacing="-1%" mt={2} fontSize="4xl" id="kubix-earned" fontWeight="bold">KUBIX Earned: {' '}
             {countFinished ? (
-                <chakra.span {...animationProps}>{userDetails.kubixEarned}</chakra.span>
+                <chakra.span {...animationProps}>{userInfo.kubixEarned}</chakra.span>
 
             ) : (
               <CountUp
-                end={userDetails.kubixEarned}
+                end={userInfo.kubixEarned}
                 duration={1.7}
                 onEnd={() => setCountFinished(true)}
                 preserveValue
@@ -132,7 +150,7 @@ const UserDashboard = () => {
             <Text pl={6} pb={6} fontSize="xl">This makes you top 1% of Contributors</Text>
           </VStack>
             <VStack p={6}  pt={6} align="center" >
-                <Text fontSize="3xl" fontWeight="bold">{userDetails.tier}</Text>
+                <Text fontSize="3xl" fontWeight="bold">{userInfo.tier}</Text>
                 <Image src="/images/KUBC-logo-RGB-1200.png" alt="KUBC Logo"  maxW="50%" />
                 <Progress
                     value={progressPercentage}
@@ -152,7 +170,7 @@ const UserDashboard = () => {
                 
                 <HStack>
                     <Text fontSize="xl" fontWeight="bold">Next Tier: Diamond</Text>
-                    <Text>({userDetails.kubixEarned}/{nextTierKUBIX})</Text>
+                    <Text>({userInfo.kubixEarned}/{nextTierKUBIX})</Text>
                 </HStack>
                 <Spacer />
                 {upgradeAvailable && (
@@ -178,8 +196,8 @@ const UserDashboard = () => {
         <div style={glassLayerStyle} />
         <HStack  pt={4} pb= {4} position="relative" borderTopRadius="2xl" >
         <div style={glassLayerStyle} />
-          <Text  pl={4}  fontSize="3xl" fontWeight="extrabold">hudsonhrh </Text>
-          <Text pt={2} pl={2} fontSize="lg" > {userDetails.memberStatus}</Text>
+          <Text  pl={4}  fontSize="3xl" fontWeight="extrabold">{userInfo.username} </Text>
+          <Text pt={2} pl={2} fontSize="lg" > {userInfo.memberStatus}</Text>
         </HStack>
           <IconButton
           icon={<SettingsIcon />}
@@ -198,9 +216,9 @@ const UserDashboard = () => {
         isOpen={isSettingsModalOpen}
         onClose={closeSettingsModal}
       />
-        <HStack pb={4} pt={2}  spacing="25%">
+        <HStack pb={4} pt={2}  spacing="27%">
             <VStack align={'flex-start'} ml="6%" spacing={1}>
-                <Text mt={2}  fontWeight="bold" fontSize="md">Joined {userDetails.joinDate}</Text>
+                <Text mt={2}  fontWeight="bold" fontSize="md">Joined {userInfo.joinDate}</Text>
                 <Text   fontWeight="bold" fontSize="md">Semester KUBIX: 4 {' '}</Text>
                 <Text  fontWeight="bold" fontSize="md">Year KUBIX: 4 {' '}</Text>
                 <Text  fontWeight="bold"  fontSize="md">Tasks Completed: 4 {' '}</Text>
@@ -228,7 +246,7 @@ const UserDashboard = () => {
                 <Button colorScheme="green" size="md">Task 2</Button>
                 <Button colorScheme="green" size="md">Task 3</Button>
             </HStack>
-            <Text ml={6} fontWeight="bold" fontSize="2xl" pt={10}>Reccomended Tasks: {' '}</Text>
+            <Text ml={6} fontWeight="bold" fontSize="2xl" pt={10}>Reccomended Tasks {' '}</Text>
             <HStack pb={6} ml={6} pt={4}>
                 <Button colorScheme="green" size="md">Task 1</Button>
                 <Button colorScheme="green" size="md">Task 2</Button>
@@ -244,7 +262,7 @@ const UserDashboard = () => {
             zIndex={2}>
         <div style={glassLayerStyle} />
 
-            <Text ml={6} fontWeight="bold" fontSize="2xl" pt={4}>Ongoing Polls: {' '}</Text>
+            <Text ml={6} fontWeight="bold" fontSize="2xl" pt={4}>Ongoing Polls {' '}</Text>
             <HStack pb={6} ml={6} pt={4}>
                 <Button colorScheme="green" size="md">Task 1</Button>
                 <Button colorScheme="green" size="md">Task 2</Button>

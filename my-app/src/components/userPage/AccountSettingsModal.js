@@ -18,12 +18,16 @@ const AccountSettingsModal = ({ isOpen, onClose }) => {
     <Modal isOpen={isOpen} onClose={onClose}>
       <ModalOverlay />
       <ModalContent>
-        <ModalHeader>Account Settings</ModalHeader>
+        <ModalHeader> Update Account Settings</ModalHeader>
         <ModalCloseButton />
         <ModalBody>
           <FormControl>
             <FormLabel>Name</FormLabel>
             <Input placeholder="Your name" />
+            <FormLabel>Username</FormLabel>
+            <Input placeholder="Your username" />
+            <FormLabel>Email</FormLabel>
+            <Input placeholder="Your email" />
             {/* Add more form controls as needed */}
           </FormControl>
         </ModalBody>
