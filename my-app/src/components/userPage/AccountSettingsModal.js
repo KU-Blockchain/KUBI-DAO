@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   Modal,
   ModalOverlay,
@@ -12,8 +12,47 @@ import {
   FormLabel,
   Input
 } from '@chakra-ui/react';
+import { useDataBaseContext } from '@/contexts/DataBaseContext';
+import { useWeb3Context } from '@/contexts/Web3Context';
+
+
 
 const AccountSettingsModal = ({ isOpen, onClose }) => {
+
+    const { userDetails,updateUserData } = useDataBaseContext();
+    const {account} = useWeb3Context();
+
+    // State for input fields
+    const [name, setName] = useState('');
+    const [username, setUsername] = useState('');
+    const [email, setEmail] = useState('');
+  
+    useEffect(() => {
+      if (userDetails) {
+        setName(userDetails.name || '');
+        setUsername(userDetails.username || '');
+        setEmail(userDetails.email || '');
+      }
+    }, [userDetails]);
+
+  // Handle input changes
+  const handleNameChange = (event) => setName(event.target.value);
+  const handleUsernameChange = (event) => setUsername(event.target.value);
+  const handleEmailChange = (event) => setEmail(event.target.value);
+
+  const handleSave = async () => {
+    
+    let usernameChange = false;
+    if (userDetails.username !== username) {
+      usernameChange = true;
+    }
+
+    await updateUserData(account, name, username, email, usernameChange);
+    onClose(); 
+  };
+
+    
+
   return (
     <Modal isOpen={isOpen} onClose={onClose}>
       <ModalOverlay />
@@ -23,17 +62,16 @@ const AccountSettingsModal = ({ isOpen, onClose }) => {
         <ModalBody>
           <FormControl>
             <FormLabel>Name</FormLabel>
-            <Input placeholder="Your name" />
+            <Input value={name} onChange={handleNameChange} />
             <FormLabel>Username</FormLabel>
-            <Input placeholder="Your username" />
+            <Input value={username} onChange={handleUsernameChange} />
             <FormLabel>Email</FormLabel>
-            <Input placeholder="Your email" />
-            {/* Add more form controls as needed */}
+          <Input value={email} onChange={handleEmailChange} />
           </FormControl>
         </ModalBody>
 
         <ModalFooter>
-          <Button colorScheme="blue" mr={3} onClick={onClose}>
+          <Button colorScheme="blue" mr={3} onClick={handleSave}>
             Save
           </Button>
           <Button variant="ghost" onClick={onClose}>Cancel</Button>

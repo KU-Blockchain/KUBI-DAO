@@ -216,6 +216,7 @@ export const DataBaseProvider = ({ children }) => {
       const addUserData = async (account, name, username, email) => {
         // Fetch the accounts data IPFS hash from the smart contract
         const accountsDataIpfsHash = await contract.accountsDataIpfsHash();
+
         let accountsDataJson = {};
         console.log("checking accountsDataIpfsHash")
       
@@ -245,10 +246,53 @@ export const DataBaseProvider = ({ children }) => {
       
         console.log("newIpfsHash", newIpfsHash)
         // Update the accounts data IPFS hash in the smart contract
-        await contract.updateAccountsData(newIpfsHash);
+        const tx= await contract.updateAccountsData(newIpfsHash);
+        await tx.wait();
+
       
         return true;
       };
+
+      const updateUserData = async (account, name, username, email, usernameChange) => {
+        // Fetch the accounts data IPFS hash from the smart contract
+        const accountsDataIpfsHash = await contract.accountsDataIpfsHash();
+
+        let accountsDataJson = {};
+        console.log("checking accountsDataIpfsHash")
+      
+        // If the IPFS hash is not empty, fetch the JSON data
+        if (accountsDataIpfsHash !== '') {
+          accountsDataJson = await fetchFromIpfs(accountsDataIpfsHash)
+        }
+
+        // Check if the username is already claimed
+        if (usernameChange) {
+          for (const userData of Object.values(accountsDataJson)) {
+            console.log("checking userData")
+            if (userData.username === username) {
+              return false;
+            }
+          }
+        }
+
+        accountsDataJson[account] = {
+          ...accountsDataJson[account],
+          name,
+          username,
+          email,
+        };
+
+         // Save the updated accounts data to IPFS
+         const ipfsResult = await addToIpfs(JSON.stringify(accountsDataJson));
+         const newIpfsHash = ipfsResult.path;
+       
+         console.log("newIpfsHash", newIpfsHash)
+         // Update the accounts data IPFS hash in the smart contract
+         const tx= await contract.updateAccountsData(newIpfsHash);
+          await tx.wait();
+       
+         return true;
+      }
       
       const getUsernameByAddress = async (walletAddress) => {
         try {
@@ -427,7 +471,8 @@ export const DataBaseProvider = ({ children }) => {
             handleDeleteProject,
             findMinMaxKubixBalance,
             setTaskLoaded,
-            getAddressByName
+            getAddressByName,
+            updateUserData
         }}
         >
         {children}

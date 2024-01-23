@@ -212,6 +212,7 @@ const UserDashboard = () => {
           right="4%"
           color="black"
         />
+        
         <AccountSettingsModal
         isOpen={isSettingsModalOpen}
         onClose={closeSettingsModal}
