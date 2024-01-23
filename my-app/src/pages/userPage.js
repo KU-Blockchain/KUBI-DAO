@@ -32,7 +32,7 @@ const progressBarAnimation = keyframes`
   100% { width: 100%; }
 `;
 
-const UserDashboard = () => {
+const UserPage= () => {
     
   const prefersReducedMotion = usePrefersReducedMotion();
   const [countFinished, setCountFinished] = useState(false);
@@ -55,6 +55,7 @@ const UserDashboard = () => {
         }
         fetch();
         
+        
       }, [web3, account]);
 
     
@@ -74,9 +75,12 @@ const UserDashboard = () => {
     username: userDetails && userDetails.username ? userDetails.username : 'User',
     kubixEarned: KUBIXbalance,
     memberStatus: hasExecNFT ? 'Executive' : 'Member',
+    semesterKubix: userDetails && userDetails.kubixBalance2024Spring ? userDetails.kubixBalance2024Spring : 0,
+    yearKubix: userDetails && userDetails.kubixBalance2024Spring && userDetails.kubixBalance2023Fall ? userDetails.kubixBalance2023Fall+ userDetails.kubixBalance2024Spring : 0,
     joinDate: 'Dec 1, 1991',
     tier: 'Gold Tier Member',
     nextReward: 'Shirt',
+    tasksCompleted: userDetails && userDetails.tasksCompleted ? userDetails.tasksCompleted : 0,
   };
 
   const animationProps = prefersReducedMotion
@@ -89,6 +93,7 @@ const UserDashboard = () => {
       const nextTierKUBIX = 1500;
 
     let progressPercentage = (userInfo.kubixEarned / nextTierKUBIX) * 100;
+    console.log(userDetails);
 
     useEffect(() => {
         if ((userInfo.kubixEarned / nextTierKUBIX) * 100 > 100) {
@@ -219,9 +224,9 @@ const UserDashboard = () => {
         <HStack pb={4} pt={2}  spacing="27%">
             <VStack align={'flex-start'} ml="6%" spacing={1}>
                 <Text mt={2}  fontWeight="bold" fontSize="md">Joined {userInfo.joinDate}</Text>
-                <Text   fontWeight="bold" fontSize="md">Semester KUBIX: 4 {' '}</Text>
-                <Text  fontWeight="bold" fontSize="md">Year KUBIX: 4 {' '}</Text>
-                <Text  fontWeight="bold"  fontSize="md">Tasks Completed: 4 {' '}</Text>
+                <Text   fontWeight="bold" fontSize="md">Semester KUBIX: {userInfo.semesterKubix}</Text>
+                <Text  fontWeight="bold" fontSize="md">Year KUBIX: {userInfo.yearKubix}</Text>
+                <Text  fontWeight="bold"  fontSize="md">Tasks Completed: {userInfo.tasksCompleted}</Text>
             </VStack>
             <VStack align={'center'} spacing={2}>
                 <Text fontWeight="extrabold" fontSize="lg">Menu</Text>
@@ -278,4 +283,4 @@ const UserDashboard = () => {
   );
 };
 
-export default UserDashboard;
+export default UserPage;

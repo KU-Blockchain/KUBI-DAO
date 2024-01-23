@@ -93,10 +93,10 @@ const User = () => {
   }, [web3, account, hasMemberNFT]);
 
   useEffect(() => {
-    if (isConnected && isMember) {
-      router.push('/userPage'); // Replace '/userPage' with your user page path
-    }
-  }, [isConnected, isMember, router]);
+     if (isConnected && isMember) {
+       router.push('/userPage/'); // Replace '/userPage' with your user page path
+     }
+   }, [isConnected, isMember, router]);
 
 
 

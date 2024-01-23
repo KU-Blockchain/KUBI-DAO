@@ -216,7 +216,7 @@ const Voting = () => {
                     <Text mt="2"> Voting Options:</Text>
                     <HStack spacing={6}>
                       {proposal.options.map((option, index) => (
-                        <Text fontSize= "lg" fontWeight="extrabold" key={index}>{option.name}</Text>
+                        <Text fontSize= "sm" fontWeight="extrabold" key={index}>{option.name}</Text>
                       ))}
                     </HStack>            
                   </Box>
