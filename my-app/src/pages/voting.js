@@ -260,7 +260,6 @@ const Voting = () => {
               <Spacer />
               <HStack justifyContent="bottom" spacing={4}>
               <IconButton
-                  aria-label="Previous polls test"
                   background="transparent"
                   border="none" 
                   _hover={{ bg: 'transparent' }} 
@@ -279,7 +278,6 @@ const Voting = () => {
                   }}
                 />
                 <IconButton
-                  aria-label="Next polls test"
                   background="transparent"
                   border="none" 
                   _hover={{ bg: 'transparent' }} 
@@ -404,7 +402,6 @@ const Voting = () => {
                     border="none" 
                     _hover={{ bg: 'transparent' }} 
                     _active={{ bg: 'transparent' }} 
-                    aria-label="Previous history polls"
                     icon={<ArrowBackIcon
                        boxSize="6" // smaller size
                       color="black"
@@ -420,7 +417,7 @@ const Voting = () => {
                    border="none" 
                    _hover={{ bg: 'transparent' }} 
                    _active={{ bg: 'transparent' }} 
-                    aria-label="Next history polls"
+                    
                     icon={<ArrowForwardIcon
                       boxSize="6" // smaller size
                       color="black"
@@ -542,7 +539,7 @@ const Voting = () => {
               <Spacer />
                 <HStack justifyContent="bottom" spacing={-2}  >
                 <IconButton
-                  aria-label="Next polls"
+                  
                   background="transparent"
                   border="none" 
                   _hover={{ bg: 'transparent' }} 
@@ -558,7 +555,7 @@ const Voting = () => {
                   }}
                 />
                 <IconButton
-                  aria-label="Previous polls"
+                  
                   background="transparent"
                   border="none" 
                   _hover={{ bg: 'transparent' }} 
@@ -658,7 +655,7 @@ const Voting = () => {
               <Spacer />
                 <HStack justifyContent="bottom" spacing={4}  >
                 <IconButton
-                  aria-label="Next polls"
+                  
                   background="transparent"
                   border="none" 
                   _hover={{ bg: 'transparent' }} 
@@ -674,7 +671,7 @@ const Voting = () => {
                   }}
                 />
                 <IconButton
-                  aria-label="Previous polls"
+                  
                   background="transparent"
                   border="none" 
                   _hover={{ bg: 'transparent' }} 
