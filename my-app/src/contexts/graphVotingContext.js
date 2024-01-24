@@ -1,7 +1,6 @@
 import { createContext, useContext, useState, useCallback } from "react";
 import { useWeb3Context } from "./Web3Context";
 import {useVoting} from "./votingContext";
-import { set } from "lodash";
 
 const graphVotingContext = createContext();
 
@@ -13,9 +12,7 @@ export const GraphVotingProvider = ({ children }) => {
     const {providerUniversal} = useWeb3Context();
     const SUBGRAPH_URL = 'https://api.thegraph.com/subgraphs/name/hudsonhrh/kubidao';
 
-
-    const [skipCountKubidOngoing, setSkipCountKubidOngoing] = useState(0); 
-    const [skipCountKubidCompleted, setSkipCountKubidCompleted] = useState(0); 
+    const [skipCount, setSkipCount] = useState(0); // For pagination
     const [kubidOngoingProposals, setKubidOngoingProposals] = useState([]); 
 
     const [kubidCompletedProposals, setKubidCompletedProposals] = useState([]); 
@@ -23,6 +20,7 @@ export const GraphVotingProvider = ({ children }) => {
     const {getWinnerFromContract} = useVoting();
 
     async function getCurrentBlockTime(){
+        console.log('provider', providerUniversal);
 
         const block = await providerUniversal.getBlock('latest');
         return block.timestamp;
@@ -50,18 +48,15 @@ export const GraphVotingProvider = ({ children }) => {
 
     // change this to load more ongoing and completed
     // also need to update how skip count works for each 
-    async function loadMoreKubidOngoing() {
-        console.log('load more ongoing');
-        const currentBlockTime = await getCurrentBlockTime();
+    async function queryKubidVotes() {
         
         const KUBID_VOTES_QUERY = `
         {
             proposals(
                 first: 10
-                skip: ${skipCountKubidOngoing}
+                skip: ${skipCount}
                 orderBy: creationTimestamp
                 orderDirection: desc
-                where: {expirationTimestamp_gt: "${currentBlockTime}"}
             ) {
                 id
                 name
@@ -85,48 +80,7 @@ export const GraphVotingProvider = ({ children }) => {
         const fetchedData = await querySubgraph(KUBID_VOTES_QUERY);
 
         if (fetchedData && fetchedData.proposals) {
-            setKubidOngoingProposals(kubidOngoingProposals => [...kubidOngoingProposals, ...fetchedData.proposals]);
-            setSkipCountKubidOngoing(skipCountKubidOngoing + 10);
-        }
-    }
-
-    async function loadMoreKubidCompleted() {
-        console.log('load more completed');
-        const currentBlockTime = await getCurrentBlockTime();
-        
-        const KUBID_VOTES_QUERY = `
-        {
-            proposals(
-                first: 10
-                skip: ${skipCountKubidCompleted}
-                orderBy: creationTimestamp
-                orderDirection: desc
-                where: {expirationTimestamp_lte: "${currentBlockTime}"}
-            ) {
-                id
-                name
-                description
-                execution
-                totalVotes
-                timeInMinutes
-                creationTimestamp
-                expirationTimestamp
-                winnerName
-                options {
-                    id
-                    optionIndex
-                    name
-                    votes
-                }
-            }
-        }
-        `;
-
-        const fetchedData = await querySubgraph(KUBID_VOTES_QUERY);
-
-        if (fetchedData && fetchedData.proposals) {
-            setKubidCompletedProposals(kubidCompletedProposals => [...kubidCompletedProposals, ...fetchedData.proposals]);
-            setSkipCountKubidCompleted(skipCountKubidCompleted + 10);
+            setKubidProposals(currentProposals => [...currentProposals, ...fetchedData.proposals]);
         }
     }
 
@@ -136,8 +90,8 @@ export const GraphVotingProvider = ({ children }) => {
         {
             proposals(
                 first: 10
-                orderBy: expirationTimestamp
-                orderDirection: asc
+                orderBy: creationTimestamp
+                orderDirection: desc
                 where: {expirationTimestamp_gt: "${currentBlockTime}"}
             ) {
                 id
@@ -162,7 +116,7 @@ export const GraphVotingProvider = ({ children }) => {
         const fetchedData = await querySubgraph(KUBID_VOTES_QUERY);
 
         setKubidOngoingProposals(fetchedData.proposals);
-        setSkipCountKubidOngoing(10);
+        setSkipCount(10);
         console.log('ongoing', fetchedData);
         
     }
@@ -207,7 +161,7 @@ export const GraphVotingProvider = ({ children }) => {
     
             setKubidCompletedProposals(fetchedData.proposals);
         }
-        setSkipCountKubidCompleted(10);
+        setSkipCount(10);
         console.log('completed', fetchedData);
     }
     
@@ -221,13 +175,17 @@ export const GraphVotingProvider = ({ children }) => {
     }
     
 
+    const loadMore = useCallback(() => {
+        queryKubidVotes();
+        setSkipCount(skipCount + 10);
+    }, [skipCount]);
+
     const value = {
+        loadMore,
         kubidOngoingProposals,
         kubidCompletedProposals,
         loadOngoingKubidInitial,
         loadCompletedKubidInitial,
-        loadMoreKubidOngoing,
-        loadMoreKubidCompleted,
     };
 
     return (
