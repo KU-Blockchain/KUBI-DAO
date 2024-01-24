@@ -76,7 +76,7 @@ const UserDashboard= () => {
 
   const glowAnimation = keyframes`
     from { text-shadow: 0 0 0px white; }
-    to { text-shadow: 0 0 6px gold; }
+    to { text-shadow: 0 0 20px gold;  }
   `;
 
 
