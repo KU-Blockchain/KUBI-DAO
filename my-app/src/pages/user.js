@@ -93,7 +93,7 @@ const User = () => {
 
     // useEffect(() => {
     // if (isConnected && isMember) {
-    //       router.push('/account'); 
+    //       router.push('/dashboard'); 
     //   }
     // }, [isConnected, isMember]);
 
