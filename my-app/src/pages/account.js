@@ -14,13 +14,10 @@ import {
   Image,
   Progress,
   Spacer,
-  Flex,
-  Link
 } from '@chakra-ui/react';
 import { SettingsIcon } from '@chakra-ui/icons';
 import CountUp from 'react-countup';
 import AccountSettingsModal from '@/components/userPage/AccountSettingsModal';
-import NextLink from 'next/link';
 
 import { useWeb3Context } from '@/contexts/Web3Context';
 import { useDataBaseContext } from '@/contexts/DataBaseContext';
@@ -41,21 +38,8 @@ const progressBarAnimation = keyframes`
   100% { width: 100%; }
 `;
 
-const renderDevMenu = () => (
-    <>
 
-        <DeployMenu />
-        <MintMenu />
-        <DataMenu />
-        <Button mt ={4} colorScheme="purple" _hover={{ bg: "purple.600", boxShadow: "md", transform: "scale(1.05)"}}>
-        <Link as={NextLink} href="/practice" color="white" fontWeight="bold" fontSize="l" mx={"2%"}> 
-            Practice
-          </Link>
-        </Button>
-  </>
-  );
-
-const UserPage= () => {
+const UserDashboard= () => {
     
   const prefersReducedMotion = usePrefersReducedMotion();
   const [countFinished, setCountFinished] = useState(false);
@@ -86,8 +70,6 @@ const UserPage= () => {
         
         
       }, [web3, account]);
-
-    
 
 
   const glassLayerStyle = {
@@ -322,4 +304,4 @@ const UserPage= () => {
   );
 };
 
-export default UserPage;
+export default UserDashboard;
