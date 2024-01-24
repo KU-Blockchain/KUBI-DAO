@@ -260,7 +260,7 @@ const Voting = () => {
               <Spacer />
               <HStack justifyContent="bottom" spacing={4}>
               <IconButton
-                  aria-label="Previous polls"
+                  aria-label="Previous polls test"
                   background="transparent"
                   border="none" 
                   _hover={{ bg: 'transparent' }} 
@@ -279,7 +279,7 @@ const Voting = () => {
                   }}
                 />
                 <IconButton
-                  aria-label="Next polls"
+                  aria-label="Next polls test"
                   background="transparent"
                   border="none" 
                   _hover={{ bg: 'transparent' }} 

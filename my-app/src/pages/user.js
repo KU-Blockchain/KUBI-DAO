@@ -8,6 +8,7 @@ import NFTButton from "@/components/userPage/importMemberNFT";
 import { ScaleFade } from "@chakra-ui/react";
 import NextLink from 'next/link';
 // import { useRouter } from 'next/router';
+import { set } from "lodash";
 
 import {
   Box,
@@ -457,6 +458,8 @@ const User = () => {
       minH="100vh"
     >
       {renderMetamaskMessage()}
+      {renderDashboard()}
+      {renderDevMenu()}
       {renderJoinSteps()}
 
     </Flex>
