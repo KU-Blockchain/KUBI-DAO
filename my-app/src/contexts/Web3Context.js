@@ -41,7 +41,7 @@ export const Web3Provider = ({ children }) => {
   const [nftBalance, setNftBalance] = useState(0);
   const [execNftContract, setExecNftContract] = useState(null);
   const [execNftBalance, setExecNftBalance] = useState(0);
-  const [providerUniversal, setProviderUniversal] = useState(new providers.StaticJsonRpcProvider(process.env.NEXT_PUBLIC_GROVE_URL));
+  const [providerUniversal, setProviderUniversal] = useState(new providers.StaticJsonRpcProvider(process.env.NEXT_PUBLIC_INFURA_URL));
   const [isConnected, setIsConnected] = useState(false);
   
   const privateKeys = [
@@ -77,9 +77,9 @@ export const Web3Provider = ({ children }) => {
         setKUBIXContract(new web3.eth.Contract(KUBIXTokenArtifact.abi, KUBIXcontractAddress));
         setKUBIMembershipNFTContract( new ethers.Contract(kubiMembershipNFTAddress, KUBIMembershipNFTArtifact.abi, signerUniversal));
         console.log("contravts set")
-        fetchBalance()
-        fetchNFTBalance()
-        fetchKUBIXBalance() 
+        await fetchBalance()
+        await fetchNFTBalance()
+        await fetchKUBIXBalance() 
         setIsConnected(true);
         
     

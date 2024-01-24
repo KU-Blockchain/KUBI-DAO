@@ -7,6 +7,7 @@ import MumbaiButton from "../components/userPage/importMumbai";
 import NFTButton from "@/components/userPage/importMemberNFT";
 import { ScaleFade } from "@chakra-ui/react";
 import NextLink from 'next/link';
+import { useRouter } from 'next/router';
 
 import {
   Box,
@@ -26,7 +27,6 @@ import KubixButton from "@/components/userPage/KubixButton";
 import DeployMenu from "@/components/userPage/DeployMenu";
 import MintMenu from "@/components/userPage/MintMenu";
 import DataMenu from "@/components/userPage/DataMenu";
-import { set } from "lodash";
 
 
 const glassLayerStyle = {
@@ -41,7 +41,10 @@ const glassLayerStyle = {
 
 
 const User = () => {
-  
+
+  const router = useRouter();
+
+
   const [email, setEmail] = useState("");
   const [username, setUsername] = useState("");
   const [name, setName] = useState("");
@@ -51,6 +54,8 @@ const User = () => {
 
   const [isConnected, setIsConnected] = useState(false);
   const [isMember, setIsMember] = useState(false);
+
+
 
 
 
@@ -86,6 +91,12 @@ const User = () => {
     checkConnection();
   }, [web3, account, hasMemberNFT]);
 
+    useEffect(() => {
+    if (isConnected && isMember) {
+          router.push('/dashboard'); 
+      }
+    }, [isConnected, isMember]);
+
 
 
 
@@ -114,7 +125,6 @@ const User = () => {
       console.log("inital")
       const networkId = await web3.eth.net.getId();
       if (networkId !== 80001) {
-        // Polygon Mumbai Network ID
         toast({
           title: "Wrong network",
           description: "Please switch to the Polygon Mumbai Network",
@@ -446,8 +456,6 @@ const User = () => {
       minH="100vh"
     >
       {renderMetamaskMessage()}
-      {renderDashboard()}
-      {renderDevMenu()}
       {renderJoinSteps()}
 
     </Flex>
