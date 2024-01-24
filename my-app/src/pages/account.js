@@ -28,17 +28,6 @@ import DataMenu from "@/components/userPage/DataMenu";
 
 
 
-const glowAnimation = keyframes`
-  from { text-shadow: 0 0 0px white; }
-  to { text-shadow: 0 0 6px gold; }
-`;
-
-const progressBarAnimation = keyframes`
-  0% { width: 0%; }
-  100% { width: 100%; }
-`;
-
-
 const UserDashboard= () => {
     
   const prefersReducedMotion = usePrefersReducedMotion();
@@ -81,6 +70,11 @@ const UserDashboard= () => {
     backdropFilter: 'blur(20px)',
     backgroundColor: 'rgba(0, 0, 0, .8)',
   };
+
+  const glowAnimation = keyframes`
+    from { text-shadow: 0 0 0px white; }
+    to { text-shadow: 0 0 6px gold; }
+  `;
 
   const userInfo = {
     username: userDetails && userDetails.username ? userDetails.username : 'User',

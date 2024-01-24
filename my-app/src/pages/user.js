@@ -7,7 +7,7 @@ import MumbaiButton from "../components/userPage/importMumbai";
 import NFTButton from "@/components/userPage/importMemberNFT";
 import { ScaleFade } from "@chakra-ui/react";
 import NextLink from 'next/link';
-import { useRouter } from 'next/router';
+// import { useRouter } from 'next/router';
 
 import {
   Box,
@@ -42,7 +42,7 @@ const glassLayerStyle = {
 
 const User = () => {
 
-  const router = useRouter();
+  // const router = useRouter();
 
 
   const [email, setEmail] = useState("");
@@ -91,11 +91,11 @@ const User = () => {
     checkConnection();
   }, [web3, account, hasMemberNFT]);
 
-    useEffect(() => {
-    if (isConnected && isMember) {
-          router.push('/account'); 
-      }
-    }, [isConnected, isMember]);
+    // useEffect(() => {
+    // if (isConnected && isMember) {
+    //       router.push('/account'); 
+    //   }
+    // }, [isConnected, isMember]);
 
 
 
