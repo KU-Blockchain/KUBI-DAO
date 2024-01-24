@@ -1,7 +1,6 @@
 import { createContext, useContext, useState, useCallback } from "react";
 import { useWeb3Context } from "./Web3Context";
 import {useVoting} from "./votingContext";
-import { set } from "lodash";
 
 const graphVotingContext = createContext();
 
