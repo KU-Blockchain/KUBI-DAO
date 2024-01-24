@@ -43,6 +43,7 @@ export const VotingProvider = ({ children }) => {
     console.log(signer.address)
     
     //contract adress for testing 0xBaE9BDd35904ad365ba6Efb028661241226acd16
+    // actual contrct adress 0x819AAcC4536Fe556AF4aB10cCdfcDf3F9224115A
     const contractD = new ethers.Contract('0x819AAcC4536Fe556AF4aB10cCdfcDf3F9224115A', KubidVotingABI.abi, signer);
     const [contract, setContract] = useState(contractD);
 

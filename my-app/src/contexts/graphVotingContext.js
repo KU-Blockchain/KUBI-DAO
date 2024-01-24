@@ -235,4 +235,6 @@ export const GraphVotingProvider = ({ children }) => {
             {children}
         </graphVotingContext.Provider>
     );
+
 }
+

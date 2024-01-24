@@ -81,4 +81,6 @@ const AccountSettingsModal = ({ isOpen, onClose }) => {
   );
 };
 
+
 export default AccountSettingsModal;
+

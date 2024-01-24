@@ -7,7 +7,9 @@ import MumbaiButton from "../components/userPage/importMumbai";
 import NFTButton from "@/components/userPage/importMemberNFT";
 import { ScaleFade } from "@chakra-ui/react";
 import NextLink from 'next/link';
+
 import { useRouter } from 'next/router';
+
 
 import {
   Box,
@@ -42,7 +44,9 @@ const glassLayerStyle = {
 
 const User = () => {
 
+
   const router = useRouter();
+
 
 
   const [email, setEmail] = useState("");
