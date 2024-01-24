@@ -76,6 +76,7 @@ const Home = () => {
         boxShadow="lg"
         position="relative"
         zIndex={1}
+        mt={4}
       >
         <div className="glass" style={glassLayerStyle} />
           <Container centerContent>
