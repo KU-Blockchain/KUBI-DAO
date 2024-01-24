@@ -14,9 +14,9 @@ import {
   Image,
   Progress,
   Spacer,
+  
 } from '@chakra-ui/react';
 import { SettingsIcon } from '@chakra-ui/icons';
-import CountUp from 'react-countup';
 import AccountSettingsModal from '@/components/userPage/AccountSettingsModal';
 
 import { useWeb3Context } from '@/contexts/Web3Context';
@@ -25,6 +25,9 @@ import { useDataBaseContext } from '@/contexts/DataBaseContext';
 import DeployMenu from "@/components/userPage/DeployMenu";
 import MintMenu from "@/components/userPage/MintMenu";
 import DataMenu from "@/components/userPage/DataMenu";
+
+import { useSpring, animated } from 'react-spring';
+
 
 
 
@@ -76,6 +79,8 @@ const UserDashboard= () => {
     to { text-shadow: 0 0 6px gold; }
   `;
 
+
+
   const userInfo = {
     username: userDetails && userDetails.username ? userDetails.username : 'User',
     kubixEarned: KUBIXbalance,
@@ -87,6 +92,14 @@ const UserDashboard= () => {
     nextReward: 'Shirt',
     tasksCompleted: userDetails && userDetails.tasksCompleted ? userDetails.tasksCompleted : 0,
   };
+
+  const animatedKubix = useSpring({ 
+    kubix: userInfo.kubixEarned, 
+    from: { kubix: 0 },
+    config: { duration: 1700 },
+    onRest: () => setCountFinished(true),
+  });
+  
 
   const animationProps = prefersReducedMotion
     ? {}
@@ -143,19 +156,17 @@ const UserDashboard= () => {
         <div style={glassLayerStyle} />
           <VStack position="relative" borderTopRadius="2xl" align="flex-start">
           <div style={glassLayerStyle} />
-            <Text pl={6} letterSpacing="-1%" mt={2} fontSize="4xl" id="kubix-earned" fontWeight="bold">KUBIX Earned: {' '}
-            {countFinished ? (
+            <Text pl={6} letterSpacing="-1%" mt={2} fontSize="4xl" id="kubix-earned" fontWeight="bold">
+                KUBIX Earned: {' '}
+                {countFinished ? (
                 <chakra.span {...animationProps}>{userInfo.kubixEarned}</chakra.span>
 
             ) : (
-              <CountUp
-                end={userInfo.kubixEarned}
-                duration={1.7}
-                onEnd={() => setCountFinished(true)}
-                preserveValue
-              />
-            )}
-          </Text>
+                <animated.span>
+                    {animatedKubix.kubix.to(kubix => kubix.toFixed(0))}
+                </animated.span>)}
+                </Text>
+
             <Text pl={6} pb={6} fontSize="xl">This makes you top 1% of Contributors</Text>
           </VStack>
             <VStack p={6}  pt={6} align="center" >
