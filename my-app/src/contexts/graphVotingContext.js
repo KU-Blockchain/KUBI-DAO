@@ -53,7 +53,7 @@ export const GraphVotingProvider = ({ children }) => {
         console.log('load more ongoing');
         const currentBlockTime = await getCurrentBlockTime();
         
-        const KUBID_VOTES_QUERY = `
+        const KUBID_VOTES_QUERY3 = `
         {
             proposals(
                 first: 10
@@ -81,7 +81,7 @@ export const GraphVotingProvider = ({ children }) => {
         }
         `;
 
-        const fetchedData = await querySubgraph(KUBID_VOTES_QUERY);
+        const fetchedData = await querySubgraph(KUBID_VOTES_QUERY3);
 
         if (fetchedData && fetchedData.proposals) {
             setKubidOngoingProposals(kubidOngoingProposals => [...kubidOngoingProposals, ...fetchedData.proposals]);
@@ -93,7 +93,7 @@ export const GraphVotingProvider = ({ children }) => {
         console.log('load more completed');
         const currentBlockTime = await getCurrentBlockTime();
         
-        const KUBID_VOTES_QUERY = `
+        const KUBID_VOTES_QUERY2 = `
         {
             proposals(
                 first: 10
@@ -121,7 +121,7 @@ export const GraphVotingProvider = ({ children }) => {
         }
         `;
 
-        const fetchedData = await querySubgraph(KUBID_VOTES_QUERY);
+        const fetchedData = await querySubgraph(KUBID_VOTES_QUERY2);
 
         if (fetchedData && fetchedData.proposals) {
             setKubidCompletedProposals(kubidCompletedProposals => [...kubidCompletedProposals, ...fetchedData.proposals]);
@@ -168,7 +168,7 @@ export const GraphVotingProvider = ({ children }) => {
 
     async function loadCompletedKubidInitial() {
         const currentBlockTime = await getCurrentBlockTime();
-        const KUBID_VOTES_QUERY = `
+        const KUBID_VOTES_QUERY1 = `
         {
             proposals(
                 first: 10
@@ -195,7 +195,7 @@ export const GraphVotingProvider = ({ children }) => {
         }
         `;
     
-        const fetchedData = await querySubgraph(KUBID_VOTES_QUERY);
+        const fetchedData = await querySubgraph(KUBID_VOTES_QUERY1);
     
         if (fetchedData && fetchedData.proposals) {
             for (const proposal of fetchedData.proposals) {
