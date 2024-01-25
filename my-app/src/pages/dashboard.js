@@ -54,10 +54,11 @@ const UserDashboard= () => {
   const closeSettingsModal = () => setSettingsModalOpen(false);
 
   const [claimedTasks, setClaimedTasks] = useState([]);
+  const [reccomendedTasks, setReccomendedTasks] = useState([]);
 
 
     const { web3, account,KUBIXbalance, hasExecNFT} = useWeb3Context();
-    const {userDetails, fetchUserDetails, findUserInProgressTasks, projects} = useDataBaseContext();
+    const {userDetails, fetchUserDetails, findUserInProgressTasks, projects, findRandomTasks} = useDataBaseContext();
 
     useEffect(() => {
         async function fetch(){
@@ -76,6 +77,14 @@ const UserDashboard= () => {
                     console.log(userDetails.username)
                     console.log(projects)
                     const wait =await findUserInProgressTasks(projects , userDetails.username)
+                   
+                    if(wait.length === 0){
+                        console.log("ready");
+                        const random = await findRandomTasks(projects, 3);
+                        setReccomendedTasks(random);
+                        console.log(random);
+                    }
+
                     setClaimedTasks(wait);
                     console.log(wait);
 
@@ -335,45 +344,36 @@ const UserDashboard= () => {
             </VStack>
             </HStack>
         </Box>
-        <Box w="100%"
-            pt={4}
-            borderRadius="2xl"
-            bg="transparent"
-            boxShadow="lg"
-            position="relative"
-            zIndex={2}>
-        <div style={glassLayerStyle} />
-        <VStack pb={2} align="flex-start" position="relative" borderTopRadius="2xl">
-        <div style={glassLayerStyle} />
-        
-            <Text pl={6} fontWeight="bold" fontSize="2xl" >Claimed Tasks {' '}</Text>
-            </VStack>
-            
-            <HStack spacing="3.5%" pb={2} ml={4}  mr={4} pt={4}>
-                {claimedTasks && (
-                claimedTasks.slice(0, 3).map((task) => (
-                    
-                    <Box w="31%" _hover={{ boxShadow: "md", transform: "scale(1.07)"}} key={task.projectId} p={4} borderRadius="2xl" overflow="hidden" bg="black" >
-                        <Link2 href={`/tasks/?task=${task.id}&projectId=${task.projectId}`}>
-                        <VStack textColor="white" align="stretch" spacing={3}>
-                        <Text fontSize="md" lineHeight="99%" fontWeight="extrabold">
-                            {task.name.length > 57 ? `${task.name.substring(0, 57)}...` : task.name}
-                        </Text>
-                            <HStack justify="space-between">
-                                <Badge colorScheme="yellow">Easy</Badge>
-                                <Text fontWeight="bold">KUBIX {task.kubixPayout}</Text>
-                            </HStack>
+        <Box w="100%" pt={4} borderRadius="2xl" bg="transparent" boxShadow="lg" position="relative" zIndex={2}>
+            <div style={glassLayerStyle} />
 
-                        </VStack>
+            <VStack pb={2} align="flex-start" position="relative" borderTopRadius="2xl">
+                <div style={glassLayerStyle} />
+                <Text pl={6} fontWeight="bold" fontSize="2xl">
+                    {claimedTasks && claimedTasks.length > 0 ? 'Claimed Tasks' : 'Reccomended Tasks'}
+                </Text>
+            </VStack>
+
+            <HStack spacing="3.5%" pb={2} ml={4} mr={4} pt={4}>
+                {((claimedTasks && claimedTasks.length > 0) ? claimedTasks : reccomendedTasks)?.slice(0, 3).map((task) => (
+                    <Box key={task.id} w="31%" _hover={{ boxShadow: "md", transform: "scale(1.07)"}} p={4} borderRadius="2xl" overflow="hidden" bg="black">
+                        <Link2 href={`/tasks/?task=${task.id}&projectId=${task.projectId}`}>
+                            <VStack textColor="white" align="stretch" spacing={3}>
+                                <Text fontSize="md" lineHeight="99%" fontWeight="extrabold">
+                                    {task.name.length > 57 ? `${task.name.substring(0, 57)}...` : task.name}
+                                </Text>
+                                <HStack justify="space-between">
+                                    <Badge colorScheme="yellow">{task.difficulty}</Badge>
+                                    <Text fontWeight="bold">KUBIX {task.kubixPayout}</Text>
+                                </HStack>
+                            </VStack>
                         </Link2>
                     </Box>
-                    
-                ))
-                )}
-
+                ))}
             </HStack>
-            
-            </Box>
+
+        </Box>
+
             <Box w="100%"
             pt={8}
             borderRadius="2xl"

@@ -109,6 +109,41 @@ export const DataBaseProvider = ({ children }) => {
       return userInProgressTasks;
   };
 
+  //find random tasks to reccomend to user
+  const findRandomTasks = (projectsData) => {
+    setTaskLoaded(true);
+    const randomTasks = [];
+  
+    // First, accumulate all tasks from open columns
+    projectsData.forEach(project => {
+      const openColumn = project.columns.find(column => column.id === "open");
+      if (openColumn) {
+        openColumn.tasks.forEach(task => {
+          const newTask = {
+            ...task,
+            projectId: project.id,
+          };
+          randomTasks.push(newTask);
+        });
+      }
+    });
+  
+    // Then, select 3 random tasks from the accumulated list
+    const randomTasksToReturn = [];
+    const randomTaskIndexes = new Set(); // Use a Set for efficient lookup
+    while (randomTasksToReturn.length < 3 && randomTasks.length > randomTasksToReturn.length) {
+      const randomIndex = Math.floor(Math.random() * randomTasks.length);
+      if (!randomTaskIndexes.has(randomIndex)) {
+        randomTaskIndexes.add(randomIndex);
+        randomTasksToReturn.push(randomTasks[randomIndex]);
+      }
+    }
+  
+    return randomTasksToReturn;
+  };
+  
+
+
   //function to select a project given its id 
   const setSelectedProjectId = (projectsData, projectId) => {
 
@@ -514,7 +549,8 @@ export const DataBaseProvider = ({ children }) => {
             getAddressByName,
             updateUserData,
             findUserInProgressTasks,
-            setSelectedProjectId
+            setSelectedProjectId,
+            findRandomTasks
         }}
         >
         {children}

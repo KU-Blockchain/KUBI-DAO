@@ -76,6 +76,25 @@ export const TaskBoardProvider = ({ children, initialColumns, onColumnChange, on
   };
 
   const addTask = async (task, destColumnId) => {
+
+    const calculateKubixPayout = (difficulty, estimatedHours) => {
+    
+      const difficulties = {
+        easy: { baseKubix: 1, multiplier: 16.5 },
+        medium: { baseKubix: 4, multiplier: 24 },
+        hard: { baseKubix: 10, multiplier: 30 },
+        veryHard: { baseKubix: 25, multiplier: 37.5 },
+      };
+      
+      const { baseKubix, multiplier } = difficulties[difficulty];
+      const totalKubix = Math.round(baseKubix + (multiplier * estimatedHours));
+      return totalKubix;
+  
+    };
+  
+    const kubixPayout = calculateKubixPayout(task.difficulty, task.estHours);
+
+    console.log("task: ", task)
     const newTaskColumns = [...taskColumns];
 
     const destColumn = newTaskColumns.find((column) => column.id === destColumnId);
@@ -83,6 +102,7 @@ export const TaskBoardProvider = ({ children, initialColumns, onColumnChange, on
     const newTask = {
       ...task,
       projectId: selectedProject.id,
+      kubixPayout: kubixPayout,
     };
 
 
