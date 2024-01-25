@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, use } from 'react';
 import {
   Box,
   Button,
@@ -14,6 +14,7 @@ import {
   Image,
   Progress,
   Spacer,
+    Badge,
   
 } from '@chakra-ui/react';
 import { SettingsIcon } from '@chakra-ui/icons';
@@ -27,6 +28,9 @@ import MintMenu from "@/components/userPage/MintMenu";
 import DataMenu from "@/components/userPage/DataMenu";
 
 import { useSpring, animated } from 'react-spring';
+import TaskCard from '@/components/TaskManager/TaskCard';
+
+import Link2 from 'next/link';
 
 
 
@@ -49,19 +53,44 @@ const UserDashboard= () => {
   const openSettingsModal = () => setSettingsModalOpen(true);
   const closeSettingsModal = () => setSettingsModalOpen(false);
 
+  const [claimedTasks, setClaimedTasks] = useState([]);
+
 
     const { web3, account,KUBIXbalance, hasExecNFT} = useWeb3Context();
-    const {userDetails, fetchUserDetails} = useDataBaseContext();
+    const {userDetails, fetchUserDetails, findUserInProgressTasks, projects} = useDataBaseContext();
 
     useEffect(() => {
         async function fetch(){
             await fetchUserDetails(web3,account);
+            
             
         }
         fetch();
         
         
       }, [web3, account]);
+
+      useEffect(() => {
+            async function fetch(){
+                if (userDetails && projects){
+                    console.log(userDetails.username)
+                    console.log(projects)
+                    const wait =await findUserInProgressTasks(projects , userDetails.username)
+                    setClaimedTasks(wait);
+                    console.log(wait);
+
+                }
+                else{
+                    console.log("not ready");
+        
+                }
+                
+
+            }
+            fetch();
+        }, [userDetails, projects]);
+
+        
 
 
   const glassLayerStyle = {
@@ -212,7 +241,7 @@ const UserDashboard= () => {
                 </animated.span>)}
                 </Text>
 
-            <Text pl={6} pb={6} fontSize="xl">This makes you top 1% of Contributors</Text>
+            <Text pl={6} pb={4} fontSize="xl">This makes you top 1% of Contributors</Text>
           </VStack>
             <VStack p={6}  pt={6} align="center" >
                 <Text fontSize="3xl" fontWeight="bold">{userInfo.tier} Member</Text>
@@ -243,7 +272,7 @@ const UserDashboard= () => {
             </VStack>
             <VStack  pl={6} pb={4} align="flex-start" spacing={2}>
                 <Text fontSize= "2xl" fontWeight="bold">Next Reward: {nextTierInfo.nextTierReward}</Text>
-                <Button colorScheme="teal">Browse all</Button>
+                <Button colorScheme="green">Browse all</Button>
             </VStack>
 
         </Box>
@@ -314,20 +343,36 @@ const UserDashboard= () => {
             position="relative"
             zIndex={2}>
         <div style={glassLayerStyle} />
+        <VStack pb={2} align="flex-start" position="relative" borderTopRadius="2xl">
+        <div style={glassLayerStyle} />
         
-            <Text ml={6} fontWeight="bold" fontSize="2xl" pt={4}>Claimed Tasks {' '}</Text>
-            {/* Make into commpnent that grabs claimed task cards */}
-            <HStack pb={6} ml={6} pt={4}>
-                <Button colorScheme="green" size="md">Task 1</Button>
-                <Button colorScheme="green" size="md">Task 2</Button>
-                <Button colorScheme="green" size="md">Task 3</Button>
+            <Text pl={6} fontWeight="bold" fontSize="2xl" >Claimed Tasks {' '}</Text>
+            </VStack>
+            
+            <HStack spacing="3.5%" pb={2} ml={4}  mr={4} pt={4}>
+                {claimedTasks && (
+                claimedTasks.slice(0, 3).map((task) => (
+                    
+                    <Box w="31%" _hover={{ boxShadow: "md", transform: "scale(1.07)"}} key={task.projectId} p={4} borderRadius="2xl" overflow="hidden" bg="black" >
+                        <Link2 href={`/tasks/?task=${task.id}&projectId=${task.projectId}`}>
+                        <VStack textColor="white" align="stretch" spacing={3}>
+                        <Text fontSize="md" lineHeight="99%" fontWeight="extrabold">
+                            {task.name.length > 57 ? `${task.name.substring(0, 57)}...` : task.name}
+                        </Text>
+                            <HStack justify="space-between">
+                                <Badge colorScheme="yellow">Easy</Badge>
+                                <Text fontWeight="bold">KUBIX {task.kubixPayout}</Text>
+                            </HStack>
+
+                        </VStack>
+                        </Link2>
+                    </Box>
+                    
+                ))
+                )}
+
             </HStack>
-            <Text ml={6} fontWeight="bold" fontSize="2xl" pt={10}>Reccomended Tasks {' '}</Text>
-            <HStack pb={6} ml={6} pt={4}>
-                <Button colorScheme="green" size="md">Task 1</Button>
-                <Button colorScheme="green" size="md">Task 2</Button>
-                <Button colorScheme="green" size="md">Task 3</Button>
-            </HStack>
+            
             </Box>
             <Box w="100%"
             pt={8}
@@ -338,7 +383,11 @@ const UserDashboard= () => {
             zIndex={2}>
         <div style={glassLayerStyle} />
 
-            <Text ml={6} fontWeight="bold" fontSize="2xl" pt={4}>Ongoing Polls {' '}</Text>
+        <VStack pb={2} align="flex-start" position="relative" borderTopRadius="2xl">
+        <div style={glassLayerStyle} />
+            <Text pl={6} fontWeight="bold" fontSize="2xl" >Ongoing Polls {' '}</Text>
+        </VStack>
+            {/* Make into commpnent that grabs votes ongoing */}
             <HStack pb={6} ml={6} pt={4}>
                 <Button colorScheme="green" size="md">Task 1</Button>
                 <Button colorScheme="green" size="md">Task 2</Button>

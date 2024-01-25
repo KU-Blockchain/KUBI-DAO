@@ -5,10 +5,32 @@ import { Box } from '@chakra-ui/react';
 import MainLayout from '../components/TaskManager/MainLayout';
 import FloatingBalls from '../components/TaskManager/floatingBalls';
 import { useDataBaseContext } from '@/contexts/DataBaseContext';
+import { useRouter } from 'next/router';
+
+
+
+
 
 const Tasks = () => {
-  const {setTaskLoaded} = useDataBaseContext();
+  const router = useRouter();
+  
+  const {setTaskLoaded, setSelectedProjectId, projects} = useDataBaseContext();
   const containerRef = useRef();
+
+  useEffect(()=>{
+    
+
+
+    if(router.query.projectId!==null){
+      console.log("project id",router.query.projectId)
+      
+      setSelectedProjectId(projects,router.query.projectId)
+
+    }
+    
+
+
+},[router.query.projectId,projects]);
 
   useEffect(() => {
     setTaskLoaded(true);

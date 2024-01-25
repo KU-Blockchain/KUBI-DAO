@@ -69,7 +69,8 @@ const TaskColumn = ({ title, tasks, columnId }) => {
           difficulty: updatedTask.difficulty,
           estHours: updatedTask.estHours,
           claimedBy: "",
-          claimerUsername: "", 
+          claimerUsername: "",
+          projectId: updatedTask.projectId, 
         };
         addTask(updatedTask, columnId);
       }
@@ -192,6 +193,7 @@ const TaskColumn = ({ title, tasks, columnId }) => {
                 kubixPayout={task.kubixPayout}
                 claimerUsername={task.claimerUsername}
                 columnId={columnId}
+                projectId={task.projectId}
                 onEditTask={(updatedTask) => handleEditTask(updatedTask, index)}
               />
             ))}

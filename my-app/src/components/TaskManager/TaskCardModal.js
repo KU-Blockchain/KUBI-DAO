@@ -34,7 +34,7 @@ const TaskCardModal = ({task, columnId, onEditTask }) => {
   const { moveTask, deleteTask} = useTaskBoard();
   const { hasExecNFT,hasMemberNFT, account, mintKUBIX} = useWeb3Context();
 
-  const { getUsernameByAddress } = useDataBaseContext();
+  const { getUsernameByAddress,setSelectedProjectId } = useDataBaseContext();
 
   const router = useRouter();
   
@@ -43,6 +43,13 @@ const TaskCardModal = ({task, columnId, onEditTask }) => {
   useEffect(()=>{
     if(router.query.task === task.id){
       onOpen();
+      console.log("project id",router.query.task.projectId)
+      if(router.query.task.projectId){
+        
+        setSelectedProjectId(router.query.task.projectId)
+
+      }
+      
     } else {
       onClose();
     }
