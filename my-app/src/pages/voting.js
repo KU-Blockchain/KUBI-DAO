@@ -24,7 +24,7 @@ const glassLayerStyle = {
   zIndex: -1,
   borderRadius: "inherit",
   backdropFilter: "blur(20px)",
-  backgroundColor: "rgba(0, 0, 0, .6)",
+  backgroundColor: "rgba(0, 0, 0, .7)",
 };
 
 
@@ -134,7 +134,7 @@ const Voting = () => {
           position="relative"
           display="flex"
           zIndex={0}
-          color= "ghostwhite"
+          color= "white"
           
         >
           <div className="glass" style={glassLayerStyle} />

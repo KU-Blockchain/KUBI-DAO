@@ -19,6 +19,8 @@ import TrashBin from './TrashBin';
 
 import '../../styles/ProjectSidebar.module.css';
 
+
+
 const glassLayerStyle = {
   position: 'absolute',
   width: '100%',
@@ -34,6 +36,8 @@ const ProjectSidebar = ({ projects,selectedProject, onSelectProject, onCreatePro
   const [showInput, setShowInput] = useState(false);
   const { hasExecNFT} = useWeb3Context();
   const { handleDeleteProject } = useDataBaseContext();
+
+
   
   const handleCreateProject = () => {
     

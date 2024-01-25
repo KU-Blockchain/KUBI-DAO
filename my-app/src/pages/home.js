@@ -107,12 +107,12 @@ const Home = () => {
         zIndex={1}
       >
         <div className="glass" style={glassLayerStyle} />
-        <Container centerContent>
+        <Container  centerContent>
           
             <Heading mt="2%" color= "ghostwhite" as="h2" size="xl">
               About KUBI DAO
             </Heading>
-            <Text mt="4%" color= "ghostwhite" fontSize="lg" textAlign="center">
+            <Text ml="8%" mr="8%" mt="4%" color= "ghostwhite" fontSize="lg" textAlign="left">
               KUBI DAO is a Decentralized Autonomous Organization that offers a
               unique model for collaboration, incentives, and privileges. Our
               hybrid tokenomics system combines KUBIX and KUBI tokens to create a

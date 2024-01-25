@@ -4,13 +4,14 @@ import { useDrag } from 'react-dnd';
 import TaskCardModal from './TaskCardModal';
 import { useRouter } from 'next/router';
 
-const TaskCard = ({ id, name, description, difficulty, estHours, index, columnId, submission,claimedBy,claimerUsername, onEditTask, moveTask, }) => {
+const TaskCard = ({ id, name, description, difficulty, estHours, index, columnId, submission,claimedBy,claimerUsername, onEditTask, moveTask,projectId }) => {
   const router = useRouter();
 
   const openTask = () => {
+    console.log("projectId: ", projectId)
     router.push({
       pathname: '/tasks',
-      query: { task: id },
+      query: { task: id, projectId: projectId },
     }, undefined, { shallow: true });
   };
 

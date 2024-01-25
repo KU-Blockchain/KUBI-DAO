@@ -3,6 +3,7 @@ import ProjectManagerArtifact from '../abi/ProjectManager.json';
 import { createContext, useContext, useState, useEffect } from 'react';
 import { useWeb3Context } from './Web3Context';
 import { useIPFScontext } from './IPFScontext';
+import { set } from 'lodash';
 
 
 //UPDATE THIS FILE TO USE RPC TO UPDTAE THE DATABASE
@@ -68,6 +69,7 @@ export const DataBaseProvider = ({ children }) => {
         );
       
         setProjects(projectsData);
+        console.log("projectsData", projectsData)
         setSelectedProject(projectsData[0]);
       } catch (error) {
         console.error("Error fetching project data from IPFS:", error);
@@ -83,7 +85,47 @@ export const DataBaseProvider = ({ children }) => {
 
 
 
-  
+  const findUserInProgressTasks = (projectsData,claimedUsername) => {
+      setTaskLoaded(true);
+      const userInProgressTasks = [];
+
+      projectsData.forEach(project => {
+          // Find the 'In Progress' column
+          const inProgressColumn = project.columns.find(column => column.id === "inProgress");
+          if (inProgressColumn) {
+              // Filter tasks claimed by the user in 'In Progress' column
+              inProgressColumn.tasks.forEach(task => {
+                  if (task.claimerUsername === claimedUsername) {
+                    const newTask = {
+                      ...task,
+                      projectId: project.id,
+                    }
+                      userInProgressTasks.push(newTask);
+                  }
+              });
+          }
+      });
+
+      return userInProgressTasks;
+  };
+
+  //function to select a project given its id 
+  const setSelectedProjectId = (projectsData, projectId) => {
+
+    projectsData.forEach(project => {
+      console.log("project.id", project.id)
+      console.log("projectId", projectId)
+      if (project.id.toString() === projectId) {
+        console.log("project", project)
+         setSelectedProject(project);
+      }
+  }
+  )
+  };
+
+
+
+
   
 
 
@@ -470,7 +512,9 @@ export const DataBaseProvider = ({ children }) => {
             findMinMaxKubixBalance,
             setTaskLoaded,
             getAddressByName,
-            updateUserData
+            updateUserData,
+            findUserInProgressTasks,
+            setSelectedProjectId
         }}
         >
         {children}

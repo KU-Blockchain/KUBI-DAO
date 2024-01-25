@@ -6,6 +6,7 @@ import { useToast } from '@chakra-ui/react';
 
 
 
+
 const TaskBoardContext = createContext();
 
 export const useTaskBoard = () => {
@@ -15,7 +16,7 @@ export const useTaskBoard = () => {
 export const TaskBoardProvider = ({ children, initialColumns, onColumnChange, onUpdateColumns, account }) => {
   const toast=useToast();
   const [taskColumns, setTaskColumns] = useState(initialColumns);
-  const { getUsernameByAddress } = useDataBaseContext();
+  const { getUsernameByAddress, selectedProject } = useDataBaseContext();
 
   useEffect(() => {
     setTaskColumns(initialColumns);
@@ -74,10 +75,17 @@ export const TaskBoardProvider = ({ children, initialColumns, onColumnChange, on
     return true;
   };
 
-  const addTask = async (newTask, destColumnId) => {
+  const addTask = async (task, destColumnId) => {
     const newTaskColumns = [...taskColumns];
 
     const destColumn = newTaskColumns.find((column) => column.id === destColumnId);
+
+    const newTask = {
+      ...task,
+      projectId: selectedProject.id,
+    };
+
+
 
     destColumn.tasks.push(newTask);
 
