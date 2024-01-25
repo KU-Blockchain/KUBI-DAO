@@ -4,7 +4,7 @@ import { useDrag } from 'react-dnd';
 import TaskCardModal from './TaskCardModal';
 import { useRouter } from 'next/router';
 
-const TaskCard = ({ id, name, description, difficulty, estHours, index, columnId, submission,claimedBy,claimerUsername, onEditTask, moveTask,projectId }) => {
+const TaskCard = ({ id, name, description, difficulty, estHours, index, columnId, submission,claimedBy,claimerUsername, onEditTask, moveTask,projectId, kubixPayout }) => {
   const router = useRouter();
 
   const openTask = () => {
@@ -15,21 +15,7 @@ const TaskCard = ({ id, name, description, difficulty, estHours, index, columnId
     }, undefined, { shallow: true });
   };
 
-  const calculateKubixPayout = (difficulty, estimatedHours) => {
-    
-    const difficulties = {
-      easy: { baseKubix: 1, multiplier: 16.5 },
-      medium: { baseKubix: 4, multiplier: 24 },
-      hard: { baseKubix: 10, multiplier: 30 },
-      veryHard: { baseKubix: 25, multiplier: 37.5 },
-    };
-    
-    const { baseKubix, multiplier } = difficulties[difficulty];
-    const totalKubix = Math.round(baseKubix + (multiplier * estimatedHours));
-    return totalKubix;
-  };
 
-  const kubixPayout = calculateKubixPayout(difficulty, estHours);
 
   const [{ isDragging }, drag] = useDrag(() => ({
     type: 'task',
