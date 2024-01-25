@@ -80,6 +80,49 @@ const UserDashboard= () => {
   `;
 
 
+  const determineTier = (kubixBalance) => {
+    if (kubixBalance >= 2500) return "Diamond";
+    else if (kubixBalance >= 1000) return "Ruby";
+    else if (kubixBalance >= 500) return "Gold";
+    else if (kubixBalance >= 250) return "Silver";
+    else if (kubixBalance >= 100) return "Bronze";
+    else return "New"; 
+  };
+
+  const tierInfo = {
+    Diamond: {
+        nextTier: "Double Diamond",
+        nextTierKUBIX: "5000",
+        nextTierReward: "Flex",
+    },
+    Ruby: {
+        nextTier: "Diamond",
+        nextTierKUBIX: 2500,
+        nextTierReward: "Choice of Any Item",
+    },
+    Gold: {
+        nextTier: "Ruby",
+        nextTierKUBIX: 1000,
+        nextTierReward: "Choice of Shirt, Hat, or Pullover",
+    },
+    Silver: {
+        nextTier: "Gold",
+        nextTierKUBIX: 500,
+        nextTierReward: "Choice of Shirt or Hat",
+    },
+    Bronze: {
+        nextTier: "Silver",
+        nextTierKUBIX: 250,
+        nextTierReward: "Choice of Shirt",
+    },
+    New: {
+        nextTier: "Bronze",
+        nextTierKUBIX: 100,
+        nextTierReward: "T-shirt and Trip Eligibility",
+    },
+    };
+
+
 
   const userInfo = {
     username: userDetails && userDetails.username ? userDetails.username : 'User',
@@ -88,10 +131,12 @@ const UserDashboard= () => {
     semesterKubix: userDetails && userDetails.kubixBalance2024Spring ? userDetails.kubixBalance2024Spring : 0,
     yearKubix: userDetails && userDetails.kubixBalance2024Spring && userDetails.kubixBalance2023Fall ? userDetails.kubixBalance2023Fall+ userDetails.kubixBalance2024Spring : 0,
     accountAddress: account ? account : '0x000',
-    tier: 'Gold Tier Member',
+    tier: determineTier(KUBIXbalance),
     nextReward: 'Shirt',
     tasksCompleted: userDetails && userDetails.tasksCompleted ? userDetails.tasksCompleted : 0,
   };
+
+  const nextTierInfo = tierInfo[userInfo.tier];
 
   const animatedKubix = useSpring({ 
     kubix: userInfo.kubixEarned, 
@@ -110,15 +155,15 @@ const UserDashboard= () => {
 
       const nextTierKUBIX = 1500;
 
-    let progressPercentage = (userInfo.kubixEarned / nextTierKUBIX) * 100;
+    let progressPercentage = (userInfo.kubixEarned / nextTierInfo.nextTierKUBIX) * 100;
     console.log(userDetails);
 
     useEffect(() => {
-        if ((userInfo.kubixEarned / nextTierKUBIX) * 100 > 100) {
+        if ((userInfo.kubixEarned / nextTierInfo.nextTierKUBIX) * 100 > 100) {
           setUpgradeAvailable(true);
           progressPercentage = 100;
         }
-      }, [userInfo.kubixEarned, nextTierKUBIX]);
+      }, [userInfo.kubixEarned, nextTierInfo.nextTierKUBIX]);
 
 
     const getProgressBarAnimation = (percentage) => keyframes`
@@ -157,7 +202,7 @@ const UserDashboard= () => {
           <VStack position="relative" borderTopRadius="2xl" align="flex-start">
           <div style={glassLayerStyle} />
             <Text pl={6} letterSpacing="-1%" mt={2} fontSize="4xl" id="kubix-earned" fontWeight="bold">
-                KUBIX Earned: {' '}
+                KUBIX Earned {' '}
                 {countFinished ? (
                 <chakra.span {...animationProps}>{userInfo.kubixEarned}</chakra.span>
 
@@ -170,7 +215,7 @@ const UserDashboard= () => {
             <Text pl={6} pb={6} fontSize="xl">This makes you top 1% of Contributors</Text>
           </VStack>
             <VStack p={6}  pt={6} align="center" >
-                <Text fontSize="3xl" fontWeight="bold">{userInfo.tier}</Text>
+                <Text fontSize="3xl" fontWeight="bold">{userInfo.tier} Member</Text>
                 <Image src="/images/KUBC-logo-RGB-1200.png" alt="KUBC Logo"  maxW="50%" />
                 <Progress
                     value={progressPercentage}
@@ -189,15 +234,15 @@ const UserDashboard= () => {
 
                 
                 <HStack>
-                    <Text fontSize="xl" fontWeight="bold">Next Tier: Diamond</Text>
-                    <Text>({userInfo.kubixEarned}/{nextTierKUBIX})</Text>
+                    <Text fontSize="xl" fontWeight="bold">Next Tier: {nextTierInfo.nextTier}</Text>
+                    <Text>({userInfo.kubixEarned}/{nextTierInfo.nextTierKUBIX})</Text>
                 </HStack>
                 <Spacer />
                 {upgradeAvailable && (
                 <Button mt={6}colorScheme="blue">Upgrade Tier</Button>)}
             </VStack>
             <VStack  pl={6} pb={4} align="flex-start" spacing={2}>
-                <Text fontSize= "3xl" fontWeight="bold">Next Reward: Coming Soon...</Text>
+                <Text fontSize= "2xl" fontWeight="bold">Next Reward: {nextTierInfo.nextTierReward}</Text>
                 <Button colorScheme="teal">Browse all</Button>
             </VStack>
 
