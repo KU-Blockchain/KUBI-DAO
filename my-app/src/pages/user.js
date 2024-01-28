@@ -5,7 +5,7 @@ import { useWeb3Context } from "@/contexts/Web3Context";
 import { ethers } from "ethers";
 import MumbaiButton from "../components/userPage/importMumbai";
 import NFTButton from "@/components/userPage/importMemberNFT";
-import { ScaleFade } from "@chakra-ui/react";
+import { HStack, ScaleFade } from "@chakra-ui/react";
 import NextLink from 'next/link';
 
 import { useRouter } from 'next/router';
@@ -22,6 +22,7 @@ import {
   Flex,
   Heading,
   Link,
+  Image,
   VStack,
 } from "@chakra-ui/react";
 
@@ -53,6 +54,11 @@ const User = () => {
   const [username, setUsername] = useState("");
   const [name, setName] = useState("");
   const[showMetaMaskMessage, setShowMetaMaskMessage]=useState(false);
+  const[dispaly,setDispaly]=useState(true);
+
+  const setDispalyHandle=()=>{
+    setDispaly(false);
+  }
 
 
 
@@ -250,7 +256,7 @@ const User = () => {
     <ScaleFade initialScale={0.8} in={true}>
       <VStack
         spacing={20}
-        style={{ position: "relative", width: "100%", maxWidth: "1200px" }}
+        
         color={"ghostwhite"}
       >
     {isConnected && !isMember && (
@@ -264,7 +270,6 @@ const User = () => {
           boxShadow="lg"
           display="flex"
           w="100%"
-          maxWidth="600px"
           bg="transparent"
           position="relative"
           mr={6}
@@ -274,7 +279,9 @@ const User = () => {
         >
           <div className="glass" style={glassLayerStyle} />
 
-          <Heading  as="h2" size="lg" mb={6}>
+          <VStack fontWeight="bold"spacing={6} width="100%" align="flex-start">
+
+          <Heading  as="h2" size="lg" mb={4}>
             How To Join the DAO
           </Heading>
           <Text fontSize="xl"  mb={4}>1. If you haven't added the polygon Mumbai testnet import it below:</Text>
@@ -287,6 +294,7 @@ const User = () => {
           <KubixButton />
           <Text mt ={4}  fontSize="xl" >4. Make sure to switch to the mumbai Network at the top of Metamask </Text>
           <Text mt ={4}  mb="5%" fontSize="xl" >5. Put in your information to the right and confirm the minting transaction on Metamask.</Text>
+          </VStack>
         </Box>
         
           <Box
@@ -399,10 +407,18 @@ const User = () => {
   const renderMetamaskMessage = () => (
     <ScaleFade initialScale={0.8} in={true}>
     <>
-      {!isConnected && (
-        <Text fontSize="3xl" fontWeight="extrabold" color="black" mt="15%">
+    
+      {!isConnected && (<>
+      <VStack  position="relative">
+      <Text fontSize="3xl" fontWeight="extrabold" color="white" mt="4%">
           Please refresh with Metamask. If you don't have Metamask, please install it <Link href="https://metamask.io/" isExternal fontWeight="bold" textDecoration="underline" color="ghostwhite">here</Link>
         </Text>
+
+
+      </VStack>
+        
+
+        </>
       )}
     </>
     </ScaleFade>
@@ -447,22 +463,37 @@ const User = () => {
 
   );
 
-  return (
-    
-    <Flex
-      flexDirection="row"
-      alignItems="flex-start"
-      justifyContent="center"
-      p={8}
-      w="100%"
-      h="100%"
-      bg="#1285ff"
-      minH="100vh"
-    >
-      {renderMetamaskMessage()}
+  const render = () => (
+    <>
       {renderJoinSteps()}
+      {renderMetamaskMessage()}
+    </>
+  );
 
-    </Flex>
+
+
+  return (
+    <>
+      {dispaly ? (
+        console.log("displaying"),
+        <VStack mt="8" spacing="6">
+          <Text  fontWeight="extrabold" fontSize="3xl" textColor="white">Join to become a member and Access the Dashboard Below</Text>
+          <Button onClick={setDispalyHandle} size="lg" mt={4} bg="green.300" _hover={{ bg: "green.400", boxShadow: "md", transform: "scale(1.05)" }}>
+            Join Now
+          </Button>
+          <Image w="60%" src="/images/becomeUser.png" />
+        </VStack>
+      ):(
+
+        render()
+        
+      )}
+      
+    </>
+
+    
+
+
     
   );
 };
