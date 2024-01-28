@@ -22,15 +22,18 @@ import AccountSettingsModal from '@/components/userPage/AccountSettingsModal';
 
 import { useWeb3Context } from '@/contexts/Web3Context';
 import { useDataBaseContext } from '@/contexts/DataBaseContext';
+import { useLeaderboard } from '@/contexts/leaderboardContext';
 
 import DeployMenu from "@/components/userPage/DeployMenu";
 import MintMenu from "@/components/userPage/MintMenu";
 import DataMenu from "@/components/userPage/DataMenu";
 
+
 import { useSpring, animated } from 'react-spring';
-import TaskCard from '@/components/TaskManager/TaskCard';
+
 
 import Link2 from 'next/link';
+import { set } from 'lodash';
 
 
 
@@ -38,6 +41,11 @@ import Link2 from 'next/link';
 
 
 const UserDashboard= () => {
+
+    const {setLeaderboardLoaded,userPercentage} = useLeaderboard();
+    
+
+    
     
   const prefersReducedMotion = usePrefersReducedMotion();
   const [countFinished, setCountFinished] = useState(false);
@@ -65,6 +73,7 @@ const UserDashboard= () => {
     useEffect(() => {
         async function fetch(){
             await fetchUserDetails(web3,account);
+            await setLeaderboardLoaded(true);
             
             
         }
@@ -180,7 +189,8 @@ const UserDashboard= () => {
     tier: determineTier(KUBIXbalance),
     nextReward: 'Shirt',
     tasksCompleted: userDetails && userDetails.tasksCompleted ? userDetails.tasksCompleted : 0,
-    percentage:"1%"
+    percentage: userPercentage? (userPercentage * 100) : 0,
+
   };
 
   const nextTierInfo = tierInfo[userInfo.tier];
@@ -261,11 +271,11 @@ const UserDashboard= () => {
                 </animated.span>)}
                 </Text>
 
-            <Text pl={6} pb={4} fontSize="xl">This makes you top {userInfo.percentage} of Contributors</Text>
+            <Text pl={6} pb={4} fontSize="lg">This makes you top {userInfo.percentage}% of Contributors</Text>
           </VStack>
-            <VStack p={6}  pt={6} align="center" >
+            <VStack p={0} pt={4} align="center" >
                 <Text fontSize="3xl" fontWeight="bold">{userInfo.tier} Member</Text>
-                <Image src={tierImage} alt="KUBC Logo"  maxW="50%" />
+                <Image src={tierImage} alt="KUBC Logo"  maxW="45%" />
                 <Progress
                     value={progressPercentage}
                     max={100} 
@@ -338,12 +348,10 @@ const UserDashboard= () => {
                 <Text  fontWeight="bold"  fontSize="md">Tasks Completed: {userInfo.tasksCompleted}</Text>
             </VStack>
             <VStack align={'center'} spacing={2}>
-
-                <Text fontWeight="extrabold" fontSize="lg">Menu</Text>
                 {hasExecNFT && (
-                <Button colorScheme="green" onClick={toggleDevMenu} size="sm">Dev Menu</Button>
+                <Button colorScheme="green" onClick={toggleDevMenu} size="sm">Developer Menu</Button>
                 )}
-                {!hasExecNFT &&(<Button colorScheme="red" size="sm">Become Dev</Button>)}
+                {!hasExecNFT &&(<Button colorScheme="red" size="sm">Become Developer</Button>)}
                 {showDevMenu && (
                 <>
                     <DeployMenu />
