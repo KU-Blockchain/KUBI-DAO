@@ -119,9 +119,42 @@ export const TaskBoardProvider = ({ children, initialColumns, onColumnChange, on
 
   //a function to edit a task
   const editTask = async(updatedTask, destColumnId, destTaskIndex) => {
+    
+    
+    
     const newTaskColumns = [...taskColumns];
     const destColumn = newTaskColumns.find((column) => column.id === destColumnId);
-    destColumn.tasks.splice(destTaskIndex, 1, updatedTask);
+
+    const calculateKubixPayout = (difficulty, estimatedHours) => {
+    
+      const difficulties = {
+        easy: { baseKubix: 1, multiplier: 16.5 },
+        medium: { baseKubix: 4, multiplier: 24 },
+        hard: { baseKubix: 10, multiplier: 30 },
+        veryHard: { baseKubix: 25, multiplier: 37.5 },
+      };
+      
+      const { baseKubix, multiplier } = difficulties[difficulty];
+      const totalKubix = Math.round(baseKubix + (multiplier * estimatedHours));
+      return totalKubix;
+  
+    };
+  
+    const kubixPayout = calculateKubixPayout(updatedTask.difficulty, updatedTask.estHours);
+
+
+
+
+    const newTask = {
+      ...updatedTask,
+      projectId: selectedProject.id,
+      kubixPayout: kubixPayout,
+    };
+    destColumn.tasks.splice(destTaskIndex, 1, newTask);
+
+    destColumn.tasks.push(newTask);
+
+
     setTaskColumns(newTaskColumns);
 
     if (onUpdateColumns) {

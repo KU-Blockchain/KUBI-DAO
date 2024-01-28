@@ -41,7 +41,7 @@ const Home = () => {
   return (
     
 
-    <VStack spacing={20} style={{ position: 'relative' }}>
+    <VStack spacing={10} style={{ position: 'relative' }}>
 
       
     <Box style={waveBackgroundStyle}>
@@ -76,7 +76,6 @@ const Home = () => {
         boxShadow="lg"
         position="relative"
         zIndex={1}
-        mt={4}
       >
         <div className="glass" style={glassLayerStyle} />
           <Container centerContent>
@@ -113,15 +112,16 @@ const Home = () => {
               About KUBI DAO
             </Heading>
             <Text ml="8%" mr="8%" mt="4%" color= "ghostwhite" fontSize="lg" textAlign="left">
-              KUBI DAO is a Decentralized Autonomous Organization that offers a
-              unique model for collaboration, incentives, and privileges. Our
+              KUBI DAO is offers a
+              unique model for collaboration, incentives, and privileges. 
+              Our
               hybrid tokenomics system combines KUBIX and KUBI tokens to create a
               platform that encourages active participation and fair
               distribution of rewards. This is all enabled by bloclchain tehcnology, built on the Polygon mumbai testnet. Welcome to the KU Blockchain DAO!
             </Text>
 
             <Text mt="4%" mb="4%" color= "ghostwhite" fontSize="2xl" textAlign="center" fontWeight={900}>
-              Read more here at our github readme <Link href="https://github.com/KU-Blockchain/DAO2#readme" isExternal fontWeight="bold" textDecoration="underline" color="white">here</Link>
+              Read more here at our GitHub <Link href="https://github.com/KU-Blockchain/DAO2#readme" isExternal fontWeight="bold" textDecoration="underline" color="white">Here</Link>
             </Text>
         </Container>
         </Box>

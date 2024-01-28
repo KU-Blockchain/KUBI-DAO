@@ -22,20 +22,34 @@ import AccountSettingsModal from '@/components/userPage/AccountSettingsModal';
 
 import { useWeb3Context } from '@/contexts/Web3Context';
 import { useDataBaseContext } from '@/contexts/DataBaseContext';
+import { useLeaderboard } from '@/contexts/leaderboardContext';
+import { useGraphVotingContext } from '@/contexts/graphVotingContext';
 
 import DeployMenu from "@/components/userPage/DeployMenu";
 import MintMenu from "@/components/userPage/MintMenu";
 import DataMenu from "@/components/userPage/DataMenu";
 
+
 import { useSpring, animated } from 'react-spring';
-import TaskCard from '@/components/TaskManager/TaskCard';
+
 
 import Link2 from 'next/link';
+import { set } from 'lodash';
+import OngoingPolls from '@/components/userPage/OngoingPolls';
+
+
 
 
 
 
 const UserDashboard= () => {
+
+    const {setLeaderboardLoaded,userPercentage} = useLeaderboard();
+
+    const {loadOngoingKubidInitial, kubidOngoingProposals} = useGraphVotingContext();
+    
+
+    
     
   const prefersReducedMotion = usePrefersReducedMotion();
   const [countFinished, setCountFinished] = useState(false);
@@ -54,20 +68,28 @@ const UserDashboard= () => {
   const closeSettingsModal = () => setSettingsModalOpen(false);
 
   const [claimedTasks, setClaimedTasks] = useState([]);
+    const [notLoaded, setNotLoaded] = useState(true);
   const [reccomendedTasks, setReccomendedTasks] = useState([]);
 
 
     const { web3, account,KUBIXbalance, hasExecNFT} = useWeb3Context();
     const {userDetails, fetchUserDetails, findUserInProgressTasks, projects, findRandomTasks} = useDataBaseContext();
 
+
     useEffect(() => {
+        
         async function fetch(){
             await fetchUserDetails(web3,account);
+            await setLeaderboardLoaded(true);
+            await loadOngoingKubidInitial();
             
             
         }
-        fetch();
-        
+        if(web3 && account&& notLoaded){
+            setNotLoaded(false)
+
+            fetch();
+        }
         
       }, [web3, account]);
 
@@ -109,7 +131,7 @@ const UserDashboard= () => {
     zIndex: -1,
     borderRadius: 'inherit',
     backdropFilter: 'blur(20px)',
-    backgroundColor: 'rgba(0, 0, 0, .8)',
+    backgroundColor: 'rgba(0, 0, 0, .7)',
   };
 
   const glowAnimation = keyframes`
@@ -132,31 +154,37 @@ const UserDashboard= () => {
         nextTier: "Double Diamond",
         nextTierKUBIX: "5000",
         nextTierReward: "Flex",
+        image: "/images/diamondMember.png"
     },
     Ruby: {
         nextTier: "Diamond",
         nextTierKUBIX: 2500,
         nextTierReward: "Choice of Any Item",
+        image: "/images/rubyMember.png"
     },
     Gold: {
         nextTier: "Ruby",
         nextTierKUBIX: 1000,
         nextTierReward: "Choice of Shirt, Hat, or Pullover",
+        image: "/images/goldMember.png"
     },
     Silver: {
         nextTier: "Gold",
         nextTierKUBIX: 500,
         nextTierReward: "Choice of Shirt or Hat",
+        image: "/images/silverMember.png"
     },
     Bronze: {
         nextTier: "Silver",
         nextTierKUBIX: 250,
         nextTierReward: "Choice of Shirt",
+        image: "/images/bronzeMember.png"
     },
     New: {
         nextTier: "Bronze",
         nextTierKUBIX: 100,
         nextTierReward: "T-shirt and Trip Eligibility",
+        image:"/images/newMember.png",
     },
     };
 
@@ -172,9 +200,13 @@ const UserDashboard= () => {
     tier: determineTier(KUBIXbalance),
     nextReward: 'Shirt',
     tasksCompleted: userDetails && userDetails.tasksCompleted ? userDetails.tasksCompleted : 0,
+    percentage: userPercentage? (userPercentage * 100) : 0,
+
   };
 
   const nextTierInfo = tierInfo[userInfo.tier];
+
+  const tierImage = tierInfo[userInfo.tier].image;
 
   const animatedKubix = useSpring({ 
     kubix: userInfo.kubixEarned, 
@@ -250,11 +282,11 @@ const UserDashboard= () => {
                 </animated.span>)}
                 </Text>
 
-            <Text pl={6} pb={4} fontSize="xl">This makes you top 1% of Contributors</Text>
+            <Text pl={6} pb={4} fontSize="lg">This makes you top {userInfo.percentage}% of Contributors</Text>
           </VStack>
-            <VStack p={6}  pt={6} align="center" >
+            <VStack p={0} pt={4} align="center" >
                 <Text fontSize="3xl" fontWeight="bold">{userInfo.tier} Member</Text>
-                <Image src="/images/KUBC-logo-RGB-1200.png" alt="KUBC Logo"  maxW="50%" />
+                <Image src={tierImage} alt="KUBC Logo"  maxW="45%" />
                 <Progress
                     value={progressPercentage}
                     max={100} 
@@ -327,12 +359,10 @@ const UserDashboard= () => {
                 <Text  fontWeight="bold"  fontSize="md">Tasks Completed: {userInfo.tasksCompleted}</Text>
             </VStack>
             <VStack align={'center'} spacing={2}>
-
-                <Text fontWeight="extrabold" fontSize="lg">Menu</Text>
                 {hasExecNFT && (
-                <Button colorScheme="green" onClick={toggleDevMenu} size="sm">Dev Menu</Button>
+                <Button colorScheme="green" onClick={toggleDevMenu} size="sm">Developer Menu</Button>
                 )}
-                {!hasExecNFT &&(<Button colorScheme="red" size="sm">Become Dev</Button>)}
+                {!hasExecNFT &&(<Button colorScheme="red" size="sm">Become Developer</Button>)}
                 {showDevMenu && (
                 <>
                     <DeployMenu />
@@ -344,13 +374,13 @@ const UserDashboard= () => {
             </VStack>
             </HStack>
         </Box>
-        <Box w="100%" pt={4} borderRadius="2xl" bg="transparent" boxShadow="lg" position="relative" zIndex={2}>
+        <Box w="100%" pt={4} borderRadius="2xl" bg="transparent" boxShadow="lg" position="relative" zIndex={2} >
             <div style={glassLayerStyle} />
 
             <VStack pb={2} align="flex-start" position="relative" borderTopRadius="2xl">
                 <div style={glassLayerStyle} />
                 <Text pl={6} fontWeight="bold" fontSize="2xl">
-                    {claimedTasks && claimedTasks.length > 0 ? 'Claimed Tasks' : 'Reccomended Tasks'}
+                    {claimedTasks && claimedTasks.length > 0 ? 'Claimed Tasks' : 'Recommended Tasks'}
                 </Text>
             </VStack>
 
@@ -383,16 +413,22 @@ const UserDashboard= () => {
             zIndex={2}>
         <div style={glassLayerStyle} />
 
-        <VStack pb={2} align="flex-start" position="relative" borderTopRadius="2xl">
+        <VStack pb={2}  align="flex-start" position="relative" borderTopRadius="2xl">
         <div style={glassLayerStyle} />
             <Text pl={6} fontWeight="bold" fontSize="2xl" >Ongoing Polls {' '}</Text>
+            
+
         </VStack>
-            {/* Make into commpnent that grabs votes ongoing */}
-            <HStack pb={6} ml={6} pt={4}>
-                <Button colorScheme="green" size="md">Task 1</Button>
-                <Button colorScheme="green" size="md">Task 2</Button>
-                <Button colorScheme="green" size="md">Task 3</Button>
-            </HStack>
+
+        <OngoingPolls  OngoingPolls={kubidOngoingProposals}/>
+
+        
+        
+   
+            
+
+
+            
         </Box>
         
 

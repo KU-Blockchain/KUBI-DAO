@@ -11,9 +11,13 @@ import { BarChart, Bar, XAxis, YAxis} from 'recharts';
 import CountDown from '@/components/voting/countDown';
 import { IconButton } from '@chakra-ui/react';
 
+import  PollModal  from '@/components/voting/pollModal';
 import { ArrowForwardIcon, ArrowBackIcon} from "@chakra-ui/icons";
 
 import { useGraphVotingContext } from '@/contexts/graphVotingContext';
+
+import { useRouter } from 'next/router';
+import { set } from 'lodash';
 
 
 
@@ -24,12 +28,19 @@ const glassLayerStyle = {
   zIndex: -1,
   borderRadius: "inherit",
   backdropFilter: "blur(20px)",
-  backgroundColor: "rgba(0, 0, 0, .7)",
+  backgroundColor: "rgba(0, 0, 0, .73)",
 };
 
 
 
 const Voting = () => {
+  const router = useRouter();
+
+    
+
+
+
+
 
 
   const {setVotingLoaded, hashLoaded, fetchPollsIPFS,fetchDataIPFS, setContract,contractX, contractD, contract, loadingVote, setLoadingVote, selectedPoll, setSelectedPoll,selectedOption, setSelectedOption, ongoingPollsKubix, setOngoingPollsKubix, completedPollsKubix, setCompletedPollsKubix, ongoingPollsKubid, setOngoingPollsKubid, completedPollsKubid, setCompletedPollsKubid, completedEnd, setCompletedEnd, totalCompletedCount, setTotalCompletedCount, proposal, setProposal, showCreateVote, setShowCreateVote, blockTimestamp, setBlockTimestamp, loadingSubmit, setLoadingSubmit, handleVote, createPoll, fetchPolls, fetchPollsData, loadMoreCompleted, handleSubmit, showCreatePoll, setShowCreatePoll } = useVoting();
@@ -61,21 +72,29 @@ const Voting = () => {
 
   const displayOngoingPollsKubix = ongoingPollsKubix.slice(ongoingStartIndexKubix, ongoingStartIndexKubix + 3);
   const displayHistoryPollsKubix = [...completedPollsKubix].reverse().slice(historyStartIndexKubix, historyStartIndexKubix + 3);
+  const [loaded, setLoaded] = useState(false);
 
 
 
   const handlePollClick = (poll) => {
     console.log(poll);
     setSelectedPoll(poll);
+    router.push(`/voting?poll=${poll.id}`);
     onOpen();
   };
 
 
   useEffect(() => {
-    loadCompletedKubidInitial();
-    loadOngoingKubidInitial();
+    const fetchPolls=  async() => {
+      await loadCompletedKubidInitial();
+      await loadOngoingKubidInitial();
+      setLoaded(true);
+    }
+    fetchPolls();
     
   }, []);
+
+
 
 
 
@@ -110,6 +129,26 @@ const Voting = () => {
   const handleCreatePollClick = () => {
     setShowCreatePoll(!showCreatePoll);
   };
+
+  useEffect(() => {
+    console.log("router.query.poll: ", router.query.poll);
+
+    
+
+    if(router.query.poll!==undefined&& loaded){
+      console.log("router.query.poll: ", router.query.poll);
+      // find poll with index poll 
+      const poll = kubidOngoingProposals.find((poll) => poll.id === router.query.poll);
+      console.log("poll: ", poll);
+      setSelectedPoll(
+        poll);
+      onOpen();
+
+    }
+    
+
+
+  },[router.query.poll,kubidOngoingProposals, loaded]);
 
 
   
@@ -769,70 +808,18 @@ const Voting = () => {
             </Modal>
         </TabPanels>
       </Tabs>
+      <PollModal
+        isOpen={isOpen}
+        onClose={onClose}
+        handleVote={handleVote}
+        loadingVote={loadingVote}
+        selectedPoll={selectedPoll}
+        selectedOption={selectedOption}
+        setSelectedOption={setSelectedOption}
+        onOpen={onOpen}
+      />
   
-      {/* Modal */}
-      <Modal isOpen={isOpen} onClose={onClose}>
-  <ModalOverlay />
-  <ModalContent
-      alignItems="center"
-      justifyContent="center"
-      borderRadius="3xl"
-      boxShadow="lg"
-      display="flex"
-      w="100%"
-      maxWidth="40%"
-      bg="transparent"
-      position="relative"
-      p={4}
-      zIndex={1}
-      mt="10%"
-      color="ghostwhite"
-  >
-    <div className="glass" style={glassLayerStyle} />
-    <ModalHeader fontWeight={"extrabold"} fontSize={"2xl"}>{selectedPoll?.name}</ModalHeader>
-    <ModalCloseButton />
-<ModalBody>
-  <VStack spacing={6}>
-
-    
-    {/* Description Section */}
-    <VStack spacing={2} alignItems="start">
-      <Text fontWeight="bold" fontSize="lg">Description:</Text>
-      <Text fontSize="md">{selectedPoll?.description}</Text>
-    </VStack>
-    
-    {/* Time Details Section */}
-    <VStack spacing={2} alignItems="start">
-    <Text fontWeight="bold" fontSize="lg">Time Details:</Text>
-    <CountDown duration={selectedPoll?.expirationTimestamp- Math.floor(Date.now() / 1000)} />
-
-    </VStack>
-
-    {/* Voting Options Section */}
-    <VStack spacing={4} alignItems="start">
-      <Text fontWeight="bold" fontSize="lg">Voting Options:</Text>
-      <RadioGroup onChange={setSelectedOption} value={selectedOption}>
-        <VStack spacing={3}>
-          {selectedPoll?.options?.map((option, index) => (
-            <Radio key={index} value={index}>
-              {option.name} (Votes: {ethers.BigNumber.from(option.votes).toNumber()})
-            </Radio>
-          ))}
-        </VStack>
-      </RadioGroup>
-    </VStack>
-  </VStack>
-</ModalBody>
-
-
-
-    <ModalFooter>
-      <Button colorScheme="blue" onClick={() => handleVote(onClose)} mr={3} isLoading={loadingVote} loadingText="Handling Vote">
-        Vote
-      </Button>
-    </ModalFooter>
-  </ModalContent>
-</Modal>
+      
 </Container>
 </>
 );

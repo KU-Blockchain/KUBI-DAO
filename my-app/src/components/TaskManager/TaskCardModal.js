@@ -12,7 +12,6 @@ import {
   ModalFooter,
   ModalHeader,
   ModalOverlay,
-  Text,
   Box,
   VStack,
   Flex,
@@ -20,7 +19,8 @@ import {
   Toast,
   useToast,
   Textarea, 
-  useDisclosure
+  useDisclosure,
+  Text
 } from '@chakra-ui/react';
 import { CheckIcon } from '@chakra-ui/icons';
 import EditTaskModal from './EditTaskModal';
@@ -28,6 +28,16 @@ import { useTaskBoard } from '../../contexts/TaskBoardContext';
 import { useWeb3Context } from '../../contexts/Web3Context';
 import { useDataBaseContext } from '@/contexts/DataBaseContext';
 import { useRouter } from 'next/router';
+
+const glassLayerStyle = {
+  position: "absolute",
+  height: "100%",
+  width: "100%",
+  zIndex: -1,
+  borderRadius: "inherit",
+  backdropFilter: "blur(20px)",
+  backgroundColor: "rgba(0, 0, 0, .87)",
+};
 
 const TaskCardModal = ({task, columnId, onEditTask }) => {
   const [submission, setSubmission] = useState('');
@@ -175,13 +185,11 @@ const TaskCardModal = ({task, columnId, onEditTask }) => {
 
   return  task ? (
     <>
-      <Modal isOpen={isOpen} onClose={handleCloseModal} size="2xl">
+      <Modal  isOpen={isOpen} onClose={handleCloseModal} size="3xl">
       <ModalOverlay />
-      <ModalContent >
+      <ModalContent bg="transparent" textColor="white" >
+      <div className="glass" style={glassLayerStyle} />
         <Flex alignItems="center" justifyContent="space-between">
-          <Box as="h2" fontWeight="bold" ml="4" mt="2" fontSize="2xl">
-            {task.name}
-          </Box >
           {task.claimedBy && (
             <Text fontSize="sm" mr={12}>
               Claimed By: {task.claimerUsername}
@@ -189,13 +197,16 @@ const TaskCardModal = ({task, columnId, onEditTask }) => {
           )}
         </Flex>
         <ModalCloseButton />
-          <ModalBody>
+
+          <Box  pt={4} borderTopRadius="2xl" bg="transparent" boxShadow="lg" position="relative" zIndex={-1}>
+          <div className="glass" style={glassLayerStyle} />
+           <Text ml="6" fontSize="2xl" fontWeight="bold">{task.name}</Text>
+          </Box>
+
+          <ModalBody >
             <VStack spacing={4} align="start">
               <Box>
-                <Text fontWeight="bold" fontSize="lg">
-                  Description:
-                </Text>
-                <Text>{task.description}</Text>
+                <Text mb="4" mt="4" lineHeight="6" fontSize="md" fontWeight="bold" style={{ whiteSpace: 'pre-wrap' }}>{task.description}</Text>
               </Box>
               {columnId === 'inProgress' && (
                 <FormControl>
@@ -219,7 +230,7 @@ const TaskCardModal = ({task, columnId, onEditTask }) => {
               )}
             </VStack>
           </ModalBody>
-          <ModalFooter borderTop="1px solid" borderColor="gray.200" py={2}>
+          <ModalFooter borderTop="1.5px solid" borderColor="gray.200" py={2}>
             <Box flexGrow={1}>
               <Text fontWeight="bold" fontSize="m">
                 KUBIX: {task.kubixPayout}
@@ -239,6 +250,7 @@ const TaskCardModal = ({task, columnId, onEditTask }) => {
               </Button>
             </Box>
           </ModalFooter>
+
         </ModalContent>
       </Modal>
       {columnId === 'open' && (

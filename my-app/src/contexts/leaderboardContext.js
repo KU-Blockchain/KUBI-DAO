@@ -19,9 +19,10 @@ export const LeaderboardProvider = ({ children }) => {
     const [sortField, setSortField] = useState('kubix');
     const [sortOrder, setSortOrder] = useState('desc');
     const PMContract = "0x50a07e25780A6cBfF63c8B96fd756D736C48CE11";
-    const { signerUniversal } = useWeb3Context()
+    const { signerUniversal, account } = useWeb3Context()
     const { fetchFromIpfs } = useIPFScontext();
     const [leaderboardLoaded, setLeaderboardLoaded] = useState(false);
+    const [userPercentage, setUserPercentage] = useState(null);
 
     const fetchLeaderboardData = async () => {
         if (signerUniversal) {
@@ -117,17 +118,33 @@ export const LeaderboardProvider = ({ children }) => {
             console.log('sortedData', sortedData);
             console.log('sortedSemesterData', sortedSemesterData);
             console.log('sortedYearLeaderboard', sortedYearLeaderboard);
+
+            // Compute user percentage
+            const userIndex = sortedData.findIndex(entry => entry.id === account);
+            if (userIndex !== -1) {
+                setUserPercentage((userIndex + 1) / sortedData.length);
+            } else {
+                setUserPercentage(0);
+            }
+
+            
         }
     };
 
     useEffect(() => {
-        if (leaderboardLoaded) {
-            fetchLeaderboardData();
+        async function loadLeaderboardData() {
+            if (leaderboardLoaded) {
+                console.log("fetching leaderboard")
+                await fetchLeaderboardData(account);
+
+            }
         }
+        loadLeaderboardData()
+
     }, [leaderboardLoaded]);
 
     return (
-        <leaderboardContext.Provider value={{ semesterData, data, setData, setSortField, sortOrder, setSortOrder, setLeaderboardLoaded, yearLeaderboardData }}>
+        <leaderboardContext.Provider value={{ userPercentage, semesterData, data, setData, setSortField, sortOrder, setSortOrder, setLeaderboardLoaded, yearLeaderboardData }}>
             {children}
         </leaderboardContext.Provider>
     );
