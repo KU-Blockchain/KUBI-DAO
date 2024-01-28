@@ -154,13 +154,13 @@ const UserDashboard= () => {
         nextTier: "Double Diamond",
         nextTierKUBIX: "5000",
         nextTierReward: "Flex",
-        image: "/images/KUBC-logo-RGB-1200.png"
+        image: "/images/diamondMember.png"
     },
     Ruby: {
         nextTier: "Diamond",
         nextTierKUBIX: 2500,
         nextTierReward: "Choice of Any Item",
-        image: "/images/KUBC-logo-RGB-1200.png"
+        image: "/images/rubyMember.png"
     },
     Gold: {
         nextTier: "Ruby",
