@@ -3,6 +3,8 @@ import { useWeb3Context } from "./Web3Context";
 import {useVoting} from "./votingContext";
 import { set } from "lodash";
 
+import{useRouter} from "next/router";
+
 const graphVotingContext = createContext();
 
 export const useGraphVotingContext = () => {
@@ -10,6 +12,8 @@ export const useGraphVotingContext = () => {
 };
 
 export const GraphVotingProvider = ({ children }) => {
+    const router = useRouter();
+
     const {providerUniversal} = useWeb3Context();
     const SUBGRAPH_URL = 'https://api.thegraph.com/subgraphs/name/hudsonhrh/kubidao';
 
@@ -17,10 +21,13 @@ export const GraphVotingProvider = ({ children }) => {
     const [skipCountKubidOngoing, setSkipCountKubidOngoing] = useState(0); 
     const [skipCountKubidCompleted, setSkipCountKubidCompleted] = useState(0); 
     const [kubidOngoingProposals, setKubidOngoingProposals] = useState([]); 
+    const [randomOngoingProposals, setRandomOngoingProposals] = useState([]);
 
     const [kubidCompletedProposals, setKubidCompletedProposals] = useState([]); 
 
     const {getWinnerFromContract} = useVoting();
+
+
 
     async function getCurrentBlockTime(){
 
@@ -131,6 +138,8 @@ export const GraphVotingProvider = ({ children }) => {
     }
 
     async function loadOngoingKubidInitial() {
+
+
         const currentBlockTime = await getCurrentBlockTime();
         const KUBID_VOTES_QUERY = `
         {
@@ -162,6 +171,7 @@ export const GraphVotingProvider = ({ children }) => {
         const fetchedData = await querySubgraph(KUBID_VOTES_QUERY);
 
         setKubidOngoingProposals(fetchedData.proposals);
+
         setSkipCountKubidOngoing(10);
         console.log('ongoing', fetchedData);
         

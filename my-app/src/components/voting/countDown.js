@@ -19,7 +19,7 @@ const Countdown = ({ duration }) => {
 
   return (
     <div style={{ position: 'relative' }}>
-      <Text fontWeight="bold" fontSize="xl">
+      <Text fontWeight="bold" fontSize="lg">
         {days > 0 ? `${days}d ` : ''}
         {hours > 0 ? `${hours}h ` : ''}
         {minutes > 0 ? `${minutes}m ` : ''}

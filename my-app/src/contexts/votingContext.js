@@ -49,7 +49,7 @@ export const VotingProvider = ({ children }) => {
 
     const [loadingVote, setLoadingVote] = useState(false)
 
-    const [selectedPoll, setSelectedPoll] = useState(null);
+    const [selectedPoll, setSelectedPoll] = useState({ name: 'c', description: '', execution: '', time: 0, options: [] ,id:0});
     const [selectedOption, setSelectedOption] = useState(null);
 
     const [ongoingPollsKubix, setOngoingPollsKubix] = useState([]);

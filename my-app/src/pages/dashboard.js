@@ -23,6 +23,7 @@ import AccountSettingsModal from '@/components/userPage/AccountSettingsModal';
 import { useWeb3Context } from '@/contexts/Web3Context';
 import { useDataBaseContext } from '@/contexts/DataBaseContext';
 import { useLeaderboard } from '@/contexts/leaderboardContext';
+import { useGraphVotingContext } from '@/contexts/graphVotingContext';
 
 import DeployMenu from "@/components/userPage/DeployMenu";
 import MintMenu from "@/components/userPage/MintMenu";
@@ -34,6 +35,7 @@ import { useSpring, animated } from 'react-spring';
 
 import Link2 from 'next/link';
 import { set } from 'lodash';
+import OngoingPolls from '@/components/userPage/OngoingPolls';
 
 
 
@@ -43,6 +45,8 @@ import { set } from 'lodash';
 const UserDashboard= () => {
 
     const {setLeaderboardLoaded,userPercentage} = useLeaderboard();
+
+    const {loadOngoingKubidInitial, kubidOngoingProposals} = useGraphVotingContext();
     
 
     
@@ -64,21 +68,28 @@ const UserDashboard= () => {
   const closeSettingsModal = () => setSettingsModalOpen(false);
 
   const [claimedTasks, setClaimedTasks] = useState([]);
+    const [notLoaded, setNotLoaded] = useState(true);
   const [reccomendedTasks, setReccomendedTasks] = useState([]);
 
 
     const { web3, account,KUBIXbalance, hasExecNFT} = useWeb3Context();
     const {userDetails, fetchUserDetails, findUserInProgressTasks, projects, findRandomTasks} = useDataBaseContext();
 
+
     useEffect(() => {
+        
         async function fetch(){
             await fetchUserDetails(web3,account);
             await setLeaderboardLoaded(true);
+            await loadOngoingKubidInitial();
             
             
         }
-        fetch();
-        
+        if(web3 && account&& notLoaded){
+            setNotLoaded(false)
+
+            fetch();
+        }
         
       }, [web3, account]);
 
@@ -402,16 +413,22 @@ const UserDashboard= () => {
             zIndex={2}>
         <div style={glassLayerStyle} />
 
-        <VStack pb={2} align="flex-start" position="relative" borderTopRadius="2xl">
+        <VStack pb={2}  align="flex-start" position="relative" borderTopRadius="2xl">
         <div style={glassLayerStyle} />
             <Text pl={6} fontWeight="bold" fontSize="2xl" >Ongoing Polls {' '}</Text>
+            
+
         </VStack>
-            {/* Make into commpnent that grabs votes ongoing */}
-            <HStack pb={6} ml={6} pt={4}>
-                <Button colorScheme="green" size="md">Task 1</Button>
-                <Button colorScheme="green" size="md">Task 2</Button>
-                <Button colorScheme="green" size="md">Task 3</Button>
-            </HStack>
+
+        <OngoingPolls  OngoingPolls={kubidOngoingProposals}/>
+
+        
+        
+   
+            
+
+
+            
         </Box>
         
 
