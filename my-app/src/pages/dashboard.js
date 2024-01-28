@@ -35,6 +35,8 @@ import Link2 from 'next/link';
 
 
 
+
+
 const UserDashboard= () => {
     
   const prefersReducedMotion = usePrefersReducedMotion();
@@ -132,31 +134,37 @@ const UserDashboard= () => {
         nextTier: "Double Diamond",
         nextTierKUBIX: "5000",
         nextTierReward: "Flex",
+        image: "/images/KUBC-logo-RGB-1200.png"
     },
     Ruby: {
         nextTier: "Diamond",
         nextTierKUBIX: 2500,
         nextTierReward: "Choice of Any Item",
+        image: "/images/KUBC-logo-RGB-1200.png"
     },
     Gold: {
         nextTier: "Ruby",
         nextTierKUBIX: 1000,
         nextTierReward: "Choice of Shirt, Hat, or Pullover",
+        image: "/images/goldMember.png"
     },
     Silver: {
         nextTier: "Gold",
         nextTierKUBIX: 500,
         nextTierReward: "Choice of Shirt or Hat",
+        image: "/images/silverMember.png"
     },
     Bronze: {
         nextTier: "Silver",
         nextTierKUBIX: 250,
         nextTierReward: "Choice of Shirt",
+        image: "/images/bronzeMember.png"
     },
     New: {
         nextTier: "Bronze",
         nextTierKUBIX: 100,
         nextTierReward: "T-shirt and Trip Eligibility",
+        image:"/images/newMember.png",
     },
     };
 
@@ -172,9 +180,12 @@ const UserDashboard= () => {
     tier: determineTier(KUBIXbalance),
     nextReward: 'Shirt',
     tasksCompleted: userDetails && userDetails.tasksCompleted ? userDetails.tasksCompleted : 0,
+    percentage:"1%"
   };
 
   const nextTierInfo = tierInfo[userInfo.tier];
+
+  const tierImage = tierInfo[userInfo.tier].image;
 
   const animatedKubix = useSpring({ 
     kubix: userInfo.kubixEarned, 
@@ -250,11 +261,11 @@ const UserDashboard= () => {
                 </animated.span>)}
                 </Text>
 
-            <Text pl={6} pb={4} fontSize="xl">This makes you top 1% of Contributors</Text>
+            <Text pl={6} pb={4} fontSize="xl">This makes you top {userInfo.percentage} of Contributors</Text>
           </VStack>
             <VStack p={6}  pt={6} align="center" >
                 <Text fontSize="3xl" fontWeight="bold">{userInfo.tier} Member</Text>
-                <Image src="/images/KUBC-logo-RGB-1200.png" alt="KUBC Logo"  maxW="50%" />
+                <Image src={tierImage} alt="KUBC Logo"  maxW="50%" />
                 <Progress
                     value={progressPercentage}
                     max={100} 

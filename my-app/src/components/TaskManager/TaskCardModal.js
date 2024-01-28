@@ -206,7 +206,7 @@ const TaskCardModal = ({task, columnId, onEditTask }) => {
           <ModalBody >
             <VStack spacing={4} align="start">
               <Box>
-                <Text mt="4" lineHeight="6" fontSize="md" fontWeight="bold" style={{ whiteSpace: 'pre-wrap' }}>{task.description}</Text>
+                <Text mb="4" mt="4" lineHeight="6" fontSize="md" fontWeight="bold" style={{ whiteSpace: 'pre-wrap' }}>{task.description}</Text>
               </Box>
               {columnId === 'inProgress' && (
                 <FormControl>
