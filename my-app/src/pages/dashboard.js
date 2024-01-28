@@ -109,7 +109,7 @@ const UserDashboard= () => {
     zIndex: -1,
     borderRadius: 'inherit',
     backdropFilter: 'blur(20px)',
-    backgroundColor: 'rgba(0, 0, 0, .8)',
+    backgroundColor: 'rgba(0, 0, 0, .7)',
   };
 
   const glowAnimation = keyframes`
@@ -350,7 +350,7 @@ const UserDashboard= () => {
             <VStack pb={2} align="flex-start" position="relative" borderTopRadius="2xl">
                 <div style={glassLayerStyle} />
                 <Text pl={6} fontWeight="bold" fontSize="2xl">
-                    {claimedTasks && claimedTasks.length > 0 ? 'Claimed Tasks' : 'Reccomended Tasks'}
+                    {claimedTasks && claimedTasks.length > 0 ? 'Claimed Tasks' : 'Recommended Tasks'}
                 </Text>
             </VStack>
 

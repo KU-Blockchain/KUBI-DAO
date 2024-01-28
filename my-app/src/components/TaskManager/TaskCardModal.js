@@ -189,10 +189,10 @@ const TaskCardModal = ({task, columnId, onEditTask }) => {
           )}
         </Flex>
         <ModalCloseButton />
-          <ModalBody>
+          <ModalBody >
             <VStack spacing={4} align="start">
-              <Box>
-                <Text fontWeight="bold" fontSize="lg">
+              <Box mr="20%" ml="20%">
+                <Text mb="4"fontWeight="bold" fontSize="lg">
                   Description:
                 </Text>
                 <Text>{task.description}</Text>
