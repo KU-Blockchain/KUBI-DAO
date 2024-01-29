@@ -29,8 +29,8 @@ const glassLayerStyle = {
     width: "100%",
     zIndex: -1,
     borderRadius: "inherit",
-    backdropFilter: "blur(20px)",
-    backgroundColor: "rgba(0, 0, 0, .73)",
+    backdropFilter: "blur(9px)",
+    backgroundColor: "rgba(33, 33, 33, 0.97)",
   };
 
 
@@ -63,7 +63,7 @@ const PollModal = ({ onOpen, isOpen, onClose, selectedPoll, handleVote, loadingV
                 color="ghostwhite"
             >
                 <div className="glass" style={glassLayerStyle} />
-                <ModalHeader fontWeight={"extrabold"} fontSize={"2xl"}>
+                <ModalHeader color="rgba(333, 333, 333, 1)" fontWeight={"extrabold"} fontSize={"2xl"}>
                     {selectedPoll?.name}
                 </ModalHeader>
                 <ModalCloseButton />
@@ -71,7 +71,7 @@ const PollModal = ({ onOpen, isOpen, onClose, selectedPoll, handleVote, loadingV
                     <VStack spacing={6}>
                         {/* Description Section */}
                         <VStack ml="6" mr="6" spacing={2} alignItems="start">
-                            <Text fontSize="md">{selectedPoll?.description}</Text>
+                            <Text color="rgba(333, 333, 333, 1)" fontSize="md">{selectedPoll?.description}</Text>
                         </VStack>
 
                             <CountDown
@@ -79,9 +79,9 @@ const PollModal = ({ onOpen, isOpen, onClose, selectedPoll, handleVote, loadingV
                             />
 
                         {/* Voting Options Section */}
-                        <VStack spacing={4} >
-                            <RadioGroup onChange={setSelectedOption} value={selectedOption}>
-                                <VStack align="flex-start">
+                        <VStack color="rgba(333, 333, 333, 1)" spacing={4} >
+                            <RadioGroup  onChange={setSelectedOption} value={selectedOption}>
+                                <VStack  align="flex-start">
                                     {selectedPoll?.options?.map((option, index) => (
                                         <Radio size="lg" key={index} value={index}>
                                             {option.name} (Votes: {ethers.BigNumber.from(option.votes).toNumber()})

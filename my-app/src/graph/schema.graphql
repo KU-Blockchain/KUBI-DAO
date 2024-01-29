@@ -23,3 +23,9 @@ type Vote @entity {
     voter: Bytes!
     optionIndex: BigInt!
 }
+type User @entity {
+    id: ID!
+    name: String!
+    proposals: [Proposal!]! @derivedFrom(field: "creator")
+    votes: [Vote!]! @derivedFrom(field: "voter")
+}

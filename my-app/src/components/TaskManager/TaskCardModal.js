@@ -35,8 +35,8 @@ const glassLayerStyle = {
   width: "100%",
   zIndex: -1,
   borderRadius: "inherit",
-  backdropFilter: "blur(20px)",
-  backgroundColor: "rgba(0, 0, 0, .87)",
+  backdropFilter: "blur(9px)",
+  backgroundColor: "rgba(33, 33, 33, 0.97)",
 };
 
 const TaskCardModal = ({task, columnId, onEditTask }) => {
@@ -189,13 +189,6 @@ const TaskCardModal = ({task, columnId, onEditTask }) => {
       <ModalOverlay />
       <ModalContent bg="transparent" textColor="white" >
       <div className="glass" style={glassLayerStyle} />
-        <Flex alignItems="center" justifyContent="space-between">
-          {task.claimedBy && (
-            <Text fontSize="sm" mr={12}>
-              Claimed By: {task.claimerUsername}
-            </Text>
-          )}
-        </Flex>
         <ModalCloseButton />
 
           <Box  pt={4} borderTopRadius="2xl" bg="transparent" boxShadow="lg" position="relative" zIndex={-1}>
@@ -208,12 +201,19 @@ const TaskCardModal = ({task, columnId, onEditTask }) => {
               <Box>
                 <Text mb="4" mt="4" lineHeight="6" fontSize="md" fontWeight="bold" style={{ whiteSpace: 'pre-wrap' }}>{task.description}</Text>
               </Box>
+              <Flex alignItems="center" justifyContent="space-between">
+          {task.claimedBy && (
+            <Text fontSize="sm" mr={12}>
+              Claimed By: {task.claimerUsername}
+            </Text>
+          )}
+        </Flex>
               {columnId === 'inProgress' && (
-                <FormControl>
+                <FormControl >
                   <FormLabel fontWeight="bold" fontSize="lg">
                     Submission:
                   </FormLabel>
-                  <Textarea
+                  <Textarea  height="200px"
                     placeholder="Type your submission here"
                     value={submission}
                     onChange={(e) => setSubmission(e.target.value)}
@@ -222,7 +222,7 @@ const TaskCardModal = ({task, columnId, onEditTask }) => {
               )}
               {(columnId === 'inReview' || columnId === 'completed') && (
                 <Box>
-                  <Text fontWeight="bold" fontSize="lg">
+                  <Text color="gray" fontWeight="bold" fontSize="lg">
                     Submission:
                   </Text>
                   <Text>{task.submission}</Text>
@@ -249,6 +249,7 @@ const TaskCardModal = ({task, columnId, onEditTask }) => {
                 {buttonText()}
               </Button>
             </Box>
+
           </ModalFooter>
 
         </ModalContent>

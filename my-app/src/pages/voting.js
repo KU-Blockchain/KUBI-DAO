@@ -32,6 +32,16 @@ const glassLayerStyle = {
 };
 
 
+const glassLayerStyle2 = {
+  position: "absolute",
+  height: "100%",
+  width: "100%",
+  zIndex: -1,
+  borderRadius: "inherit",
+  backdropFilter: "blur(20px)",
+  backgroundColor: "rgba(0, 0, 0, .73)",
+};
+
 
 const Voting = () => {
   const router = useRouter();
@@ -173,14 +183,14 @@ const Voting = () => {
           position="relative"
           display="flex"
           zIndex={0}
-          color= "white"
+          color="rgba(333, 333, 333, 1)"
           
         >
           <div className="glass" style={glassLayerStyle} />
           <Tab 
             fontSize="2xl" 
             fontWeight="extrabold" 
-            color= "ghostwhite"
+            color="rgba(333, 333, 333, 1)"
             _selected={{ backgroundColor: "ghostwhite", color: "black" }}
           >
             Votes
@@ -188,7 +198,7 @@ const Voting = () => {
           <Tab 
             fontSize="2xl" 
             fontWeight="extrabold" 
-            color= "ghostwhite"
+            color="rgba(333, 333, 333, 1)"
             _selected={{ backgroundColor: "ghostwhite", color: "black" }}
           >
             Polls
@@ -222,7 +232,7 @@ const Voting = () => {
               {/* Ongoing Votes */}
 
               <HStack w ="100%" justifyContent= "space-between">
-                <Heading pl= {2} color="ghostwhite" >Ongoing Votes </Heading>
+                <Heading pl= {2} color="rgba(333, 333, 333, 1)" >Ongoing Votes </Heading>
                 <Button fontWeight="black" p="2%" w="20%"bg="green.300" mt="2%" onClick={handleCreatePollClick} _hover={{ bg: "green.400",  transform: "scale(1.05)"} }>
                   {selectedTab === 0 ? (showCreateVote ? 'Hide Create Vote Form' : 'Create Vote') : (showCreatePoll ? 'Hide Create Poll Form' : 'Create Poll')}
                 </Button>
@@ -244,7 +254,7 @@ const Voting = () => {
                   maxWidth="30%"
                   bg="transparent"
                   position="relative"
-                  color= "ghostwhite"
+                  color="rgba(333, 333, 333, 1)"
                   p={2}
                   zIndex={1} 
                     _hover={{ bg: "black", boxShadow: "md", transform: "scale(1.05)"}}
@@ -253,7 +263,7 @@ const Voting = () => {
                     <Text mb ="4" fontSize="xl" fontWeight="extrabold">{proposal.name}</Text>
                     <CountDown duration={proposal?.expirationTimestamp- Math.floor(Date.now() / 1000)} />
                     <Text mt="2"> Voting Options:</Text>
-                    <HStack spacing={6}>
+                    <HStack mb={2} spacing={6}>
                       {proposal.options.map((option, index) => (
                         <Text fontSize= "sm" fontWeight="extrabold" key={index}>{option.name}</Text>
                       ))}
@@ -273,7 +283,7 @@ const Voting = () => {
                     position="relative"
                     p={4}
                     zIndex={1}
-                    color="ghostwhite">
+                    color="rgba(333, 333, 333, 1)">
                     <div className="glass" style={glassLayerStyle} />
                     <Flex
                       flexDirection="column"
@@ -346,7 +356,7 @@ const Voting = () => {
               
   
               {/* History */}
-              <Heading pl={2} color= "ghostwhite">History </Heading>
+              <Heading pl={2} color="rgba(333, 333, 333, 1)">History </Heading>
               <HStack spacing={4}  w= "100%" justifyContent="flex-start" >
                 
               {kubidCompletedProposals.length > 0 ? (
@@ -376,7 +386,7 @@ const Voting = () => {
                   maxWidth="30%"
                   bg="transparent"
                   position="relative"
-                  color= "ghostwhite"
+                  color="rgba(333, 333, 333, 1)"
                   zIndex={1}>
 
                     <div className="glass" style={glassLayerStyle} />
@@ -411,7 +421,7 @@ const Voting = () => {
                   position="relative"
                   p={4}
                   zIndex={1}
-                  color="ghostwhite">
+                  color="rgba(333, 333, 333, 1)">
                   <div className="glass" style={glassLayerStyle} />
                   <Flex
                     flexDirection="column"
@@ -507,13 +517,15 @@ const Voting = () => {
             <Flex w="100%"  flexDirection="column">
                 <VStack  alignItems={"flex-start"} spacing={8} >
                 <HStack w ="100%" justifyContent= "space-between">
-                <Heading pl= {2} color="ghostwhite" >Ongoing Polls </Heading>
+                <Heading pl= {2} color="rgba(333, 333, 333, 1)" >Ongoing Polls </Heading>
                 <Button fontWeight="black" p="2%" w="20%"bg="green.300" mt="2%" onClick={handleCreatePollClick} _hover={{ bg: "green.400",  transform: "scale(1.05)"} }>
                   {selectedTab === 0 ? (showCreateVote ? 'Hide Create Vote Form' : 'Create Vote') : (showCreatePoll ? 'Hide Create Poll Form' : 'Create Poll')}
                 </Button>
 
               </HStack>
+              
                 <HStack justifyContent={"flex-start"} w="100%" spacing={4}>
+                  
                 {ongoingPollsKubix.length > 0 ? (
                   ongoingPollsKubix.map((poll, index) => (
                     <Box key={index} flexDirection="column"
@@ -527,7 +539,7 @@ const Voting = () => {
                     maxWidth="30%"
                     bg="transparent"
                     position="relative"
-                    color= "ghostwhite"
+                    color="rgba(333, 333, 333, 1)"
                     p={2}
                     zIndex={1} 
                         _hover={{ bg: "black", boxShadow: "md", transform: "scale(1.05)"}}
@@ -556,7 +568,7 @@ const Voting = () => {
                     position="relative"
                     p={4}
                     zIndex={1}
-                    color="ghostwhite">
+                    color="rgba(333, 333, 333, 1)">
                     <div className="glass" style={glassLayerStyle} />
                     <Flex
                       flexDirection="column"
@@ -617,7 +629,7 @@ const Voting = () => {
               ) : null}
                 </HStack>
              
-                <Heading pl={2} color= "ghostwhite">History </Heading>
+                <Heading pl={2} color="rgba(333, 333, 333, 1)">History </Heading>
                 <HStack spacing={4}  w= "100%" justifyContent="flex-start" >
                 {completedPollsKubix.length > 0 ? (
                   displayHistoryPollsKubix.map((poll, index) => {
@@ -642,7 +654,7 @@ const Voting = () => {
                   maxWidth="30%"
                   bg="transparent"
                   position="relative"
-                  color= "ghostwhite"
+                  color="rgba(333, 333, 333, 1)"
                   zIndex={1}>
                     <div className="glass" style={glassLayerStyle} />
                     <Text mr="2" mt="4" ml="2 "mb ="2" fontSize={"xl"} fontWeight="extrabold">{poll.name}</Text>
